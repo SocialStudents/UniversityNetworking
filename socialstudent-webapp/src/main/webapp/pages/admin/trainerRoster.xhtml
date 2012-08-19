@@ -1,0 +1,233 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+
+    <body>
+        <ui:composition template="./../layout/adminLayout.xhtml">
+            <ui:define name="content">
+                <script type="text/javascript">
+                    if(document.getElementById("trainerRoster") != null) {
+                        document.getElementById("trainerRoster").setAttribute("class", "active");
+                    } else {
+                        location.href ="#{loginDataBean.lendingPage}";
+                    }                    
+                </script>
+                <h3>Session Roster</h3>
+                <hr class="red"/>
+                <div id="content">
+                    <f:event listener="#{schedulerServiceBean.generateRosterForTrainer}" type="preRenderComponent"/>
+                    <h:form prependId="false">
+                        <a4j:poll action="#{schedulerServiceBean.retrieveCurrentSessionForTrainerFromRoster()}" interval="60000" render="mainPanel,dataMessage" />
+                        <ui:include src="../common/message.xhtml" />
+                        <div style="text-align: right;margin: 10px;">
+                            <a href="todaysPBers" title="Today's PBers" target="_blank" class="standard-button">Today's PBers</a>
+                        </div>
+                        <h:inputHidden value="#{systemResultSessionUtil.date}" id="date">
+                        </h:inputHidden>
+                        <h:inputHidden value="#{systemResultSessionUtil.slotId}" id="slot"/>
+                        <h:panelGroup id="calenderPanel" rendered="#{systemResultViewUtil.bookCalendarDataBeanList != null and systemResultViewUtil.bookCalendarDataBeanList.size() > 0}">
+                            <div class="calendarHeader" style="display:#{schedulerServiceBean.calendarLabel != null ? 'block' : 'none'};">
+                                <div align="center"><label id="calLabel" style="color: white">#{schedulerServiceBean.calendarLabel}</label></div>
+                            </div>
+                            <rich:dataTable id="calender" value="#{systemResultViewUtil.bookCalendarDataBeanList}" var="bookCalendar"  styleClass="meal-plan" style="width:100%" rendered="#{systemResultViewUtil.bookCalendarDataBeanList != null and systemResultViewUtil.bookCalendarDataBeanList.size() > 0}">
+                                <f:facet name="header">
+                                    <rich:columnGroup>
+                                        <rich:column>
+
+                                        </rich:column>
+                                        <rich:column styleClass="header">
+                                            <h:outputText value="SUN"/>
+                                        </rich:column>
+                                        <rich:column styleClass="header">
+                                            <h:outputText value="MON"/>
+                                        </rich:column>
+                                        <rich:column styleClass="header">
+                                            <h:outputText value="TUE"/>
+                                        </rich:column>
+                                        <rich:column styleClass="header">
+                                            <h:outputText value="WED"/>
+                                        </rich:column>
+                                        <rich:column styleClass="header">
+                                            <h:outputText value="THU"/>
+                                        </rich:column>
+                                        <rich:column styleClass="header">
+                                            <h:outputText value="FRI"/>
+                                        </rich:column>
+                                        <rich:column styleClass="header">
+                                            <h:outputText value="SAT"/>
+                                        </rich:column>
+                                    </rich:columnGroup>
+                                </f:facet>
+                                <rich:column style="height: 56px;width: 106px;">
+                                    <h:panelGroup>
+                                        <h:outputText value="#{bookCalendar.shiftDataBean.startHour}">
+                                            <f:convertNumber minIntegerDigits="2"/>
+                                        </h:outputText>
+                                        :
+                                        <h:outputText value="#{bookCalendar.shiftDataBean.startMin}">
+                                            <f:convertNumber minIntegerDigits="2"/>
+                                        </h:outputText>
+                                        -
+                                        <h:outputText value="#{bookCalendar.shiftDataBean.endHour}">
+                                            <f:convertNumber minIntegerDigits="2"/>
+                                        </h:outputText> :
+                                        <h:outputText value="#{bookCalendar.shiftDataBean.endMin}">
+                                            <f:convertNumber minIntegerDigits="2"/>
+                                        </h:outputText>
+                                    </h:panelGroup>
+                                </rich:column>
+                                <rich:column style=" text-align:center;height: 56px;width: 66px;background-color:#{bookCalendar.bookSlotDataBeanList[0] ne null and bookCalendar.bookSlotDataBeanList[0].slotId == systemResultViewUtil.currentSession ? '#939393':''}">
+                                    <h:panelGroup rendered="#{bookCalendar.bookSlotDataBeanList[0].slotStatus == 1}">
+                                        <div style="border: none;width: 66px;height: 56px;font-weight:bold;cursor: pointer;margin:0px auto;background-image: url(#{facesContext.externalContext.requestContextPath.concat('/images/u19_original.png')});background-repeat: no-repeat" onclick="checkCurrentStatus(#{bookCalendar.bookSlotDataBeanList[0].slotId},'#{bookCalendar.bookSlotDataBeanList[0].bookDate.year }'+','+'#{bookCalendar.bookSlotDataBeanList[0].bookDate.month}'+','+'#{bookCalendar.bookSlotDataBeanList[0].bookDate.date}');" title="#{bookCalendar.bookSlotDataBeanList[0].slotInfo}" >
+                                            <div style="padding-top: 20px">
+                                                #{bookCalendar.bookSlotDataBeanList[0].noOfBook}
+                                            </div>
+                                        </div>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{bookCalendar.bookSlotDataBeanList[0].slotStatus == 0}">
+                                        <div style="border: none;width: 66px;height: 56px;font-weight:bold;cursor: pointer;margin:0px auto;background-image: url(#{facesContext.externalContext.requestContextPath.concat('/images/u116_full.png')});background-repeat: no-repeat" onclick="checkCurrentStatus(#{bookCalendar.bookSlotDataBeanList[0].slotId},'#{bookCalendar.bookSlotDataBeanList[0].bookDate.year+1900}'+','+'#{bookCalendar.bookSlotDataBeanList[0].bookDate.month}'+','+'#{bookCalendar.bookSlotDataBeanList[0].bookDate.date}');" title="#{bookCalendar.bookSlotDataBeanList[0].slotInfo}">
+                                        </div>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{bookCalendar.bookSlotDataBeanList[0].slotStatus == -1}">
+                                        <div style="border: none;width: 66px;height: 56px; margin:0px auto; vertical-align:middle;text-align: center;background-image: url(#{facesContext.externalContext.requestContextPath.concat('/images/u138_disabled.png')});background-repeat: no-repeat" >
+                                        </div>
+                                    </h:panelGroup>
+                                </rich:column>
+                                <rich:column style="text-align:center;height: 56px;width: 66px;background-color:#{bookCalendar.bookSlotDataBeanList[1] ne null and bookCalendar.bookSlotDataBeanList[1].slotId == systemResultViewUtil.currentSession ? '#939393':''}">
+                                    <h:panelGroup rendered="#{bookCalendar.bookSlotDataBeanList[1].slotStatus == 1}">
+                                        <div style="font-weight:bold;cursor: pointer;margin:0px auto;border: none;width: 66px;height: 56px;font-weight:bold; background-image: url(#{facesContext.externalContext.requestContextPath.concat('/images/u19_original.png')});background-repeat: no-repeat" onclick="checkCurrentStatus(#{bookCalendar.bookSlotDataBeanList[1].slotId},'#{bookCalendar.bookSlotDataBeanList[1].bookDate.year+1900}'+','+'#{bookCalendar.bookSlotDataBeanList[1].bookDate.month}'+','+'#{bookCalendar.bookSlotDataBeanList[1].bookDate.date}');" title="#{bookCalendar.bookSlotDataBeanList[1].slotInfo}">
+                                            <div style="padding-top: 20px">
+                                                #{bookCalendar.bookSlotDataBeanList[1].noOfBook}
+                                            </div>
+                                        </div>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{bookCalendar.bookSlotDataBeanList[1].slotStatus == 0}">
+                                        <div style="font-weight:bold;cursor: pointer;margin:0px auto;border: none;width: 66px;height: 56px; vertical-align:middle;text-align: center;background-image: url(#{facesContext.externalContext.requestContextPath.concat('/images/u116_full.png')});background-repeat: no-repeat" onclick="checkCurrentStatus(#{bookCalendar.bookSlotDataBeanList[1].slotId},'#{bookCalendar.bookSlotDataBeanList[1].bookDate.year+1900}'+','+'#{bookCalendar.bookSlotDataBeanList[1].bookDate.month}'+','+'#{bookCalendar.bookSlotDataBeanList[1].bookDate.date}');" title="#{bookCalendar.bookSlotDataBeanList[1].slotInfo}">
+                                        </div>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{bookCalendar.bookSlotDataBeanList[1].slotStatus == -1}">
+                                        <div style="border: none;width: 66px;height: 56px; margin:0px auto; vertical-align:middle;text-align: center;background-image: url(#{facesContext.externalContext.requestContextPath.concat('/images/u138_disabled.png')});background-repeat: no-repeat" >
+                                        </div>
+                                    </h:panelGroup>
+                                </rich:column>
+                                <rich:column style="text-align:center;height: 56px;width: 66px;background-color:#{bookCalendar.bookSlotDataBeanList[2] ne null and bookCalendar.bookSlotDataBeanList[2].slotId == systemResultViewUtil.currentSession ? '#939393':''}">
+                                    <h:panelGroup rendered="#{bookCalendar.bookSlotDataBeanList[2].slotStatus == 1}">
+                                        <div style="font-weight:bold;cursor: pointer;margin:0px auto;border: none;width: 66px;height: 56px; vertical-align:middle;text-align: center;background-image: url(#{facesContext.externalContext.requestContextPath.concat('/images/u19_original.png')});background-repeat: no-repeat" onclick="checkCurrentStatus(#{bookCalendar.bookSlotDataBeanList[2].slotId},'#{bookCalendar.bookSlotDataBeanList[2].bookDate.year+1900}'+','+'#{bookCalendar.bookSlotDataBeanList[2].bookDate.month}'+','+'#{bookCalendar.bookSlotDataBeanList[2].bookDate.date}');" title="#{bookCalendar.bookSlotDataBeanList[2].slotInfo}">
+                                            <div style="padding-top: 20px">
+                                                #{bookCalendar.bookSlotDataBeanList[2].noOfBook}
+                                            </div>
+                                        </div>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{bookCalendar.bookSlotDataBeanList[2].slotStatus == 0}">
+                                        <div style="font-weight:bold;cursor: pointer;margin:0px auto;border: none;width: 66px;height: 56px; vertical-align:middle;text-align: center;background-image: url(#{facesContext.externalContext.requestContextPath.concat('/images/u116_full.png')});background-repeat: no-repeat" onclick="checkCurrentStatus(#{bookCalendar.bookSlotDataBeanList[2].slotId},'#{bookCalendar.bookSlotDataBeanList[2].bookDate.year+1900}'+','+'#{bookCalendar.bookSlotDataBeanList[2].bookDate.month}'+','+'#{bookCalendar.bookSlotDataBeanList[2].bookDate.date}');" title="#{bookCalendar.bookSlotDataBeanList[2].slotInfo}">
+                                        </div>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{bookCalendar.bookSlotDataBeanList[2].slotStatus == -1}">
+                                        <div style=";border: none;width: 66px;height: 56px; margin:0px auto; vertical-align:middle;text-align: center;background-image: url(#{facesContext.externalContext.requestContextPath.concat('/images/u138_disabled.png')});background-repeat: no-repeat" >
+                                        </div>
+                                    </h:panelGroup>
+                                </rich:column>
+                                <rich:column style="text-align:center;height: 56px;width: 66px;background-color:#{bookCalendar.bookSlotDataBeanList[3] ne null and bookCalendar.bookSlotDataBeanList[3].slotId == systemResultViewUtil.currentSession ? '#939393':''}">
+                                    <h:panelGroup rendered="#{bookCalendar.bookSlotDataBeanList[3].slotStatus == 1}">
+                                        <div style="font-weight:bold;cursor: pointer;margin:0px auto;border: none;width: 66px;height: 56px; vertical-align:middle;text-align: center;background-image: url(#{facesContext.externalContext.requestContextPath.concat('/images/u19_original.png')});background-repeat: no-repeat" onclick="checkCurrentStatus(#{bookCalendar.bookSlotDataBeanList[3].slotId},'#{bookCalendar.bookSlotDataBeanList[3].bookDate.year+1900}'+','+'#{bookCalendar.bookSlotDataBeanList[3].bookDate.month}'+','+'#{bookCalendar.bookSlotDataBeanList[3].bookDate.date}');" title="#{bookCalendar.bookSlotDataBeanList[3].slotInfo}">
+                                            <div style="padding-top: 20px">
+                                                #{bookCalendar.bookSlotDataBeanList[3].noOfBook}
+                                            </div>
+                                        </div>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{bookCalendar.bookSlotDataBeanList[3].slotStatus == 0}">
+                                        <div style="font-weight:bold;cursor: pointer;margin:0px auto;border: none;width: 66px;height: 56px; vertical-align:middle;text-align: center;background-image: url(#{facesContext.externalContext.requestContextPath.concat('/images/u116_full.png')});background-repeat: no-repeat" onclick="checkCurrentStatus(#{bookCalendar.bookSlotDataBeanList[3].slotId},'#{bookCalendar.bookSlotDataBeanList[3].bookDate.year+1900}'+','+'#{bookCalendar.bookSlotDataBeanList[3].bookDate.month}'+','+'#{bookCalendar.bookSlotDataBeanList[3].bookDate.date}');" title="#{bookCalendar.bookSlotDataBeanList[3].slotInfo}">
+                                        </div>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{bookCalendar.bookSlotDataBeanList[3].slotStatus == -1}">
+                                        <div style=";border: none;width: 66px;height: 56px; margin:0px auto; vertical-align:middle;text-align: center;background-image: url(#{facesContext.externalContext.requestContextPath.concat('/images/u138_disabled.png')});background-repeat: no-repeat" >
+                                        </div>
+                                    </h:panelGroup>
+                                </rich:column>
+                                <rich:column style="text-align:center;height: 56px;width: 66px;background-color:#{bookCalendar.bookSlotDataBeanList[4] ne null and bookCalendar.bookSlotDataBeanList[4].slotId == systemResultViewUtil.currentSession ? '#939393':''}">
+                                    <h:panelGroup rendered="#{bookCalendar.bookSlotDataBeanList[4].slotStatus == 1}">
+                                        <div style="font-weight:bold;cursor: pointer;margin:0px auto;border: none;width: 66px;height: 56px; vertical-align:middle;text-align: center;background-image: url(#{facesContext.externalContext.requestContextPath.concat('/images/u19_original.png')});background-repeat: no-repeat" onclick="checkCurrentStatus(#{bookCalendar.bookSlotDataBeanList[4].slotId},'#{bookCalendar.bookSlotDataBeanList[4].bookDate.year+1900}'+','+'#{bookCalendar.bookSlotDataBeanList[4].bookDate.month}'+','+'#{bookCalendar.bookSlotDataBeanList[4].bookDate.date}');" title="#{bookCalendar.bookSlotDataBeanList[4].slotInfo}">
+                                            <div style="padding-top: 20px">
+                                                #{bookCalendar.bookSlotDataBeanList[4].noOfBook}
+                                            </div>
+                                        </div>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{bookCalendar.bookSlotDataBeanList[4].slotStatus == 0}">
+                                        <div style="font-weight:bold;cursor: pointer;margin:0px auto;border: none;width: 66px;height: 56px; vertical-align:middle;text-align: center;background-image: url(#{facesContext.externalContext.requestContextPath.concat('/images/u116_full.png')});background-repeat: no-repeat" onclick="checkCurrentStatus(#{bookCalendar.bookSlotDataBeanList[4].slotId},'#{bookCalendar.bookSlotDataBeanList[4].bookDate.year+1900}'+','+'#{bookCalendar.bookSlotDataBeanList[4].bookDate.month}'+','+'#{bookCalendar.bookSlotDataBeanList[4].bookDate.date}');" title="#{bookCalendar.bookSlotDataBeanList[4].slotInfo}">
+                                        </div>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{bookCalendar.bookSlotDataBeanList[4].slotStatus == -1}">
+                                        <div style="border: none;width: 66px;height: 56px; margin:0px auto; vertical-align:middle;text-align: center;background-image: url(#{facesContext.externalContext.requestContextPath.concat('/images/u138_disabled.png')});background-repeat: no-repeat" >
+                                        </div>
+                                    </h:panelGroup>
+                                </rich:column>
+                                <rich:column style="text-align:center;height: 56px;width: 66px;background-color:#{bookCalendar.bookSlotDataBeanList[5] ne null and bookCalendar.bookSlotDataBeanList[5].slotId == systemResultViewUtil.currentSession ? '#939393':''}">
+                                    <h:panelGroup rendered="#{bookCalendar.bookSlotDataBeanList[5].slotStatus == 1}">
+                                        <div style="font-weight:bold;cursor: pointer;margin:0px auto;border: none;width: 66px;height: 56px; vertical-align:middle;text-align: center;background-image: url(#{facesContext.externalContext.requestContextPath.concat('/images/u19_original.png')});background-repeat: no-repeat" onclick="checkCurrentStatus(#{bookCalendar.bookSlotDataBeanList[5].slotId},'#{bookCalendar.bookSlotDataBeanList[5].bookDate.year+1900}'+','+'#{bookCalendar.bookSlotDataBeanList[5].bookDate.month}'+','+'#{bookCalendar.bookSlotDataBeanList[5].bookDate.date}');" title="#{bookCalendar.bookSlotDataBeanList[5].slotInfo}">
+                                            <div style="padding-top: 20px">
+                                                #{bookCalendar.bookSlotDataBeanList[5].noOfBook}
+                                            </div>
+                                        </div>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{bookCalendar.bookSlotDataBeanList[5].slotStatus == 0}">
+                                        <div style="font-weight:bold;cursor: pointer;margin:0px auto;border: none;width: 66px;height: 56px; vertical-align:middle;text-align: center;background-image: url(#{facesContext.externalContext.requestContextPath.concat('/images/u116_full.png')});background-repeat: no-repeat" onclick="checkCurrentStatus(#{bookCalendar.bookSlotDataBeanList[5].slotId},'#{bookCalendar.bookSlotDataBeanList[5].bookDate.year+1900}'+','+'#{bookCalendar.bookSlotDataBeanList[5].bookDate.month}'+','+'#{bookCalendar.bookSlotDataBeanList[5].bookDate.date}');" title="#{bookCalendar.bookSlotDataBeanList[5].slotInfo}">
+                                        </div>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{bookCalendar.bookSlotDataBeanList[5].slotStatus == -1}">
+                                        <div style="border: none;width: 66px;height: 56px; margin:0px auto; vertical-align:middle;text-align: center;background-image: url(#{facesContext.externalContext.requestContextPath.concat('/images/u138_disabled.png')});background-repeat: no-repeat">
+                                        </div>
+                                    </h:panelGroup>
+                                </rich:column>
+                                <rich:column style="text-align:center;height: 56px;width: 66px;background-color:#{bookCalendar.bookSlotDataBeanList[6] ne null and bookCalendar.bookSlotDataBeanList[6].slotId == systemResultViewUtil.currentSession ? '#939393':''}">
+                                    <h:panelGroup rendered="#{bookCalendar.bookSlotDataBeanList[6].slotStatus == 1}">
+                                        <div style="font-weight:bold;cursor: pointer;margin:0px auto;border: none;width: 66px;height: 56px; text-align: center;background-image: url(#{facesContext.externalContext.requestContextPath.concat('/images/u19_original.png')});background-repeat: no-repeat" onclick="checkCurrentStatus(#{bookCalendar.bookSlotDataBeanList[6].slotId},'#{bookCalendar.bookSlotDataBeanList[6].bookDate.year+1900}'+','+'#{bookCalendar.bookSlotDataBeanList[6].bookDate.month}'+','+'#{bookCalendar.bookSlotDataBeanList[6].bookDate.date}');" title="#{bookCalendar.bookSlotDataBeanList[6].slotInfo}">
+                                            <div style="padding-top: 20px">
+                                                #{bookCalendar.bookSlotDataBeanList[6].noOfBook}
+                                            </div>
+                                        </div>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{bookCalendar.bookSlotDataBeanList[6].slotStatus == 0}">
+                                        <div style="font-weight:bold;cursor: pointer;margin:0px auto;border: none;width: 66px;height: 56px; vertical-align:middle;text-align: center;background-image: url(#{facesContext.externalContext.requestContextPath.concat('/images/u116_full.png')});background-repeat: no-repeat" onclick="checkCurrentStatus(#{bookCalendar.bookSlotDataBeanList[6].slotId},'#{bookCalendar.bookSlotDataBeanList[6].bookDate.year+1900}'+','+'#{bookCalendar.bookSlotDataBeanList[6].bookDate.month}'+','+'#{bookCalendar.bookSlotDataBeanList[6].bookDate.date}');" title="#{bookCalendar.bookSlotDataBeanList[6].slotInfo}">
+                                        </div>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{bookCalendar.bookSlotDataBeanList[6].slotStatus == -1}">
+                                        <div style="border: none;width: 66px;height: 56px; margin:0px auto; vertical-align:middle;text-align: center;background-image: url(#{facesContext.externalContext.requestContextPath.concat('/images/u138_disabled.png')});background-repeat: no-repeat" >
+                                        </div>
+                                    </h:panelGroup>
+                                </rich:column>
+                            </rich:dataTable>
+                            <br/>
+                            <div style="text-align:  right;width: 100%">
+                                <a4j:outputPanel rendered="#{systemResultViewUtil.bookCalendarDataBeanList != null and systemResultViewUtil.bookCalendarDataBeanList.size() > 0}" style="width:740px; text-align: right;">
+                                    <img src="#{facesContext.externalContext.requestContextPath.concat('/images/session-legend.png')}" />
+                                </a4j:outputPanel>
+                            </div>
+                        </h:panelGroup>
+                        <h:commandButton action="pretty:currentSession" id="currentSession" style="display: none"/>
+                        <h:commandButton action="pretty:otherSession" id="otherSession"  style="display:none" >
+
+                        </h:commandButton>
+                    </h:form>
+                </div>
+                <script type="text/javascript">
+                   
+                    function checkCurrentStatus(slotId,date){
+                        var current = "#{systemResultViewUtil.currentSession}";
+                        if(slotId == current ){
+                            document.getElementById('currentSession').click();
+                        }else{
+                            document.getElementById('date').value = date;
+                            document.getElementById('slot').value = slotId;
+                            document.getElementById('otherSession').click();
+                        }
+                    }
+                </script>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

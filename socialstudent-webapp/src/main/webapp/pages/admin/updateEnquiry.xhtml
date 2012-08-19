@@ -1,0 +1,175 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">    
+    <body>
+        <ui:composition template="../layout/adminLayout.xhtml">         
+            <ui:define name="content">
+                <div id="content">
+                    <script type="text/javascript">
+                        if(document.getElementById("searchEnquiry") != null) {
+                            document.getElementById("searchEnquiry").setAttribute("class", "active");
+                        } else {
+                            location.href ="#{loginDataBean.lendingPage}";
+                        }                    
+                    </script>
+                    <h3>Update Inquiry</h3>
+                    <div align="right" style="margin-top: -23px"> <h:outputText value="(Fields marked with * are mandatory)" styleClass="infomessages"/></div>                 
+                    <hr class="red"/>
+                    <f:event type="preRenderComponent" listener="#{userServiceBean.loadEnquiryForUpdate()}"/>
+                    <h:form prependId="false">
+                        <ui:include src="../common/message.xhtml" />                    
+                        <table width="100%" border="0" cellpadding="0" cellspacing="0" class="form-table">
+                            <tr>
+                                <th width="20%">&nbsp;</th>
+                                <td width="30%"><h6>Personal Info</h6><hr class="red"/></td>
+                                <th width="20%">&nbsp;</th>
+                                <td width="30%"><h6>Contact Info</h6><hr class="red"/></td>
+                            </tr>
+                        </table>
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" align="center">                         
+                            <tr>
+                                <th width="20%">Name</th>
+                                <td width="30%" >
+                                    <h:outputText  value="#{contactusDataBean.name}" id="name">
+                                    </h:outputText>
+                                </td>
+                                <th width="20%">Email address</th>
+                                <td width="30%" >
+                                    <h:outputText  value="#{contactusDataBean.email}" id="email" >
+                                    </h:outputText>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Gender</th>
+                                <td >
+                                    <h:outputText id="gender" value="#{contactusDataBean.gender == 'F' ? 'Female' : 'Male'}">                                                
+                                    </h:outputText>
+                                </td>
+                                <th>Cell phone</th>
+                                <td >
+                                    <h:outputLabel value="#{contactusDataBean.phoneNumber}" >
+                                    </h:outputLabel>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <h:outputLabel value="#{contactusDataBean.dateOfBirth == null ? 'DOB' : 'Age'}" />
+                                </th>
+                                <td >
+                                    <h:outputLabel value="#{contactusDataBean.age}" rendered="#{contactusDataBean.dateOfBirth != null}" />
+                                    <h:inputText tabindex="3" value="#{contactusDataBean.dateOfBirth}" id="dateofbirth" style="width: 100%;" styleClass="medium"
+                                                 rendered="#{contactusDataBean.dateOfBirth == null}">
+                                        <f:convertDateTime type="date" dateStyle="MM/dd/yyyy" pattern="MM/dd/yyyy"  timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                    </h:inputText>                                  
+                                    <br/>
+                                    <h:message for="dateofbirth" style="color: red" id="dobMsg" />
+                                </td>
+                                <th>Home phone</th>
+                                <td>
+                                    <h:outputLabel value="#{contactusDataBean.homePhone == null or contactusDataBean.homePhone == '' ? 'N/A' : contactusDataBean.homePhone}" >
+                                    </h:outputLabel>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Goal</th>
+                                <td style="vertical-align: top">
+                                    <h:outputLabel value="#{contactusDataBean.goal}"/>
+                                </td>
+                                <th rowspan="2" style="vertical-align: top">
+                                    Address
+                                </th>
+                                <td rowspan="2" style="vertical-align: top">
+                                    <h:outputLabel value="#{contactusDataBean.fullAddress}" escape="false"/>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th>Inquiry About</th>
+                                <td >
+                                    <h:outputText value="#{contactusDataBean.isWlc ? 'Weight Loss Center' : 'PBStudio'}"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Follow Up</th>
+                                <td >
+                                    <h:selectOneMenu tabindex="1" value="#{contactusDataBean.followUp}">
+                                        <f:selectItems value="#{userServiceBean.enquiryFollowupList}"/>
+                                    </h:selectOneMenu>
+                                    <h:inputHidden value="#{contactusDataBean.id}"/>
+                                </td>
+                                <th>
+                                    Best time to contact
+                                </th>
+                                <td >
+                                    <h:outputText value="#{contactusDataBean.contactTime}"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    Lead status
+                                </th>
+                                <td>
+                                    <h:selectOneMenu tabindex="2" id="leadStatus" style="width: 94%" value="#{contactusDataBean.leadStatus}">
+                                        <f:selectItems value="#{userServiceBean.enquiryLeadStatusList}" />
+                                    </h:selectOneMenu>
+                                </td>
+                                <th>
+                                    Heard About us
+                                </th>
+                                <td >
+                                    <h:outputText value="#{contactusDataBean.source}"/>
+                                    <h:outputText value="#{contactusDataBean.otherSource != null and contactusDataBean.otherSource != '' ? ' (' : ''}" />
+                                    <h:outputText value="#{contactusDataBean.otherSource != null and contactusDataBean.otherSource != '' ? contactusDataBean.otherSource : ''}" />
+                                    <h:outputText value="#{contactusDataBean.otherSource != null and contactusDataBean.otherSource != '' ? ')' : ''}" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th style="vertical-align: top;">
+                                    Notes
+                                </th>
+                                <td colspan="3">
+                                    <h:inputTextarea tabindex="3" id="notes" value="#{contactusDataBean.notes}" onfocus="counterForTextArea('notes','notesCounter',250)" onkeyup="counterForTextArea('notes','notesCounter',250)" />
+                                    <div style="text-align:left"><i><h:outputText value="(You can type" style="color: grey;"/> &#160;<h:outputText id="notesCounter"  value="250" style="color: grey;"/> &#160;<h:outputText value="more characters)" style="color: grey;"/></i></div>                                    
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4" align="center">
+                                    <hr class="red"/>
+                                    <div align="center">
+                                        <h:commandButton value="Submit" tabindex="4" onclick="loadWaitPanel('content');" action="#{userServiceBean.updateEnquiry()}" styleClass="standard-button">                                            
+                                        </h:commandButton>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </h:form>
+                </div>
+                <script type="text/javascript">
+                    $(document).ready(function(){
+                            counterForTextArea('notes', 'notesCounter', 250);                                                       
+                            
+                            $("#dateofbirth").datepicker({
+                            changeMonth: true,
+                            changeYear: true,
+                            dateFormat: 'mm/dd/yy',
+                            maxDate:+0,
+                            height: 200,
+                            width:200
+                       
+                        })
+                        .attr( 'readOnly' , 'true' );
+                      });                     
+                </script>
+
+            </ui:define>
+        </ui:composition>   
+
+
+    </body>
+</html>
+

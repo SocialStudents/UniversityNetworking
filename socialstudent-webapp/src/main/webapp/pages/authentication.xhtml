@@ -1,0 +1,325 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:body>
+        <f:metadata>
+            <f:event listener="#{loginServiceBean.checkCookie()}" type="preRenderView"/>
+        </f:metadata>
+        <ui:composition template="./layout/homeLayout.xhtml">
+            <ui:define name="content">
+                <script type="text/javascript">
+                    function checkKey(e) {
+                        var unicode=e.keyCode? e.keyCode : e.charCode;
+                        if (unicode == 27) {
+                            disablePopup();
+                        }
+                    }
+                </script>
+                <f:loadBundle var="msg" basename="ValidationMessages"/>
+
+                <h:form prependId="false" id="loginForm">
+                    <div class="popupContact" style=" width:590px; " id="content">
+
+                        <div class="login-header">
+                            PB Login
+                            <div class="popupContactClose"></div>
+                        </div>
+                        <table width="100%" border="0" cellpadding="0" cellspacing="0" class="form-table" style="margin:15px 0px;">
+                            <tr>
+                                <td width="38%"><div align="center"><b>Don't have a username?</b><br/><br/>
+                                        <div class="register-btn" onclick="navigateToRegistration()"></div><br/>
+                                        <b>Its simple and absolutely</b> <span class="style1">FREE!!</span></div></td>
+
+                                <td width="2%" style="background:url(#{facesContext.externalContext.requestContextPath}/images/login-seperator.png) no-repeat;"></td>
+                                <td width="60%"><table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td colspan="2"><div align="center"><a onclick="loadWaitPanel('content');loginWithFacebook()" style="width:157px; height:36px;cursor: pointer;"><img src="#{facesContext.externalContext.requestContextPath}/images/btn-facebook.png" alt="loginwithFB" style="width:157px; height:36px;" align="absmiddle" /></a></div></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2"><div align="center" style="color: #333333;"><span style="letter-spacing:-3px;">---------------------------</span>&nbsp;<em><strong>OR</strong></em>&nbsp;<span style="letter-spacing:-3px;">---------------------------</span></div></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2"><strong>Login with your PB Account</strong></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2"><h:inputHidden id="errorMsg" /><h:message id="errorMsgSpan" for="errorMsg" style="color:red;font-size: 13px;"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th width="31%">Username </th>
+                                            <td><h:inputText id="j_username" required="true" requiredMessage="Enter username" autocomplete="off"  value="#{loginDataBean.userId}" styleClass="medium"  maxlength="30" onkeyup="convertToLowerCase(this.id,event);" onchange="convertToLowerCase(this.id,event);" onkeypress="var keycode; if (window.event) {keycode = window.event.keyCode;}else {return true;} if (keycode == 13) {document.getElementById('sin').click();}else {return true;}">
+                                                    <f:ajax event="blur" render="usernameMsg" />
+                                                </h:inputText>
+                                                <h:message style="color: red;font-size: 13px;" for="j_username" id="usernameMsg" />                                               
+                                            </td>                                       
+                                        </tr>
+                                        <tr>
+                                            <th>Password </th>
+                                            <td><h:inputSecret id="j_password" required="true" requiredMessage="Enter password" value="#{loginDataBean.password}" autocomplete="off" styleClass="medium" maxlength="50" redisplay="true" onkeypress="var keycode; if (window.event) {keycode = window.event.keyCode;}else {return true;} if (keycode == 13) {document.getElementById('sin').click();}else {return true;}">
+                                                    <f:ajax event="blur" render="pwdMsg" />
+                                                </h:inputSecret>
+                                                <h:message style="color: red;font-size: 13px;" for="j_password" id="pwdMsg" /> 
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td> &#160; </td>
+                                            <td class="smalltxt">
+                                                <h:selectBooleanCheckbox style="text-align:right; " id="_spring_security_remember_me" value="#{loginDataBean.rememberMe}" />&#160;<label for="_spring_security_remember_me"><h:outputText value="Remember Me" /></label> |
+                                                <h:outputLink  value="#{facesContext.externalContext.requestContextPath}/forgotPassword" title="Reset Password">Forgot Password?</h:outputLink>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>&#160;</td>
+                                            <td class="smalltxt">
+                                                <h:commandButton type="submit" styleClass="letsgo-btn" id="sin" action="#{loginServiceBean.doLogin}" style="float: right;" /></td>
+                                        </tr>
+                                    </table></td>
+                            </tr>                    
+                        </table>
+                    </div>
+
+                    <div class="backgroundPopup"></div>
+                </h:form>
+                <!--Facebook login form -->
+                <h:form prependId="false" id="facebookLoginForm">
+                    <!--Hidden inputs for facebook login-->
+                    <h:inputHidden id="userIdFB" value="#{loginDataBean.userId}"/>
+                    <h:inputHidden id="userFirstNameFB" value="#{userDataBean.firstName}"/>
+                    <h:inputHidden id="userLastNameFB" value="#{userDataBean.lastName}"/>
+                    <h:inputHidden id="userEmailFB"  value="#{userDataBean.email}"/>
+                    <h:commandButton id="fbSubmit" onclick="loadWaitPanel('content');" type="submit" style="display: none" action="#{loginServiceBean.facebookLogin()}"/>
+                </h:form>
+                <h:form>
+                    <div class="flash-banner" id="flashContentDiv">
+                        <script type="text/javascript">
+                            AC_FL_RunContent( 'codebase','http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,28,0','width','970','height','445','title','pbalance','src','pbalance-slide-show_v6','quality','high','pluginspage','http://www.adobe.com/shockwave/download/download.cgi?P1_Prod_Version=ShockwaveFlash','wmode','transparent','movie','#{facesContext.externalContext.requestContextPath}/images/pbalance-slide-show_v6' ); //end AC code
+                        </script>
+                        <noscript>
+                            <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,28,0" width="970" height="445" title="pbalance">
+                                <param name="movie" value="pbalance-slide-show_v6.swf" />
+                                <param name="quality" value="high" />
+                                <param name="wmode" value="transparent" />
+                                <embed src="#{facesContext.externalContext.requestContextPath}/images/pbalance-slide-show_v6.swf" width="970" height="415" quality="high" pluginspage="http://www.adobe.com/shockwave/download/download.cgi?P1_Prod_Version=ShockwaveFlash" type="application/x-shockwave-flash" wmode="transparent"></embed>
+                            </object>
+                        </noscript>                    
+                    </div>
+                    <div class="flash-banner" id="flashDiv" style="display:none;">
+                        <img src="#{facesContext.externalContext.requestContextPath}/images/alternate-image-flash.jpg" />
+                    </div>  
+                    <hr style="margin-bottom:15px;"/>                    
+                    <a class="youtube" href="#" rel="uNxQcWrI8p8" title="Welcome to the perfect balance guidance videos">  <div class="video-box">
+                            <div class="inner-video">
+                                <div class="inner-videobg">
+                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                        <tr>
+                                            <td colspan="2"><h2>Latest Video</h2></td>
+                                        </tr>
+                                        <tr>
+                                            <td width="46%"><img src="#{facesContext.externalContext.requestContextPath}/images/warmup-video.png" alt="introduction-video" width="127" height="110" /></td>
+                                            <td width="54%" valign="top">
+                                                <p>Micheal talks about the Perfect Balance weight loss challenge and the video series                        </p>  </td>
+                                        </tr>
+                                    </table>
+                                </div>	
+                            </div>           
+                        </div>
+                    </a>
+                    <h:commandLink action="#{menuServiceBean.menuNavigate}">     
+                        <f:param name="id" value="wlc"/>   
+                        <div class="video-box">
+                            <div class="inner-video">
+                                <div class="inner-videobg">
+                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                        <tr>
+                                            <td colspan="2"><h2>PB Weight Loss Contest</h2></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" style="text-align:justify;"><h6 style="text-align:center; font-weight:600; margin-bottom:0px;">WIN $2000</h6>
+                                                Perfect Balance invites you to a weight loss challenge unlike any you’ve ever seen! Open to all... </td>                                   </tr>
+
+                                        <tr>
+                                            <td colspan="2" style="text-align:center; padding-top:5px;">                                             
+                                                <div id="joinnow-btn" style="margin:0 auto;" />                                                                                                                                                                                                                     
+                                            </td>
+                                        </tr>
+                                    </table>                                
+                                </div>	
+                            </div>
+                        </div>
+                    </h:commandLink> 
+                    <div class="video-box01"  >
+                        <div class="inner-video01" >
+                            <div class="inner-videobg01" >
+                                <table width="100%" border="0" cellpadding="0" cellspacing="0" class="form-table">
+                                    <tr>
+                                        <td colspan="2" style="padding:0px;"><h2>Weight Loss Calculator</h2></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Your starting Weight</th>
+                                        <td  valign="top">
+                                            <input type="text" maxlength="3" name="textSWeight" id="textSWeight" class="small" />              </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Your current Weight</th>
+                                        <td valign="top"><input type="text" maxlength="3" name="textCWeight" id="textCWeight" class="small" /></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Total weight lost</th>
+                                        <td valign="bottom"><label id="labelWLost" name="labelWLost" style="font-weight: bold;">0 %</label></td>
+                                    </tr>
+                                    <tr>
+                                        <th>&#160;</th>
+                                        <td valign="top">
+                                            <a  onclick="calculatewlc();return false;" ><div id="calculate">&#160;</div></a>
+                                        </td>
+                                    </tr>
+                                </table>
+
+                            </div>	
+                        </div>
+                    </div>
+
+                    <script type="text/javascript">
+                        //code for post on facebook wall
+                 
+                        var userid;
+                        window.fbAsyncInit = function () {
+
+                            FB.init({
+                                appId: '#{systemPropertyUtil.fbApplicationId}',
+                                status: true,
+                                cookie: true,
+                                xfbml: true,
+                                oauth: true
+                            });
+
+                        };
+                        function js_mm_dd_yyyy_hh_mm () {
+                            now = new Date();
+                            year = "" + now.getFullYear();
+                            month = "" + (now.getMonth() + 1); if (month.length == 1) { month = "0" + month; }
+                            day = "" + now.getDate(); if (day.length == 1) { day = "0" + day; }
+                            hour = "" + now.getHours(); if (hour.length == 1) { hour = "0" + hour; }
+                            minute = "" + now.getMinutes(); if (minute.length == 1) { minute = "0" + minute; }
+                            return day + "/" + month + "/" + year + " at " + hour + ":" + minute  ;
+                        }
+                        function PostToWallCallBackHandler(response) {
+                            if (!response || response.error) {
+                                alert(response.error.message);
+                            } else {
+                                document.getElementById('fbSubmit').click();
+                            }
+                        }
+                        function PostToWall(mymessage,mypic,mylink,myname,mydesc,callbackHandler) {
+                            var dateString=js_mm_dd_yyyy_hh_mm();
+                            mymessage=mymessage+dateString;
+                            FB.api('/me/feed', 'post', { message: mymessage, picture: mypic, link: mylink, name: myname, description: mydesc },function (response){callbackHandler(response);} );
+                        };
+                        (function (d) {
+                            var js, id = 'facebook-jssdk'; if (d.getElementById(id)) { return; }
+                            js = d.createElement('script'); js.id = id; js.async = true;
+                            js.src = "//connect.facebook.net/en_US/all.js";
+                            d.getElementsByTagName('head')[0].appendChild(js);
+                        } (document));
+               
+
+                        //code for facebook login
+                        function loginWithFacebook()
+                        {
+                            var appID = #{systemPropertyUtil.fbApplicationId};
+                            if (window.location.hash.length == 0) {
+                                var path = 'https://www.facebook.com/dialog/oauth?';
+                                var queryParams = ['client_id=' + appID,
+                                    'redirect_uri=' + window.location,
+                                    'response_type=token','scope=email,publish_stream'];
+                                var query = queryParams.join('&#38;');
+                                var url = path + query;
+                                location.href =url;
+                            }
+                            else {
+                                var accessToken = window.location.hash.substring(1);
+                                var path = "https://graph.facebook.com/me?";
+                                var queryParams = [accessToken, 'callback=userInfo'];
+                                var query = queryParams.join('&#38;');
+                                var url = path + query;
+                                // use jsonp to call the graph
+                                var script = document.createElement('script');
+                                script.src = url;
+                                document.body.appendChild(script);      
+                            }
+                        }
+
+                        function userInfo(user)
+                        {
+                            document.getElementById('userIdFB').value=user.id;
+                            document.getElementById('userFirstNameFB').value=user.first_name;
+                            document.getElementById('userLastNameFB').value=user.last_name;
+                            document.getElementById('userEmailFB').value=user.email;
+                            document.getElementById('fbSubmit').click();
+                            var mymessage = 'Signed in to PBalance on ';
+                            var mypic = 'http://www.pbalance.com/images/pbalance-logo.jpg';
+                            var mylink = 'http://www.pbalance.com';
+                            var myname = 'PBalance';
+                            var mydesc = 'This Post is posted when user gets loged in to the PBalance .';
+                           // PostToWall(mymessage,mypic,mylink,myname,mydesc,PostToWallCallBackHandler);
+                            
+                        }
+
+                        //                        function pageLoadFBCheck()
+                        //                        {
+                        //                            if(window.location.hash.substring(1).length>10)
+                        //                            {
+                        //                                loadWaitPanel('content');
+                        //                                var accessToken = window.location.hash.substring(1);
+                        //                                var path = "https://graph.facebook.com/me?";
+                        //                                var queryParams = [accessToken, 'callback=userInfo'];
+                        //                                var query = queryParams.join('&#38;');
+                        //                                var url = path + query;
+                        //                                // use jsonp to call the graph
+                        //                                var script = document.createElement('script');
+                        //                                script.src = url;
+                        //                                document.body.appendChild(script);  
+                        //                            }
+                        //                        }
+                        //facebook login code over
+
+
+                        loadPopup();
+                        document.getElementById('j_username').focus();                    
+                        jQuery("#textSWeight").numeric();
+                        jQuery("#textCWeight").numeric();                   
+                        function navigateToRegistration() {
+                            location.href='#{facesContext.externalContext.requestContextPath}/registration'
+                        }
+                        //CONTROLLING EVENTS IN jQuery
+                        $(document).ready(function(){                                                                                                
+                            //CLOSING POPUP
+                            //Click the x event!
+                            $(".popupContactClose").click(function(){
+                                disablePopup();  
+//                                location.href='{facesContext.externalContext.requestContextPath}/login'
+                            });
+                            $(".popupContactClosebutton").click(function(){
+                                disablePopup();
+//                                location.href='{facesContext.externalContext.requestContextPath}/login'
+                            });     
+                        });
+                        if(swfobject.hasFlashPlayerVersion("1")) {
+                            document.getElementById('flashContentDiv').style.display='block';
+                            document.getElementById('flashDiv').style.display='none';
+                        }
+                        else {
+                            document.getElementById('flashDiv').style.display='block';
+                            document.getElementById('flashContentDiv').style.display='none';
+
+                        }
+                    </script>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </h:body>       
+</html>
+

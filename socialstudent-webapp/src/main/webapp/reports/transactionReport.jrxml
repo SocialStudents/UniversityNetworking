@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="outStandingFeesReport" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="eb79bc93-f524-4c5a-a287-66fd5cdc61bb">
+	<property name="ireport.zoom" value="1.331000000000001"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="71"/>
+	<parameter name="fromDate" class="java.util.Date">
+		<parameterDescription><![CDATA[fromDate]]></parameterDescription>
+	</parameter>
+	<parameter name="toDate" class="java.util.Date">
+		<parameterDescription><![CDATA[toDate]]></parameterDescription>
+	</parameter>
+	<parameter name="imageLink" class="java.lang.String"/>
+	<field name="name" class="java.lang.String">
+		<fieldDescription><![CDATA[name]]></fieldDescription>
+	</field>
+	<field name="reason" class="java.lang.String">
+		<fieldDescription><![CDATA[reason]]></fieldDescription>
+	</field>
+	<field name="amount" class="java.lang.Float">
+		<fieldDescription><![CDATA[amount]]></fieldDescription>
+	</field>
+	<field name="paymentMode" class="java.lang.String">
+		<fieldDescription><![CDATA[paymentMode]]></fieldDescription>
+	</field>
+	<field name="transactionDate" class="java.util.Date">
+		<fieldDescription><![CDATA[transactionDate]]></fieldDescription>
+	</field>
+	<field name="receivedBy" class="java.lang.String">
+		<fieldDescription><![CDATA[receivedBy]]></fieldDescription>
+	</field>
+	<field name="assignedSpecialist" class="java.lang.String">
+		<fieldDescription><![CDATA[assignedSpecialist]]></fieldDescription>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="179" splitType="Stretch">
+			<image scaleImage="FillFrame">
+				<reportElement uuid="f1a76c25-2b68-43df-9d6e-d8d67e826e48" x="2" y="0" width="441" height="132"/>
+				<imageExpression><![CDATA[$P{imageLink}.toString()]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement uuid="371d2254-1e88-4f04-995b-953f5062e22a" x="2" y="116" width="555" height="35"/>
+				<textElement textAlignment="Left">
+					<font size="18"/>
+				</textElement>
+				<text><![CDATA[Transaction Report]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="b9716cea-e1cb-4b45-8688-ddf97e8ca48f" x="0" y="143" width="89" height="20"/>
+				<textElement/>
+				<text><![CDATA[Registered From]]></text>
+			</staticText>
+			<textField pattern="MM/dd/yyyy">
+				<reportElement uuid="991477cf-04ad-48cf-b2f2-2c83614f836a" x="92" y="143" width="73" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$P{fromDate}]]></textFieldExpression>
+			</textField>
+			<textField pattern="MM/dd/yyyy">
+				<reportElement uuid="e0ca0d95-b2b8-48d5-b98d-7c3c2656b59d" x="182" y="143" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$P{toDate}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="49e8b591-e291-4fcc-bb04-9953bc6462c7" x="159" y="143" width="15" height="20"/>
+				<textElement/>
+				<text><![CDATA[To]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="e0511228-4e84-4fd5-9a18-ab8b13d19d6c" mode="Transparent" x="54" y="23" width="58" height="20" forecolor="#FFFFFF"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Name]]></text>
+			</staticText>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="25" splitType="Stretch">
+			<rectangle>
+				<reportElement uuid="54c86095-b606-4025-8874-6a740b130ae0" x="44" y="0" width="87" height="25" backcolor="#5F5F5F"/>
+			</rectangle>
+			<rectangle>
+				<reportElement uuid="ed65ac0a-452e-4ddd-a7b4-1c0594d7629d" x="127" y="0" width="59" height="25" backcolor="#5F5F5F"/>
+			</rectangle>
+			<rectangle>
+				<reportElement uuid="8d3ef09d-f632-4d5d-afd4-fc489f90980f" x="182" y="0" width="58" height="25" backcolor="#5F5F5F"/>
+			</rectangle>
+			<staticText>
+				<reportElement uuid="5de24b83-0a1f-4850-9298-89d0ac5cd941" x="186" y="0" width="50" height="25" forecolor="#FEFEFE"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Amount]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement uuid="3a9f7170-ac97-42d7-9508-68067259f61c" x="236" y="0" width="77" height="25" backcolor="#5F5F5F"/>
+			</rectangle>
+			<staticText>
+				<reportElement uuid="091e1ee1-bb48-4b5a-a393-6df1f404cb8c" x="240" y="0" width="73" height="25" forecolor="#FEFEFE"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Transacted On]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="ec6fb43e-0ebc-476a-b472-747250c91af8" x="48" y="0" width="41" height="20" forecolor="#FEFEFE"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Name]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement uuid="144dd99e-7892-4bbf-a93d-bad9597e4876" x="0" y="0" width="44" height="25" backcolor="#5F5F5F"/>
+			</rectangle>
+			<staticText>
+				<reportElement uuid="9caf8548-b6a9-4212-bc8d-5d412917fd25" x="4" y="0" width="40" height="20" forecolor="#FEFEFE"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Sr No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="c5ee8b34-d64b-46a5-a3f1-c412c23bb7e3" x="131" y="0" width="51" height="25" forecolor="#FEFEFE"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Services]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement uuid="d338383f-56eb-4b57-be84-fa07b32fa1d6" x="313" y="0" width="71" height="25" backcolor="#5F5F5F"/>
+			</rectangle>
+			<rectangle>
+				<reportElement uuid="8f356525-f2f5-4f3c-9f75-41e3acc010b1" x="457" y="0" width="98" height="25" backcolor="#5F5F5F"/>
+			</rectangle>
+			<rectangle>
+				<reportElement uuid="a1385ad8-3af5-45d3-b274-b6ab2f0516e9" x="384" y="0" width="73" height="25" backcolor="#5F5F5F"/>
+			</rectangle>
+			<staticText>
+				<reportElement uuid="c5ee8b34-d64b-46a5-a3f1-c412c23bb7e3" x="317" y="0" width="63" height="25" forecolor="#FEFEFE"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Payment Mode]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="c5ee8b34-d64b-46a5-a3f1-c412c23bb7e3" x="389" y="0" width="59" height="25" forecolor="#FEFEFE"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Received By]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="c5ee8b34-d64b-46a5-a3f1-c412c23bb7e3" x="462" y="1" width="88" height="16" forecolor="#FEFEFE"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[PB Specialist]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="24" splitType="Stretch">
+			<rectangle>
+				<reportElement uuid="86cafe2e-5b97-49f7-81dd-b876f923cada" mode="Opaque" x="313" y="0" width="71" height="24" forecolor="#636363">
+					<printWhenExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 == 0)]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement uuid="50e985f7-55f1-4dd4-8515-07eb84d9a19e" mode="Opaque" x="384" y="0" width="73" height="24" forecolor="#636363">
+					<printWhenExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 == 0)]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement uuid="3a682e81-4906-44bf-b209-6aa29d7dec1a" mode="Opaque" x="457" y="0" width="98" height="24" forecolor="#636363">
+					<printWhenExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 == 0)]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement uuid="14c779dd-7c51-4dcf-89f5-3fac49bb2ee0" x="236" y="0" width="77" height="24" forecolor="#636363" backcolor="#FFFFFF">
+					<printWhenExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 == 0)]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement uuid="c8e92171-e273-4d5a-82d9-fc7935ff3085" x="127" y="0" width="59" height="24" forecolor="#636363" backcolor="#FFFFFF">
+					<printWhenExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 == 0)]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement uuid="4d267ff5-db05-4710-aabf-2ca558c84976" x="44" y="0" width="83" height="24" forecolor="#636363" backcolor="#FFFFFF">
+					<printWhenExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 == 0)]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement uuid="f7c2f298-50d4-4f4d-ac4d-413adcf4d427" x="182" y="0" width="54" height="24" forecolor="#636363" backcolor="#FFFFFF">
+					<printWhenExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 == 0)]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement uuid="12c8b04b-a044-4792-8d54-c3db22fec2ac" x="0" y="0" width="44" height="24" forecolor="#636363" backcolor="#FFFFFF">
+					<printWhenExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 == 0)]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement uuid="4d267ff5-db05-4710-aabf-2ca558c84976" x="44" y="0" width="87" height="24" forecolor="#636363" backcolor="#F4F4F4">
+					<printWhenExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 == 1)]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement uuid="c8e92171-e273-4d5a-82d9-fc7935ff3085" x="127" y="0" width="59" height="24" forecolor="#636363" backcolor="#F4F4F4">
+					<printWhenExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 == 1)]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement uuid="f7c2f298-50d4-4f4d-ac4d-413adcf4d427" x="182" y="0" width="58" height="24" forecolor="#636363" backcolor="#F4F4F4">
+					<printWhenExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 == 1)]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement uuid="14c779dd-7c51-4dcf-89f5-3fac49bb2ee0" x="236" y="0" width="77" height="24" forecolor="#636363" backcolor="#F4F4F4">
+					<printWhenExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 == 1)]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement uuid="12c8b04b-a044-4792-8d54-c3db22fec2ac" x="0" y="0" width="44" height="24" forecolor="#636363" backcolor="#F4F4F4">
+					<printWhenExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 == 1)]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<textField>
+				<reportElement uuid="9d2a2640-a2b1-48e9-bdf4-bedfef3b7326" x="2" y="0" width="44" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="217e9c4a-2e50-4830-b43d-2511e04bd188" x="48" y="0" width="83" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[( $F{name} != null ? $F{name} : "N/A" )]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement uuid="bdcafc59-6eaf-4a0d-a257-ce1b91735ad7" x="313" y="0" width="71" height="24" forecolor="#636363" backcolor="#F4F4F4">
+					<printWhenExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 == 1)]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement uuid="562a4919-e20a-45d4-a689-ce7228d677c0" x="457" y="0" width="98" height="24" forecolor="#636363" backcolor="#F4F4F4">
+					<printWhenExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 == 1)]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<textField>
+				<reportElement uuid="6a92416a-8853-4886-b426-cd309891354c" x="131" y="0" width="47" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[( $F{reason} != null ? $F{reason} : "N/A" )]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00">
+				<reportElement uuid="376fa43f-6573-456b-aa97-a03892cd13ff" x="191" y="2" width="40" height="16"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[( $F{amount} != null ? $F{amount} : "0.0" )]]></textFieldExpression>
+			</textField>
+			<textField pattern="MM/dd/yyyy">
+				<reportElement uuid="1e6c80f8-aca4-4cda-b24a-367fcd5f1a93" x="240" y="4" width="73" height="14"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[( $F{transactionDate} != null ? $F{transactionDate} : "N/A" )]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="1c4388bf-b5a6-4a1b-8221-dad5d4228e9b" x="317" y="4" width="63" height="14"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[( $F{paymentMode} != null ? $F{paymentMode} : "N/A" )]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="7b3a781c-b88e-413a-950a-3da71c7316d5" x="462" y="4" width="93" height="14"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[( $F{assignedSpecialist} != null ? $F{assignedSpecialist} : "N/A" )]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement uuid="12794588-a1d5-47de-bcc1-b06a9810bf3e" x="384" y="0" width="73" height="24" forecolor="#636363" backcolor="#F4F4F4">
+					<printWhenExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 == 1)]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<textField>
+				<reportElement uuid="a8475cb1-790a-437a-ab5c-e12cc9141941" x="387" y="4" width="64" height="14"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[( $F{receivedBy} != null ? $F{receivedBy} : "N/A" )]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="50">
+			<textField>
+				<reportElement uuid="b71e2488-6c73-4c03-a227-ff2aa10f137d" x="380" y="30" width="164" height="20"/>
+				<textElement textAlignment="Right">
+					<font fontName="SansSerif" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="MM/dd/yyyy">
+				<reportElement uuid="0ed3a430-3c0a-4965-bd08-30cada6e0358" x="111" y="30" width="67" height="20"/>
+				<textElement>
+					<font fontName="SansSerif" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new Date()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="2656aaab-2152-4531-bfeb-36059ee60a4d" x="0" y="30" width="107" height="20"/>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Generated on"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="e0511228-4e84-4fd5-9a18-ab8b13d19d6c" mode="Transparent" x="54" y="23" width="58" height="20" forecolor="#FFFFFF"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Name]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

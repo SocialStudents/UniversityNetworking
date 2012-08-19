@@ -1,0 +1,165 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+
+    <ui:composition template="../layout/adminReportLayout.xhtml">
+        <ui:define name="content">
+            <script type="text/javascript">
+                if("#{userRightsDataBean.haveFinancialReportsRights}" == "false") {                          
+                    location.href ="#{loginDataBean.lendingPage}";
+                }
+                $(document).ready(function() {
+                    sorting();
+                } );
+            </script>
+            <div id="content">
+                <h:form prependId="false">
+                    <h:outputLabel id="messagePanel">
+                        <ui:include src="../common/message.xhtml" /> 
+                    </h:outputLabel>
+                    <div id="SearchPanel" class="userinfo">
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" id="selectionTable"> 
+                            <tr>
+                                <th><h:outputText value="Transaction From"/></th>
+                                <td>
+                                    <h:inputText id="transactionFromDate" styleClass="medium" value="#{systemResultViewUtil.startData}" required="true" requiredMessage="Enter from date">
+                                        <f:convertDateTime type="date" dateStyle="MM/dd/yyyy" pattern="MM/dd/yyyy"  timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                    </h:inputText>
+                                    <rich:message for="subscriptionFromDate" />
+                                </td>
+                                <th><h:outputText value="To"/></th>
+                                <td>
+                                    <h:inputText id="transactionToDate" styleClass="medium" value="#{systemResultViewUtil.endDate}" required="true" requiredMessage="Enter To date">
+                                        <f:convertDateTime type="date" dateStyle="MM/dd/yyyy" pattern="MM/dd/yyyy"  timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                    </h:inputText>
+                                    <rich:message for="subscriptionToDate" />
+                                </td>
+                                <td width="20%">
+                                    <a4j:commandButton value="Search"  action="#{transactionReportServiceBean.retrieveTransactionReport()}" 
+                                                       onclick="loadWaitPanel('content');" oncomplete="stopWaitPanel('content');" 
+                                                       render="reportListPanel,messagePanel" 
+                                                       styleClass="standard-button"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th><h:outputText value="Select Reason"/></th>
+                                <td>
+                                    <h:selectOneMenu id="reasonFilter" value="#{systemResultViewUtil.categorySelected}">
+                                        <f:selectItem itemLabel="All" itemValue="all"/>
+                                        <f:selectItem itemLabel="Registration" itemValue="registration"/>
+                                        <f:selectItem itemLabel="Renewal" itemValue="renual"/>
+                                        <f:selectItem itemLabel="Services" itemValue="services"/>
+                                        <a4j:ajax event="change" listener="#{transactionReportServiceBean.retrieveTransactionReport()}"
+                                                  render="reportListPanel,messagePanel" onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content');" />
+                                    </h:selectOneMenu>
+                                </td>      
+                                <th>&#160;</th>
+                                <td>&#160;</td>
+                                <td width="20%">&#160;</td>
+                            </tr>
+                        </table>                                              
+                    </div>
+                    <br></br>
+                    <div class="content">
+                        <a4j:outputPanel id="reportListPanel">
+                            <script type="text/javascript">
+                                sorting();
+                            </script>
+                            <h:commandLink action="#{reportToPdfServiceBean.transactioniReport()}" rendered="#{systemResultViewUtil.transactionReportDataBeanList !=null and not empty systemResultViewUtil.transactionReportDataBeanList}">
+                                <h:graphicImage value="/images/download-pdf.jpg" style="border: none; float: right" title="Click to Download Report"/>
+                                &nbsp;&nbsp;&nbsp;
+                            </h:commandLink>
+                            <br></br>
+                            <rich:dataTable  id="reportDataList" rowKeyVar="rowId" rows="100" var="report" value="#{systemResultViewUtil.transactionReportDataBeanList}" styleClass="meal-plan" style="width: 100%;line-height: 12px" rendered="#{systemResultViewUtil.transactionReportDataBeanList !=null and not empty systemResultViewUtil.transactionReportDataBeanList}" rowClass="#{rowId%2 == 0 ? 'alt-row1':'alt-row'}" >
+                                <f:facet name="header">
+                                    <rich:columnGroup>
+                                        <rich:column style="width: 15%" styleClass="header">
+                                            <h:outputText value="Name"/>
+                                        </rich:column>
+                                        <rich:column style="width: 15%"  styleClass="header">
+                                            <h:outputText value="Services" />
+                                        </rich:column>
+                                        <rich:column style="width: 10%"  styleClass="header">
+                                            <h:outputText value="Amount"/>
+                                        </rich:column>                                       
+                                        <rich:column style="width: 13%"  styleClass="header">
+                                            <h:outputText value="Transacted On" />
+                                        </rich:column>
+                                        <rich:column style="width: 13%"  styleClass="header">
+                                            <h:outputText value="Payment Mode" />
+                                        </rich:column>
+                                        <rich:column style="width: 15%"  styleClass="header">
+                                            <h:outputText value="Helped By" />
+                                        </rich:column>
+                                        <rich:column style="width: 15%"  styleClass="header">
+                                            <h:outputText value="PBSpecialist" />
+                                        </rich:column>
+                                    </rich:columnGroup>
+                                </f:facet>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{report.name}"/>
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{report.reason}" rendered="#{report.reason!=null}"/>
+                                    <h:outputText value="N/A" rendered="#{report.reason==null}"/>
+                                </rich:column>
+                                <rich:column style="vertical-align: top;text-align: right">
+                                    <h:outputText value="#{report.amount}" rendered="#{report.amount!=null}"/>
+                                    <h:outputText value="N/A" rendered="#{report.amount==null}"/>
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{report.transactionDate}">
+                                        <f:convertDateTime type="date" pattern="MM/dd/yyyy" timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                    </h:outputText>
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{report.paymentMode}"/>
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{report.receivedBy}" rendered="#{report.receivedBy!=null}"/>
+                                    <h:outputText value="N/A" rendered="#{report.receivedBy==null}"/>
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{report.assignedSpecialist}"/>
+                                </rich:column>
+                            </rich:dataTable>
+                        </a4j:outputPanel>
+                    </div>
+                </h:form>
+            </div>
+            <script type="text/javascript">
+                getDatePickerForRangeForFuture('transactionFromDate','transactionToDate');
+                function sorting(){
+                    $('#reportDataList').dataTable( {
+                        "aoColumns": [
+                            null,
+                            null,
+                            { "sType": "numeric-comma" },
+                            { "sType": "eu_date" },
+                            null,
+                            null,
+                            null,
+                        ],
+                        "bJQueryUI": false,
+                        "sPaginationType": "full_numbers",
+                        "bRetrieve" : true,
+
+                        "bFilter": true,
+                        "bInfo": false,
+                        "bAutoWidth": false 
+                    } );
+                }
+                
+            </script>
+            <script type="text/javascript">
+                document.getElementById("transactionReport").setAttribute("class", "active");
+            </script>
+        </ui:define>
+    </ui:composition>
+</html>
+

@@ -1,0 +1,249 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">    
+    <body>
+        <ui:composition template="../layout/adminLayout.xhtml">         
+            <ui:define name="content">
+                <script type="text/javascript">
+                    if(document.getElementById("searchEnquiry") != null) {
+                        document.getElementById("searchEnquiry").setAttribute("class", "active");
+                    } else {
+                        location.href ="#{loginDataBean.lendingPage}";
+                    }  
+                    
+                    $(document).ready(
+                    function() {
+                        textboxHint("content");
+                    });
+                    
+                </script>
+                <f:metadata>
+                    <f:event type="preRenderView" listener="#{userServiceBean.clearFlashData()}"/>
+                </f:metadata>
+                <div id="content">
+                    <h3>Add Inquiry</h3>
+                    <div align="right" style="margin-top: -23px"> <h:outputText value="(Fields marked with * are mandatory)" styleClass="infomessages"/></div>                 
+                    <hr class="red"/>
+
+                    <h:form prependId="false">
+                        <ui:include src="../common/message.xhtml" />                    
+                        <table width="100%" border="0" cellpadding="0" cellspacing="0" class="form-table">
+                            <tr>
+                                <th width="20%">&nbsp;</th>
+                                <td width="30%"><h6>Personal Info</h6><hr class="red"/></td>
+                                <th width="20%">&nbsp;</th>
+                                <td width="30%"><h6>Contact Info</h6><hr class="red"/></td>
+                            </tr>
+                        </table>
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table">
+                            <tr>
+                                <th width="20%">Name<sup><font color="red">*</font></sup></th>
+                                <td width="30%" >
+                                    <h:inputText tabindex="1" style="width: 100%;" styleClass="medium" value="#{contactusDataBean.name}" id="name" maxlength="30">
+                                        <f:ajax event="blur" render="nameMsg" />
+                                    </h:inputText>
+                                    <br/>
+                                    <h:message for="name" style="color: red" id="nameMsg" />
+                                </td>
+                                <th width="20%" >Email address<sup><font color="red">*</font></sup></th>
+                                <td width="30%" >
+                                    <h:inputText tabindex="10" style="width: 100%;" styleClass="medium" value="#{contactusDataBean.email}" id="email" >
+                                        <f:ajax event="blur" render="emailMsg" />
+                                    </h:inputText>                                   
+                                    <br/>
+                                    <h:message for="email" id="emailMsg" style="color: red" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Gender</th>
+                                <td >
+                                    <h:selectOneMenu tabindex="2" id="gender" value="#{contactusDataBean.gender}" style="width: 100%;" required="true" requiredMessage="Select gender">
+                                        <f:selectItem itemLabel="Female" itemValue="F" />                                                
+                                        <f:selectItem itemLabel="Male" itemValue="M" />
+                                    </h:selectOneMenu>                                    
+                                    <br/>
+                                    <h:message for="gender" style="color: red" />
+                                </td>
+                                <th>Cell phone<sup><font color="red">*</font></sup></th>
+                                <td >
+                                    <h:inputText tabindex="11" style="width: 100%;" styleClass="medium" value="#{contactusDataBean.phoneNumber}" maxlength="12" id="phone" onkeyup="formatContact(event, 'phone');" onkeypress="var keycode; if (window.event) { keycode = window.event.keyCode;}else {return true;} if (keycode == 13) {return false;}else {return true;}">
+                                        <f:ajax event="blur" render="phoneMsg" />
+                                    </h:inputText>                                  
+                                    <br/>
+                                    <h:message for="phone" style="color: red" id="phoneMsg" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>DOB</th>
+                                <td >
+                                    <h:inputText tabindex="3" value="#{contactusDataBean.dateOfBirth}" id="dateofbirth" style="width: 100%;" styleClass="medium">
+                                        <f:convertDateTime type="date" dateStyle="MM/dd/yyyy" pattern="MM/dd/yyyy"  timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                    </h:inputText>                                  
+                                    <br/>
+                                    <h:message for="dateofbirth" style="color: red" id="dobMsg" />
+                                </td>
+                                <th>Home phone</th>
+                                <td >
+                                    <h:inputText tabindex="12" style="width: 100%;" styleClass="medium" value="#{contactusDataBean.homePhone}" maxlength="12" id="hphone" onkeyup="formatContact(event, 'hphone');" onkeypress="var keycode; if (window.event) { keycode = window.event.keyCode;}else {return true;} if (keycode == 13) {return false;}else {return true;}">
+                                        <f:ajax event="blur" render="hphoneMsg" />
+                                    </h:inputText>                                  
+                                    <br/>
+                                    <h:message for="hphone" style="color: red" id="hphoneMsg" />
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th>Goal</th>
+                                <td >
+                                    <h:selectOneMenu tabindex="4" value="#{contactusDataBean.goal}" style="width: 100%;">
+                                        <f:selectItems value="#{userServiceBean.contactUsGoals}" />
+                                    </h:selectOneMenu>                                    
+                                    <br/>
+                                    <h:message for="goal" style="color: red" />
+                                </td>
+                                <th>
+                                    Address<sup><font color="red">*</font></sup>
+                                </th>
+                                <td>
+                                    <h:inputText tabindex="13" style="width: 100%;" maxlength="30" styleClass="medium" value="#{contactusDataBean.address}" id="address" required="true" requiredMessage="Enter street 1" title="Street 1">
+                                        <f:ajax event="blur" render="street1Msg" />
+                                    </h:inputText>                                    
+                                    <br/>
+                                    <h:message for="address" id="street1Msg" style="color: red" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Inquiry about</th>
+                                <td >
+                                    <h:selectOneMenu tabindex="5" value="#{contactusDataBean.enquiredForId}" style="width: 100%;">
+                                        <f:selectItems value="#{userServiceBean.enquiryAboutList}" />
+                                    </h:selectOneMenu>
+                                </td>
+                                <th></th>
+                                <td >
+                                    <h:inputText tabindex="14" style="width: 100%;" maxlength="30" styleClass="medium" id="address1" value="#{contactusDataBean.address1}" title="Street 2" >
+                                    </h:inputText>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Follow up</th>
+                                <td >
+                                    <h:selectOneMenu tabindex="6"  value="#{contactusDataBean.followUp}" style="width: 100%;">
+                                        <f:selectItems value="#{userServiceBean.enquiryFollowupList}"/>
+                                    </h:selectOneMenu>
+                                </td>
+                                <th></th>
+                                <td>
+                                    <h:inputText tabindex="15" style="width: 100%;" styleClass="medium" id="city" maxlength="30" value="#{contactusDataBean.city}" required="true" requiredMessage="Enter city" title="City" >
+                                        <f:ajax event="blur" render="cityMsg" />
+                                    </h:inputText>                                   
+                                    <br/>
+                                    <h:message for="city" style="color: red" id="cityMsg" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    Lead status
+                                </th>
+                                <td>
+                                    <h:selectOneMenu tabindex="7" id="leadStatus" style="width: 100%" value="#{contactusDataBean.leadStatus}">
+                                        <f:selectItems value="#{userServiceBean.enquiryLeadStatusList}" />
+                                    </h:selectOneMenu>
+                                </td>
+                                <th>
+                                </th>
+                                <td >
+                                    <h:selectOneMenu tabindex="16" id="state" style="width: 47%" value="#{contactusDataBean.state}" required="true" requiredMessage="Select state ">
+                                        <f:selectItems value="#{userServiceBean.stateList}" />
+                                    </h:selectOneMenu>&#160;
+                                    <h:inputText tabindex="17" style="width: 47%; float: right" styleClass="small" id="zip" maxlength="10" value="#{contactusDataBean.zipCode}" required="true" requiredMessage="Enter zip code" title="Zip Code"
+                                                 onkeyup="formatZipCode(event, 'zip');">
+                                        <f:ajax event="blur" render="zipMsg" />
+                                    </h:inputText>                                                 
+                                    <h:message for="state" style="color: red" />                                    
+                                    <rich:message for="zip" id="zipMsg" style="color: red" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    Heard about us
+                                </th>
+                                <td>
+                                    <h:inputHidden value="#{contactusDataBean.source}" id="cntSrc" />
+                                    <h:selectOneMenu value="#{systemResultViewUtil.city}" style="width: 100%" id="contactSrc">
+                                        <f:selectItems value="#{userServiceBean.contactUsSource}" />
+                                        <a4j:ajax event="change" render="srcTxt" oncomplete="document.getElementById('cntSrc').value = document.getElementById('contactSrc').value;('#{systemResultViewUtil.city == 'FR' or systemResultViewUtil.city == 'NE' or systemResultViewUtil.city == 'PP'}' == 'true') ? document.getElementById('srcTxtTr').style.display = '' : document.getElementById('srcTxtTr').style.display = 'none'"/>
+                                    </h:selectOneMenu>
+                                </td>
+                                <th>
+                                    Best time to contact
+                                </th>
+                                <td>
+                                    <h:selectOneMenu tabindex="18" id="select3" value="#{contactusDataBean.contactTime}" style="width: 100%;">
+                                        <f:selectItems value="#{userServiceBean.contactUsContactTime}" />
+                                    </h:selectOneMenu>
+                                </td>
+                            </tr>
+                            <tr id="srcTxtTr" style="display: ('#{systemResultViewUtil.city == 'FR' or systemResultViewUtil.city == 'NE' or systemResultViewUtil.city == 'PP'}' == 'true') ? '' : 'none'">
+                                <th></th>
+                                <td>
+                                    <h:outputLabel id="srcTxt">
+                                        <h:inputText styleClass="small" style="width: 100%;" maxlength="50" value="#{contactusDataBean.otherSource}" rendered="#{systemResultViewUtil.city == 'FR' or systemResultViewUtil.city == 'NE' or systemResultViewUtil.city == 'PP'}" />
+                                    </h:outputLabel>
+                                </td>
+                            </tr>
+                            <script type="text/javascript">
+                                    if ('#{systemResultViewUtil.city == 'FR' or systemResultViewUtil.city == 'NE' or systemResultViewUtil.city == 'PP'}' == 'true') {
+                                        document.getElementById('srcTxtTr').style.display = '';
+                                    } else {
+                                        document.getElementById('srcTxtTr').style.display = 'none';
+                                    }
+                            </script>
+                            <tr>
+                                <th style="vertical-align: top;">
+                                    Notes
+                                </th>
+                                <td colspan="3">
+                                    <h:inputTextarea tabindex="9" id="notes" value="#{contactusDataBean.notes}" onfocus="counterForTextArea('notes','notesCounter',250)" onkeyup="counterForTextArea('notes','notesCounter',250)" />
+                                    <div style="text-align:left"><i><h:outputText value="(You can type" style="color: grey;"/> &#160;<h:outputText id="notesCounter"  value="250" style="color: grey;"/> &#160;<h:outputText value="more characters)" style="color: grey;"/></i></div>                                    
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="4" align="center">
+                                    <hr class="red"/>
+                                    <div align="center">
+                                        <h:commandButton tabindex="19" value="Submit" onclick="clearBlurredData('content');loadWaitPanel('content');" action="#{userServiceBean.createContactus()}" styleClass="standard-button">                                            
+                                            <f:setPropertyActionListener target="#{contactusDataBean.fromPage}" value="Enquiry"/>
+                                        </h:commandButton>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </h:form>
+                </div>
+                <script type="text/javascript">
+            
+                   $("#dateofbirth").datepicker({
+                       changeMonth: true,
+                       changeYear: true,
+                       dateFormat: 'mm/dd/yy',
+                       maxDate:+0,
+                       height: 200,
+                       width:200
+                   })
+                   .attr( 'readOnly' , 'true' );
+                                       
+                </script>
+
+            </ui:define>
+        </ui:composition>   
+
+
+    </body>
+</html>
+

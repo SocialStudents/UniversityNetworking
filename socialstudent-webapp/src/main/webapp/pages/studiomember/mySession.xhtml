@@ -1,0 +1,125 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+
+    <body>
+        <ui:composition template="./../layout/studioMemberLayout.xhtml">
+            <ui:define name="content">
+                <h3>My Sessions</h3>
+                <hr class="red"/>
+                <div id="content">
+                    <f:metadata>
+                        <f:event listener="#{schedulerServiceBean.retrieveMemberSessions()}" type="preRenderComponent"/>
+                    </f:metadata>
+                    <h:form prependId="false">
+                        <ui:include src="../common/message.xhtml" />
+                        <rich:messages/>
+                        <div style="margin-left: 40%" align="right" class="form-table">                                                    
+                            <div align="right">
+                                <a4j:outputPanel id="memberinfo">
+                                    <div align="right" id="search-panel">
+                                        <table border="0" cellspacing="0" cellpadding="0">
+                                            <tr>
+                                                <td style="padding-right: 0">
+                                                    <h:selectBooleanCheckbox value="#{systemResultViewUtil.isShowAll}">
+                                                        <a4j:ajax listener="#{schedulerServiceBean.retrieveMemberSessions()}" render="sessionPanel,dataMessage"  onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content');"/>
+                                                    </h:selectBooleanCheckbox>                 
+                                                </td>
+                                                <th style="text-align: right;font-weight: bold;padding-left: 0;padding-right: 0">
+                                                    Show All
+                                                </th>
+                                                <th style="text-align: right;font-weight: bold">
+                                                    | Session Left
+                                                </th>
+                                                <td style="text-align: left;font-weight: bold">
+                                                    <h:outputLabel value="#{systemResultViewUtil.sessionLeft}" id="sessionLeft"/>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </a4j:outputPanel>
+                            </div>
+                        </div>
+                        <br/>
+                        <a4j:outputPanel id="sessionPanel">
+                            <rich:dataTable id="sessions" value="#{systemResultViewUtil.memberSessionDataBeanList}" var="sessions"  rowKeyVar="rowCnt" styleClass="meal-plan" style="width: 100%" rendered="#{systemResultViewUtil.memberSessionDataBeanList != null and not empty systemResultViewUtil.memberSessionDataBeanList}" rowClass="#{rowCnt%2 == 0 ? 'alt-row1':'alt-row'}">
+                                <f:facet name="header">
+                                    <rich:columnGroup>
+                                        <rich:column styleClass="header">
+                                            <h:outputText value="Session Count"/>
+                                        </rich:column>
+                                        <rich:column styleClass="header">
+                                            <h:outputText value="Date"/>
+                                        </rich:column>
+                                        <rich:column styleClass="header">
+                                            <h:outputText value="Time"/>
+                                        </rich:column>
+                                        <rich:column styleClass="header">
+                                            <h:outputText value="PB Specialists"/>
+                                        </rich:column>
+                                        <rich:column styleClass="header">
+                                            <h:outputText value="Action"/>
+                                        </rich:column>
+                                    </rich:columnGroup>
+                                </f:facet>
+                                <rich:column>
+                                    <h:outputLabel value="#{rowCnt+1}"/>
+                                </rich:column>
+                                <rich:column>
+                                    <h:outputLabel value="#{sessions.sessionDate}">
+                                        <f:convertDateTime pattern="MM/dd/yyyy"  timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                    </h:outputLabel>
+                                </rich:column>
+                                <rich:column>
+                                    <h:outputLabel value="#{sessions.sessionTime}" />
+                                </rich:column>
+                                <rich:column>
+                                    <h:outputLabel value="#{sessions.trainer}" />
+                                </rich:column>
+                                <rich:column style="text-align: center">
+                                    <center>
+                                        <a4j:commandButton rendered="#{sessions.sessionStatus eq 'b'}" action="#{schedulerServiceBean.cancelMySession}" render="sessionPanel,memberinfo,dataMessage"  onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content')" value="&nbsp;" style="background-image: url(#{facesContext.externalContext.requestContextPath.concat('/images/confirmed.png')});border: none;height: 22px;width: 22px;background-repeat: no-repeat;cursor: pointer;background-color: transparent" title="Click here to cancel">
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedDate}" value="#{sessions.sessionDate}"/>
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedSlot}" value="#{sessions.sessionId}"/>
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedUser}" value="#{systemResultViewUtil.id}"/>
+                                        </a4j:commandButton>
+                                        <h:panelGroup rendered="#{sessions.sessionStatus eq 'a'}">
+                                            <div style="border: none;width: 22px;height: 22px;background-image: url(#{facesContext.externalContext.requestContextPath.concat('/images/attended.png')});background-repeat: no-repeat">
+                                            </div>
+                                        </h:panelGroup>
+                                        <h:panelGroup rendered="#{sessions.sessionStatus eq 's'}">
+                                            <div style="border: none;width: 22px;height: 22px;background-image: url(#{facesContext.externalContext.requestContextPath.concat('/images/skipped.png')});background-repeat: no-repeat">
+                                            </div>
+                                        </h:panelGroup>
+                                        <h:panelGroup rendered="#{sessions.sessionStatus eq 'c'}">
+                                            <div style="border: none;width: 22px;height: 22px;background-image: url(#{facesContext.externalContext.requestContextPath.concat('/images/cancelled.png')});background-repeat: no-repeat">
+                                            </div>
+                                        </h:panelGroup>
+                                    </center>
+                                </rich:column>
+                                <f:facet name="footer" >
+                                    <div align="center" style="width: 100%;">
+                                        <rich:dataScroller for="sessions" renderIfSinglePage="true" maxPages="10" fastStep="5"></rich:dataScroller>
+                                    </div>
+                                </f:facet>
+                            </rich:dataTable>
+                            <div style="float: right;margin-top: 10px;">
+                            <h:panelGroup rendered="#{systemResultViewUtil.memberSessionDataBeanList != null and not empty systemResultViewUtil.memberSessionDataBeanList}">
+                                <img src="#{facesContext.externalContext.requestContextPath.concat('/images/all-legends.jpg')}"/>
+                            </h:panelGroup>
+                                </div>
+                        </a4j:outputPanel>
+                    </h:form>
+                </div>
+                <script type="text/javascript">
+                   document.getElementById("mySession").setAttribute("class", "active");
+                </script>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

@@ -1,0 +1,146 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+
+    <body>
+
+        <ui:composition template="./../layout/studioMemberLayout.xhtml">
+
+            <ui:define name="content">
+                <f:metadata>
+                    <f:event type="preRenderView" listener="#{userServiceBean.retrieveSubscriptionDetail()}"/>
+                </f:metadata>
+
+                <h:form prependId="false">
+                    <h:outputLabel>
+                        <h3>Update Subscription</h3>
+                    </h:outputLabel>
+                    <hr class="red"/>
+                    <ui:include src="../common/message.xhtml" />  
+
+                    <div style="width: 100%; float: right">
+                        <h:outputLink styleClass="pbalLink" style="float: right" value="#{systemResultSessionUtil.prevView}" rendered="#{systemResultSessionUtil.prevView != null}">
+                            <img src="#{facesContext.externalContext.requestContextPath}/images/back-btn.png"/>
+                        </h:outputLink>
+                    </div>
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0" class="form-table">
+                        <tr>
+                            <td width="25%" style="font-weight: bold">
+                                Package
+                            </td>
+                            <td width="25%">
+                                <h:outputLabel value="#{memberSubscriptionDetailDataBean.programName}" />
+                            </td>
+                            <td width="25%" style="font-weight: bold">
+                                Remaining Sessions
+                            </td>
+                            <td width="25%">
+                                    <h:outputLabel value="#{(memberSubscriptionDetailDataBean.unit - memberSubscriptionDetailDataBean.unitsUsed)}/#{memberSubscriptionDetailDataBean.unit}" rendered="#{memberSubscriptionDetailDataBean.unit gt 0}" />
+                                    <h:outputLabel value="N/A" rendered="#{memberSubscriptionDetailDataBean.unit le 0}" />
+                            </td>
+                        </tr>                    
+                        <tr>
+                            <td style="font-weight: bold">
+                                Activated on
+                            </td>
+                            <td>
+                                <h:outputLabel value="#{memberSubscriptionDetailDataBean.activationDate}" rendered="#{memberSubscriptionDetailDataBean.activationDate != null}">
+                                    <f:convertDateTime pattern="MM/dd/yyyy" />
+                                </h:outputLabel>
+                                <h:outputLabel value="N/A" rendered="#{memberSubscriptionDetailDataBean.activationDate == null}" />
+                            </td>
+                            <td style="font-weight: bold">
+                                Expires on
+                            </td>
+                            <td>
+                                <h:outputLabel value="#{memberSubscriptionDetailDataBean.expirationDate}" rendered="#{memberSubscriptionDetailDataBean.expirationDate != null}">
+                                    <f:convertDateTime pattern="MM/dd/yyyy" />
+                                </h:outputLabel>
+                                <h:outputLabel value="N/A" rendered="#{memberSubscriptionDetailDataBean.expirationDate == null}" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight: bold">
+                                Referred by
+                            </td>
+                            <td>
+                                <h:outputLabel value="#{memberSubscriptionDetailDataBean.referredBy}" />
+                            </td>
+                            <td style="font-weight: bold">
+                                Status
+                            </td>
+                            <td>
+                                <h:outputLabel value="#{memberSubscriptionDetailDataBean.activeStatus == 0 ? 'Inactive' : memberSubscriptionDetailDataBean.activeStatus == 1 ? 'Active' : 'Queued'}" />
+                            </td>
+                        </tr>
+                    </table>
+                    <br/>
+                    <br/>
+
+                    <div class="content">
+                        <a4j:outputPanel id="reportListPanel">
+                            <rich:dataTable  id="reportDataList" rowKeyVar="rowId" var="report" value="#{systemResultViewUtil.userDataBeanList}" styleClass="meal-plan" style="width: 100%;line-height: 12px;" rendered="#{systemResultViewUtil.userDataBeanList !=null and not empty systemResultViewUtil.userDataBeanList}" rowClass="#{rowId%2 == 0 ? 'alt-row1':'alt-row'}" >
+                                <f:facet name="header">
+                                    <rich:columnGroup>
+                                        <rich:column style="width: 20" styleClass="header">
+                                            <h:outputText value="Session"/>
+                                        </rich:column>
+                                        <rich:column style="width: 20%" styleClass="header">
+                                            <h:outputText value="Date"/>
+                                        </rich:column>
+                                        <rich:column style="width: 20%"  styleClass="header">
+                                            <h:outputText value="Time" />
+                                        </rich:column>
+                                        <rich:column style="width: 40%"  styleClass="header">
+                                            <h:outputText value="Pb Specialist"/>
+                                        </rich:column>                                       
+                                    </rich:columnGroup>
+                                </f:facet>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{report.count}">
+                                        <f:convertNumber minIntegerDigits="2"/>
+                                    </h:outputText>
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{report.sessionDate}">
+                                        <f:convertDateTime type="date" pattern="MM/dd/yyyy" timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                    </h:outputText>
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{report.startHour}">
+                                        <f:convertNumber minIntegerDigits="2"/>
+                                    </h:outputText>
+                                    :
+                                    <h:outputText value="#{report.startMin}">
+                                        <f:convertNumber minIntegerDigits="2"/>
+                                    </h:outputText>
+                                    -
+                                    <h:outputText value="#{report.endHour}">
+                                        <f:convertNumber minIntegerDigits="2"/>
+                                    </h:outputText> :
+                                    <h:outputText value="#{report.endMin}">
+                                        <f:convertNumber minIntegerDigits="2"/>
+                                    </h:outputText>
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{report.assignedPbSpecialist == null ? 'N/A' : report.assignedPbSpecialist}"/>
+                                </rich:column>
+                            </rich:dataTable>
+                        </a4j:outputPanel>
+                    </div>
+                </h:form>
+
+                <script type="text/javascript">
+                    document.getElementById("myProfile_studioMember").setAttribute("class", "active");
+                </script>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

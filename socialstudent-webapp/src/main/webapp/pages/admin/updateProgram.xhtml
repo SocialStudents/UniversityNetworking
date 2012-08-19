@@ -1,0 +1,333 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+    <body>
+        <ui:composition template="../layout/adminLayout.xhtml">
+            <ui:define name="content">
+                <script type="text/javascript">
+                    if(document.getElementById("searchProgram") != null) {
+                        document.getElementById("searchProgram").setAttribute("class", "active");
+                    } else {
+                        location.href ="#{loginDataBean.lendingPage}";
+                    }   
+                   $(document).ready(
+                   function() {
+                       textboxHint("content");
+                   });
+
+                </script>
+                <div id="content">
+                    <h3>Update Program</h3>
+                    <div align="right" style="margin-top: -23px"> <h:outputText value="(Fields marked with * are mandatory)" styleClass="infomessages"/></div>                 
+                    <hr class="red"/>
+                    <ui:include src="../common/message.xhtml" />  
+                    <f:event type="preRenderView" listener="#{programServiceBean.retrieveProgramInfo()}" />
+                    <h:form prependId="false">
+                        <a4j:outputPanel id="updateprogrampanelDues" rendered="#{programDataBean.type eq 'Dues'}">
+                            <br/>
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" align="center">
+                                <tr>
+                                    <th width="24%" style="font-weight: bold">Program Name</th>
+                                    <td width="28%">
+                                        <h:outputLabel value="#{programDataBean.programName}" id="programName">
+                                        </h:outputLabel>
+                                    </td>
+                                    <th width="20%" style="font-weight: bold">Type</th>
+                                    <td width="">
+                                        <h:outputLabel value="#{programDataBean.type}" id="type" ></h:outputLabel>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th style="font-weight: bold">Created By</th>
+                                    <td>
+                                        <h:outputLabel value="#{programDataBean.createdBy}" id="createdBy"></h:outputLabel>
+                                    </td>
+                                    <th style="font-weight: bold">Created On</th>
+                                    <td>
+                                        <h:outputText value="#{programDataBean.createdOn}">
+                                            <f:convertDateTime type="date" pattern="MM/dd/yyyy" timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                        </h:outputText>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th style="font-weight: bold">Status</th>
+                                    <td>
+                                        <h:outputLabel value="#{programDataBean.status}" id="status"></h:outputLabel>
+                                    </td>
+                                    <th>Sessions count<sup><font color="red">*</font></sup></th>
+                                    <td>
+                                        <h:inputText style="width: 135px;" maxlength="3" value="#{programDataBean.unit}" id="sessions" styleClass="medium" required="true" requiredMessage="Enter session count" validatorMessage="Invalid session count">
+                                                <f:validateLongRange for="sessions" minimum="1"></f:validateLongRange>
+                                            <f:ajax event="blur" render="sessionsMsg" />
+                                        </h:inputText>
+                                        <br/>
+                                        <h:message for="sessions" style="color: red" id="sessionsMsg" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                        <th>Signup fees<sup><font color="red">*</font></sup></th>
+                                        <td>
+                                            <h:inputText maxlength="7" style="width: 135px;" value="#{programDataBean.signupFees}" id="signupFees" styleClass="medium" required="true" requiredMessage="Enter signup fees">
+                                                <f:ajax event="blur" render="signupFeesMsg" />
+                                            </h:inputText>
+                                            USD 
+                                            <rich:message for="signupFees" style="color: red" id="signupFeesMsg" />
+                                        </td>
+                                        <th>Subscription fees<sup><font color="red">*</font></sup></th>
+                                    <td>
+                                        <h:inputText style="width: 135px;" maxlength="7" value="#{programDataBean.fees}" id="fees" styleClass="medium" required="true" requiredMessage="Enter fees">
+                                            <f:ajax event="blur" render="feesMsg" />
+                                        </h:inputText>
+                                        USD 
+                                        <br/>
+                                        <h:message for="fees" style="color: red" id="feesMsg" />
+                                    </td>
+                                </tr>
+                                    <tr>
+                                        <th>
+                                            Registration commission
+                                        </th>
+                                        <td>
+                                            <h:inputText style="width: 135px;" maxlength="4" value="#{programDataBean.commissionNew}" id="comNewD" styleClass="medium">
+                                                <f:ajax event="blur" render="comNewDMsg" />
+                                            </h:inputText> Unit(s)
+                                            <rich:message for="comNewD" style="color: red" id="comNewDMsg" />                                            
+                                        </td>
+                                        <th>
+                                            Renewal commission
+                                        </th>
+                                        <td>
+                                            <h:inputText style="width: 135px;" maxlength="4" value="#{programDataBean.commissionRenewal}" id="comRenewD" styleClass="medium">
+                                                <f:ajax event="blur" render="comRenewDMsg" />
+                                            </h:inputText> Unit(s)
+                                            <rich:message for="comRenewD" style="color: red" id="comRenewDMsg" />                                                                                        
+                                        </td>
+                                    </tr>
+                                <tr>
+                                    <td colspan="4" align="center">
+                                        <hr class="red"/>
+                                        <div align="center">
+                                            <h:commandButton value="Submit" onclick="clearBlurredData('content');loadWaitPanel('content');" action="#{programServiceBean.updateProgram()}" styleClass="standard-button">
+                                            </h:commandButton>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </a4j:outputPanel>
+                        <a4j:outputPanel id="updateprogrampanelMember" rendered="#{programDataBean.type eq 'Membership'}">
+                            <br/>
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" align="center">
+                                <tr>
+                                    <th width="24%" style="font-weight: bold">Program Name</th>
+                                    <td width="28%">
+                                        <h:outputLabel value="#{programDataBean.programName}" id="programNameMember">
+                                        </h:outputLabel>
+                                    </td>
+                                    <th width="20%" style="font-weight: bold">Type</th>
+                                    <td width="28%">
+                                        <h:outputLabel value="#{programDataBean.type}" id="typeMember" ></h:outputLabel>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th style="font-weight: bold">Created By</th>
+                                    <td>
+                                        <h:outputLabel value="#{programDataBean.createdBy}" id="createdByMember"></h:outputLabel>
+                                    </td>
+                                    <th style="font-weight: bold">Created On</th>
+                                    <td>
+                                        <h:outputText value="#{programDataBean.createdOn}">
+                                            <f:convertDateTime type="date" pattern="MM/dd/yyyy" timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                        </h:outputText>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th style="font-weight: bold">Status</th>
+                                    <td>
+                                        <h:outputLabel value="#{programDataBean.status}" id="statusMember"></h:outputLabel>
+                                    </td>
+                                    <th>Days<sup><font color="red">*</font></sup></th>
+                                    <td>
+                                        <h:inputText style="width: 135px;" maxlength="3" value="#{programDataBean.unit}" id="sessionsMember" styleClass="medium" required="true" requiredMessage="Enter session count">
+                                            <f:ajax event="blur" render="sessionsMemberMsg" />
+                                        </h:inputText>
+                                        <br/>
+                                        <h:message for="sessionsMember" style="color: red" id="sessionsMemberMsg" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                        <th>Signup fees<sup><font color="red">*</font></sup></th>
+                                        <td>
+                                            <h:inputText maxlength="7" style="width: 135px;" value="#{programDataBean.signupFees}" id="signupFeesM" styleClass="medium" required="true" requiredMessage="Enter signup fees">
+                                                <f:ajax event="blur" render="signupFeesMMsg" />
+                                            </h:inputText>
+                                            USD 
+                                            <rich:message for="signupFeesM" style="color: red" id="signupFeesMMsg" />
+                                        </td>
+                                        <th>Subscription fees<sup><font color="red">*</font></sup></th>
+                                    <td>
+                                        <h:inputText style="width: 135px;" maxlength="7" value="#{programDataBean.fees}" id="feesMember" styleClass="medium" required="true" requiredMessage="Enter fees">
+                                            <f:ajax event="blur" render="feesMemberMsg" />
+                                        </h:inputText>
+                                        USD 
+                                        <br/>
+                                        <h:message for="feesMember" style="color: red" id="feesMemberMsg" />
+                                    </td>
+                                </tr>
+                                    <tr>
+                                        <th>
+                                            Registration commission
+                                        </th>
+                                        <td>
+                                            <h:inputText style="width: 135px;" maxlength="4" value="#{programDataBean.commissionNew}" id="comNewM" styleClass="medium">
+                                                <f:ajax event="blur" render="comNewMMsg" />
+                                            </h:inputText> Unit(s)
+                                            <rich:message for="comNewM" style="color: red" id="comNewMMsg" />                                            
+                                        </td>
+                                        <th>
+                                            Renewal commission
+                                        </th>
+                                        <td>
+                                            <h:inputText style="width: 135px;" maxlength="4" value="#{programDataBean.commissionRenewal}" id="comRenewM" styleClass="medium">
+                                                <f:ajax event="blur" render="comRenewMMsg" />
+                                            </h:inputText> Unit(s)
+                                            <rich:message for="comRenewM" style="color: red" id="comRenewMMsg" />                                                                                        
+                                        </td>
+                                    </tr>
+                                <tr>
+                                    <td colspan="4" align="center">
+                                        <hr class="red"/>
+                                        <div align="center">
+                                            <h:commandButton value="Submit" onclick="clearBlurredData('content');loadWaitPanel('content');" action="#{programServiceBean.updateProgram()}" styleClass="standard-button">
+                                            </h:commandButton>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </a4j:outputPanel>
+
+                        <a4j:outputPanel id="updateprogrampanelPromo" rendered="#{programDataBean.type eq 'Promotion'}">
+                            <br/>
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" align="center">
+                                <tr>
+                                    <th width="24%" style="font-weight: bold">Program Name</th>
+                                    <td width="28%">
+                                        <h:outputLabel value="#{programDataBean.programName}" id="programNamePromo">
+                                        </h:outputLabel>
+                                    </td>
+                                    <th width="20%" style="font-weight: bold">Type</th>
+                                    <td width="28%">
+                                        <h:outputLabel value="#{programDataBean.type}" id="typePromo" ></h:outputLabel>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th style="font-weight: bold">Created By</th>
+                                    <td>
+                                        <h:outputLabel value="#{programDataBean.createdBy}" id="createdByPromo"></h:outputLabel>
+                                    </td>
+                                    <th style="font-weight: bold">Created On</th>
+                                    <td>
+                                        <h:outputText value="#{programDataBean.createdOn}">
+                                            <f:convertDateTime type="date" pattern="MM/dd/yyyy" timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                        </h:outputText>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th style="font-weight: bold">Status</th>
+                                    <td>
+                                        <h:outputLabel value="#{programDataBean.status}" id="statusPromo"></h:outputLabel>
+                                    </td>
+                                    <th>Fees<sup><font color="red">*</font></sup></th>
+                                    <td>
+                                        <h:inputText maxlength="7" value="#{programDataBean.fees}" style="width: 135px;" id="feesPromo" styleClass="medium" required="true" requiredMessage="Enter fees">
+                                            <f:ajax event="blur" render="feesPromoMsg" />
+                                        </h:inputText>
+                                        USD 
+                                        <br/>
+                                        <h:message for="feesPromo" style="color: red" id="feesPromoMsg" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Held Date<sup><font color="red">*</font></sup></th>
+                                    <td>
+                                        <h:inputText id="heldDate" style="width: 135px;" value="#{programDataBean.fromDate}" required="true" requiredMessage="Enter held date" styleClass="medium">
+                                            <f:convertDateTime type="date" dateStyle="MM/dd/yyyy" pattern="MM/dd/yyyy"  timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                            <!--                                            <f:ajax event="blur" render="heldDateMsg" />-->
+                                        </h:inputText>
+                                        <br/>
+                                        <h:message for="heldDate" style="color: red" id="heldDateMsg" />
+                                    </td>
+                                    <th>To Date<sup><font color="red">*</font></sup></th>
+                                    <td>
+                                        <h:inputText id="toDate" style="width: 135px;"  value="#{programDataBean.toDate}" required="true" requiredMessage="Enter to date" styleClass="medium">
+                                            <f:convertDateTime type="date" dateStyle="MM/dd/yyyy" pattern="MM/dd/yyyy"  timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                            <!--                                            <f:ajax event="blur" render="toDateMsg" />-->
+                                        </h:inputText>
+                                        <br/>
+                                        <h:message for="toDate" style="color: red" id="toDateMsg" />
+                                    </td>
+                                </tr>
+                                    <tr>
+                                        <th>
+                                            Registration commission
+                                        </th>
+                                        <td>
+                                            <h:inputText maxlength="4" value="#{programDataBean.commissionNew}" style="width: 135px;" id="comNewP" styleClass="medium">
+                                                <f:ajax event="blur" render="comNewPMsg" />
+                                            </h:inputText> Unit(s)
+                                            <rich:message for="comNewP" style="color: red" id="comNewPMsg" />                                            
+                                        </td>
+                                        <th>
+                                            Renewal commission
+                                        </th>
+                                        <td>
+                                            <h:inputText maxlength="4" value="#{programDataBean.commissionRenewal}" style="width: 135px;" id="comRenewP" styleClass="medium">
+                                                <f:ajax event="blur" render="comRenewPMsg" />
+                                            </h:inputText> Unit(s)
+                                            <rich:message for="comRenewP" style="color: red" id="comRenewPMsg" />                                                                                        
+                                        </td>
+                                    </tr>
+                                <tr>
+                                    <td colspan="4" align="center">
+                                        <hr class="red"/>
+                                        <div align="center">
+                                            <h:commandButton value="Submit" onclick="clearBlurredData('content');loadWaitPanel('content');" action="#{programServiceBean.updateProgram()}" styleClass="standard-button">
+                                            </h:commandButton>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </a4j:outputPanel>
+
+                        <a4j:jsFunction name="loadInfo" action="#{userServiceBean.retriveUserInfo()}" render="updateuserpanel">
+                        </a4j:jsFunction>
+                    </h:form>
+                </div>
+                <script type="text/javascript">
+                    getDatePickerForRange('heldDate','toDate');                    
+                    $("#fees").numeric({allow:"."});
+                   $("#signupFees").numeric({allow:"."});
+                    $("#feesMember").numeric({allow:"."});
+                   $("#signupFeesM").numeric({allow:"."});
+                    $("#feesPromo").numeric({allow:"."});
+                    $("#sessions").numeric();
+                    $("#sessionsMember").numeric();
+                    $('#comNewM').numeric();
+                    $('#comRenewM').numeric();                   
+                    $('#comNewD').numeric();
+                    $('#comRenewD').numeric();                   
+                    $('#comNewP').numeric();
+                    $('#comRenewP').numeric();                   
+                </script>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>
+

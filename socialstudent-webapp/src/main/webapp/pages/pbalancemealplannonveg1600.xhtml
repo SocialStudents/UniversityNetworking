@@ -1,0 +1,108 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:body>       
+        <ui:composition template="./layout/homeLayout.xhtml">
+            <ui:define name="content">
+                <h:form>
+                    <div id="left">
+                        <ul id="subnav">     
+                            <a href="/pbalancediet"><li>Eating</li></a> 
+                            <li class="active">PB Meal Plan</li>    
+                            <h:commandLink action="#{menuServiceBean.loginNavigate}">
+                                <li>PB Recipes</li>
+                                <f:param name="id" value="pbalanceRecipes"/>
+                            </h:commandLink>
+                        </ul>
+                        <div class="contact-bg">
+                            <h4>Questions?</h4>
+                            <h5>Just call and talk to us:</h5>
+                            (510) 668-0701<br/>
+                            <br/>
+                            <a href="/contact"><div id="emailus">&#160;</div></a>
+                        </div>
+                    </div>
+                    <div id="right">
+                        <h3>PB Meal Plan</h3>
+                        <div class="breadcrumbs">  <a href="/login">HOME</a> | <a href="/pbalancemealplan">PB MEAL PLAN</a> | 1600 CALORIES NON-VEG</div>
+                        <div class="content"><!--content ends here -->
+                            <table width="100%" border="0" cellpadding="0" cellspacing="0" class="meal-plan">
+                                <tbody><tr class="alt-row">
+                                        <td colspan="6"><div><strong>1600 Calories Meal Plan 
+                                                </strong>
+                                                <div style="float:right;"><img src="#{facesContext.externalContext.requestContextPath}/images/non-veg.jpg" align="absmiddle"/></div>
+                                            </div></td>
+                                    </tr>
+                                    <tr>
+                                        <th width="7%">&nbsp;</th>
+                                        <th width="26%">Breakfast </th>
+                                        <th width="17%">Snack</th>
+                                        <th width="23%">Lunch
+                                        </th>
+                                        <th width="9%">Snack</th>
+                                        <th width="18%">Dinner</th>
+                                    </tr>
+                                    <tr>
+                                        <th valign="top">Day 1</th>
+                                        <td>Continental Breakfast: whole wheat english muffin w/organic peanut butter and 1 scrambled egg--413 calories per serving</td>
+                                        <td>1 Apple--80 calories</td>
+                                        <td>Marinated Beef and Veggie Kabobs-3 veggie kabobs &amp; 6 oz beef= 512 calories per serving</td>
+                                        <td>&nbsp;</td>
+                                        <td>Chicken Cacciatore--3C squash &amp; 1-1/2C chicken mixture=561 calories per serving</td>
+                                    </tr>
+                                    <tr class="alt-row">
+                                        <th valign="top">Day 2</th>
+                                        <td>2 Breakfast Sandwich on whole wheat sandwich thin--484 calories per serving</td>
+                                        <td>1 Banana--120 calories</td>
+                                        <td>Rosemary Chicken Cutlets w/6-8 oz chicken tenders--465 calories per serving</td>
+                                        <td>&nbsp;</td>
+                                        <td>Meatballs w/couscous--16 meatballs, 1-1/4C couscous &amp; 13 carrot sticks=531 calories per serving</td>
+                                    </tr>
+                                    <tr>
+                                        <th valign="top">Day 3</th>
+                                        <td>Veggie Omelet with Lavash bread from Trader Joe's--3 egg omelet=478 calories per serving</td>
+                                        <td>1 Orange--65 calories</td>
+                                        <td>Beef &amp; Broccoli w/Penne Pasta--2-1/4C =541 calories per serving</td>
+                                        <td>&nbsp;</td>
+                                        <td>Hearty Chicken Salad--7oz Chicken breast, 2-1/4C salad &amp; 1/3 avocado=505 calories per serving</td>
+                                    </tr>
+                                    <tr class="alt-row">
+                                        <th valign="top">Day 4</th>
+                                        <td>Almond Oatmeal w/fruit--1.5 servings of oatmeal=352 calories per serving</td>
+                                        <td>10-12 almonds--90 calories</td>
+                                        <td>Turkey &amp; Pumpkin Chili--1-1/2 C Chili=562 calories per serving</td>
+                                        <td>&nbsp;</td>
+                                        <td>Slow Roasted Salmon--6oz salmon fillet 3/4C rice &amp; 1/2C salsa=552 calories per serving</td>
+                                    </tr>
+                                    <tr>
+                                        <th valign="top">Day 5</th>
+                                        <td>Quinoa Omelet 426 calories per serving</td>
+                                        <td>&nbsp;</td>
+                                        <td>Balsamic Chicken and green beans 470 calories per serving</td>
+                                        <td>Apple chips 70 calories per serving</td>
+                                        <td>Chicken and Fig Pasta 628 calories per serving</td>
+                                    </tr>
+                                    <tr class="alt-row">
+                                        <th valign="top">Day 6</th>
+                                        <td>Cranberry Almond Pancakes 300 calories per serving of 4.5 pancakes</td>
+                                        <td>&nbsp;</td>
+                                        <td>Turkey Tacos 591 calories per serving of 3 tacos</td>
+                                        <td>Kale Chips 117 calories per serving</td>
+                                        <td>Orange-Black Cherry Cod w/Couscous 660 calories per serving</td>
+                                    </tr>
+
+                                </tbody></table>                        
+                        </div>
+                        <!--right div ends here --> 
+                    </div>
+                    <script type="text/javascript">
+                        document.getElementById("pbalancediet").setAttribute("class", "active")
+                    </script>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

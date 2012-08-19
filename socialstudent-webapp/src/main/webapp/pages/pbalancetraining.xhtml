@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html">
+    <h:body>       
+        <ui:composition template="./layout/homeLayout.xhtml">
+            <ui:define name="content">
+                <div id="left">
+                    <ul id="subnav">
+                        <a href="/aboutus"><li >Philosophy</li></a>
+                        <a href="/founder"><li >Founder</li></a>
+                        <li class="active">Training</li>
+                        <a href="/pbalancediet"><li>Eating</li></a>
+                    </ul>
+                    <div class="contact-bg">
+                        <h4>Questions?</h4>
+                        <h5>Just call and talk to us:</h5>
+                        (510) 668-0701<br/>                       
+                        <br/>
+                        <a href="/contact">
+                            <div id="emailus">&#160;</div>
+                        </a>                        
+                    </div>
+                </div>
+                <div id="right">
+                    <h3 >Perfect Balance Training</h3>
+                    <div class="breadcrumbs">  <a href="/login">HOME</a> |  PBALANCE TRAINING</div>
+                    <div><img src="#{facesContext.externalContext.requestContextPath}/images/pbtraining.jpg"/></div>
+                    <div class="content">
+                        <p>Whether your goal is to lose weight, tone up, trim body fat or improve performance in your sport of choice, Perfect Balance’s well-rounded approach to working out has proven results over and over again. Our members reach their goals, quickly increasing energy and stamina and improving body strength while dropping pounds and body fat. For our more competitive minded individuals, we see overall performance improvements in power, cardiovascular endurance and even accuracy.</p><p> People ask what we do that is so different. There isn’t much new under the sun but we find utilizing traditional practices incorporated into invigorating combinations and fresh workouts succeeds in keeping the body off-balanced and guessing as to what’s coming next. Combine this with our service, eye for detail, and healthy eating and we see fewer plateaus and more results! Regardless of which you choose, our ever popular group training or the privacy of individual sessions, we always keep in mind your individual goals and needs and work with you to ensure those goals and needs are met.</p>
+                        <!--content ends here -->
+                    </div>
+                    <!--right div ends here --> 
+                </div>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

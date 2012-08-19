@@ -1,0 +1,122 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+    <h:body>
+        <ui:composition template="../layout/adminLayout.xhtml">
+            <ui:define name="content">
+                <script type="text/javascript">
+                    if(document.getElementById("searchProgram") != null) {
+                        document.getElementById("searchProgram").setAttribute("class", "active");
+                    } else {
+                        location.href ="#{loginDataBean.lendingPage}";
+                    }                    
+                </script>
+                <h:form prependId="false">
+                    <f:metadata>
+                        <f:event listener="#{programServiceBean.loadPrograms}" type="preRenderComponent"/>
+                    </f:metadata>
+                    <h3>Manage Programs</h3>
+                    <hr class="red"/>
+                    <div id="search-panel">
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tbody>
+                                <tr>
+                                    <td width="39%">
+                                        <h:commandLink action="#{programServiceBean.navigateToCreateProgram}" title="Create Program">
+                                            <img src="#{facesContext.externalContext.requestContextPath}/images/new-button.jpg" alt="Create Program"/>
+                                        </h:commandLink>
+                                    </td>
+                                    <td width="14%" style="vertical-align: middle;">
+                                        <h:selectBooleanCheckbox value="#{systemResultViewUtil.isShowInActiveData}" >
+                                            <a4j:ajax  listener="#{programServiceBean.loadPrograms()}" render="programListPanel"/>
+                                        </h:selectBooleanCheckbox>
+                                        <strong>Show All</strong></td>
+                                    <td width="35%"><div id="search-box-bg">
+                                            <h:inputText value="#{systemResultViewUtil.searchString}" id="searchString" maxlength="50" styleClass="search-txt-box"/>
+                                        </div></td>
+                                    <td width="12%" style="vertical-align: middle;"> &#160;
+                                        <a4j:commandButton value="Search"  action="#{programServiceBean.loadPrograms}" onclick="loadWaitPanel('content');" oncomplete="stopWaitPanel('content');" render="programListPanel,programDataList, dataMessage" styleClass="standard-button"  title="Search Program" status="status" />
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                    </div>
+
+                    <div class="content">
+                    <ui:include src="../common/message.xhtml" /> 
+                        <a4j:outputPanel id="programListPanel">
+                            <rich:dataTable  id="programDataList" rowKeyVar="rowId" rows="10" var="program" styleClass="meal-plan" value="#{systemResultViewUtil.programDataBeanList}" style="width: 100%" rendered="#{systemResultViewUtil.programDataBeanList !=null and not empty systemResultViewUtil.programDataBeanList}" rowClass="#{rowId%2 == 0 ? 'alt-row1':'alt-row'}" >
+                                <f:facet name="header">
+                                    <rich:columnGroup>
+                                        <rich:column style="width: 35%" styleClass="header">
+                                            <h:outputText value="Program"/>
+                                        </rich:column>
+                                        <rich:column style="width: 25%" styleClass="header">
+                                            <h:outputText value="Type" />
+                                        </rich:column>
+                                        <rich:column style="width: 15%"  styleClass="header">
+                                            <h:outputText value="Charge" />
+                                        </rich:column>                                     
+                                        <rich:column style="width: 15%"  styleClass="header">
+                                            <h:outputText value="Created On"/>
+                                        </rich:column>                                       
+                                        <rich:column style="width: 10%; text-align: center;"  styleClass="header">
+                                            <h:outputText value="Status" />
+                                        </rich:column>
+                                    </rich:columnGroup>
+                                </f:facet>
+                                <rich:column style="vertical-align: top">
+                                    <h:commandLink title="Click here to Edit" value="#{program.programName}" action="#{programServiceBean.navigateToUpdateProgram()}" onclick="loadWaitPanel('content');">
+                                        <f:setPropertyActionListener target="#{systemResultSessionUtil.id}" value="#{program.id}"/>
+                                    </h:commandLink>
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                     <a4j:commandLink value="#{program.type}" render="programListPanel" title="Click here to view all #{program.type}"
+                                                     onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content');">
+                                        <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="#{program.type}"/>                                        
+                                    </a4j:commandLink>
+                                </rich:column>
+                                <rich:column style="vertical-align: top" >
+                                    <h:outputText value="#{program.fees}">
+                                        <f:convertNumber minIntegerDigits="1" minFractionDigits="2"/>
+                                    </h:outputText>
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{program.createdOn}">
+                                        <f:convertDateTime type="date" pattern="MM/dd/yyyy" timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                    </h:outputText>
+                                </rich:column>
+
+
+                                <rich:column style="text-align: center;vertical-align: top">
+                                    <h:outputLabel id="statusPanel">
+                                        <a4j:commandLink title="#{program.isIsActive ? 'Click here to Deactivate':'Click here to Activate'}" onclick="loadWaitPanel('content');" action="#{programServiceBean.deActiveProgram()}" rendered="#{program.isIsActive != null }" render="programListPanel,dataMessage" oncomplete="stopWaitPanel('content');">
+                                            <h:graphicImage value="#{program.isIsActive ?'/images/activate.png' :'/images/deactivate.png'}" style="border: none;" />
+                                            <f:setPropertyActionListener target="#{programDataBean.id}" value="#{program.id}"/>
+                                            <f:setPropertyActionListener target="#{programDataBean.isActive}" value="#{not program.isIsActive}"/>
+                                        </a4j:commandLink>
+                                    </h:outputLabel>
+                                    <!--                                    <h:outputLabel>
+                                                                            <a4j:commandLink title="Click here to delete the Program" action="#programServiceBean.deleteProgram()}" render="programDataList">
+                                                                                <h:graphicImage value="/images/delete.png" style="border : none;"/>
+                                                                                <f:setPropertyActionListener target="#programDataBean.id}" value="#program.id}"/>
+                                                                            </a4j:commandLink>
+                                                                        </h:outputLabel>-->
+                                </rich:column>
+                                <f:facet name="footer" >
+                                    <div align="center" style="width: 100%;">
+                                        <rich:dataScroller for="programDataList" renderIfSinglePage="true" maxPages="10" fastStep="5"></rich:dataScroller>
+                                    </div>
+                                </f:facet>
+                            </rich:dataTable>
+                        </a4j:outputPanel>
+                    </div>
+                </h:form>               
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

@@ -1,0 +1,55 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:a4j="http://richfaces.org/a4j"
+      >
+    <ui:composition>
+        <h:form prependId="false">
+             <div class="profile">
+                <h:panelGrid id="profileImagePanel" style="width: 100%">
+                    <h:commandLink action="pretty:uploadMemberProfilePicture" title="click to edit picture" style="cursor:pointer;text-align: center">
+                        <h:panelGroup rendered="#{loginDataBean.profilePicture == null}">
+                            <h:graphicImage url="#{facesContext.externalContext.requestContextPath}/images/defaultuser.jpg" width="95px" height="95px" />
+                        </h:panelGroup>
+                        <h:panelGroup rendered="#{loginDataBean.profilePicture != null}">
+                            <a4j:mediaOutput id="profileImage" style="border:none;height: 95px;width: 95px"
+                                             element="img"
+                                             createContent="#{systemResultSessionUtil.drawImage}"
+                                             mimeType="image/jpg"
+                                             styleClass="u7"
+                                             value="#{systemPropertyUtil.filePath.concat(loginDataBean.profilePicture)}"/>
+                        </h:panelGroup>
+                    </h:commandLink>
+                </h:panelGrid>
+            </div>            
+            <ul id="subnav" style="margin:10px 0px 0px 0px"> 
+                <h:commandLink action="#{menuServiceBean.menuNavigate}" >
+                    <li id="mySession">My Sessions</li>
+                    <f:param name="id" value="mySession"/>
+                </h:commandLink>
+                <h:commandLink action="#{menuServiceBean.menuNavigate}" rendered="#{loginDataBean.hasActiveSubscription}">
+                    <li id="memberBookSession">Book Sessions</li>
+                    <f:param name="id" value="memberBookSession"/>
+                </h:commandLink>
+                <h:commandLink action="#{menuServiceBean.menuNavigate}" rendered="#{loginDataBean.hasActiveSubscription}">
+                    <li id="testimonial">Testimonials</li>
+                    <f:param name="id" value="testimonial"/>
+                </h:commandLink>
+                <h:commandLink action="#{menuServiceBean.menuNavigate}" >
+                    <li id="myProfile_studioMember">My Profile</li>
+                    <f:param name="id" value="myProfile_studioMember"/>
+                </h:commandLink>
+            </ul>
+            <script type="text/javascript">  
+                if ('#{loginDataBean.isLoggedin}' == 'false') {
+                    location.href = '/login';
+                }
+                     document.getElementById("pbstudio").setAttribute("class", "active");
+            </script>
+        </h:form>        
+    </ui:composition>
+</html>
+

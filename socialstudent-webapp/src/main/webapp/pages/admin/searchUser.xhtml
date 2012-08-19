@@ -1,0 +1,113 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+    <h:body>
+        <ui:composition template="../layout/adminLayout.xhtml">
+            <ui:define name="content">
+                <script type="text/javascript">
+                    if(document.getElementById("searchUser") != null) {
+                        document.getElementById("searchUser").setAttribute("class", "active");
+                    } else {
+                        location.href ="#{loginDataBean.lendingPage}";
+                    }                    
+                </script>
+                <h:form prependId="false">
+                    <f:metadata>
+                        <f:event type="preRenderView" listener="#{userServiceBean.searchUsers()}"/>
+                    </f:metadata>
+                    <h3>Manage Users</h3>
+                    <hr class="red"/>
+                    <div id="search-panel"> 
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tbody>
+                                <tr>
+                                    <td width="39%">                                               
+                                        <h:commandLink action="#{userServiceBean.navigateToCreateUser}" title="Create User">
+                                            <img src="#{facesContext.externalContext.requestContextPath}/images/new-button.jpg" alt="Create User" />
+                                        </h:commandLink>                                                    
+                                    </td>
+                                    <td width="14%" style="vertical-align: middle;">
+                                        <h:selectBooleanCheckbox value="#{systemResultViewUtil.isShowInActiveData}" >
+                                            <a4j:ajax listener="#{userServiceBean.searchUsers()}" render="userDataListPanel,dataMessage" onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content');"/>                                        
+                                        </h:selectBooleanCheckbox>
+                                        <strong>Show All</strong></td>
+                                    <td width="35%"><div id="search-box-bg">
+                                            <h:inputText value="#{systemResultViewUtil.searchString}" id="searchString" maxlength="50" styleClass="search-txt-box"/>                                                
+                                        </div></td>
+                                    <td width="12%" style="vertical-align: middle;"> &#160;                                               
+                                        <a4j:commandButton value="Search"  action="#{userServiceBean.searchUsers}"  onclick="loadWaitPanel('content');" oncomplete="stopWaitPanel('content');" render="temp,userDataListPanel,userDataList, dataMessage" styleClass="standard-button"  title="Search User" status="status" />                                                 
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                    </div>
+                    <div id="content" class="content">
+                        <ui:include src="../common/message.xhtml" />                    
+                        <a4j:outputPanel id="userDataListPanel">                        
+                            <rich:dataTable  id="userDataList" rowKeyVar="rowId" rows="10" rendered="#{systemResultViewUtil.searchUserList!=null and not empty systemResultViewUtil.searchUserList}"
+                                             var="user" value="#{systemResultViewUtil.searchUserList}" styleClass="meal-plan" style="width: 100%" rowClass="#{rowId%2 == 0 ? 'alt-row1':'alt-row'}" >
+                                <f:facet name="header">
+                                    <rich:columnGroup>
+                                        <rich:column style="width: 31%" styleClass="header">
+                                            <h:outputText value="Name"/>
+                                        </rich:column>
+                                        <rich:column style="width: 25%" styleClass="header">
+                                            <h:outputText value="Username"/>
+                                        </rich:column>                                        
+                                        <rich:column style="width: 24%"  styleClass="header">
+                                            <h:outputText value="User Type"/>
+                                        </rich:column>
+                                        <rich:column style="width: 13%"  styleClass="header">
+                                            <h:outputText value="Created On" />
+                                        </rich:column>
+                                        <rich:column style="width: 7%; text-align: center;"  styleClass="header">
+                                            <h:outputText value="Status" />
+                                        </rich:column>
+                                    </rich:columnGroup>
+                                </f:facet>                              
+                                <rich:column style="vertical-align: top">
+                                    <h:commandLink title="Click here to Edit" value="#{user.firstName} #{user.lastName}" action="#{userServiceBean.navigateToUpdateUser()}" onclick="loadWaitPanel('content');">                                        
+                                        <f:setPropertyActionListener target="#{systemResultSessionUtil.id}" value="#{user.id}"/>
+                                        <f:setPropertyActionListener target="#{systemResultSessionUtil.userId}" value="#{user.userId}"/>
+                                    </h:commandLink>                                    
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{user.userId}"></h:outputText>                                    
+                                </rich:column>                                
+                                <rich:column style="vertical-align: top">
+                                    <a4j:commandLink value="#{user.userRole}" render="userDataListPanel" title="Click here to view all #{user.userRole}"
+                                                     onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content');">
+                                        <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="#{user.userRole}"/>                                        
+                                    </a4j:commandLink>
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{user.createdOn}">
+                                        <f:convertDateTime type="date" pattern="MM/dd/yyyy" timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                    </h:outputText>                                    
+                                </rich:column>
+                                <rich:column style="text-align: center;vertical-align: top">                                    
+                                    <h:outputLabel id="statusPanel">
+                                        <a4j:commandLink title="#{user.isActive ? 'Click here to Deactivate':'Click here to Activate'}" action="#{userServiceBean.changeUserStatus()}" rendered="#{user.isActive != null}" render="userDataListPanel,dataMessage" onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content');">
+                                            <h:graphicImage value="#{user.isActive ?'/images/activate.png' :'/images/deactivate.png'}" style="border: none;" />
+                                            <f:setPropertyActionListener target="#{systemResultViewUtil.id}" value="#{user.id}"/>
+                                            <f:setPropertyActionListener target="#{systemResultViewUtil.userStatus}" value="#{user.isActive}"/>
+                                        </a4j:commandLink>
+                                    </h:outputLabel>
+                                </rich:column>                               
+                                <f:facet name="footer" >                                    
+                                    <div align="center" style="width: 100%;">
+                                        <rich:dataScroller id="scroller" for="userDataList" renderIfSinglePage="true" maxPages="10" fastStep="5"></rich:dataScroller>  
+                                    </div>                                    
+                                </f:facet>
+                            </rich:dataTable>
+                        </a4j:outputPanel>
+                    </div>
+                </h:form>              
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

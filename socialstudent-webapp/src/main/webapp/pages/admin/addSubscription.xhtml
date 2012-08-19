@@ -1,0 +1,220 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+
+    <body>
+        <ui:composition template="./../layout/blankLayout.xhtml">
+            <ui:define name="content">
+                <br/>
+                <f:event listener="#{userServiceBean.loadMemberSubscription()}" type="preRenderComponent" />
+                <h3>Add Subscription</h3>
+                <div align="right" style="margin-top: -23px"> <h:outputText value="(Fields marked with * are mandatory)" styleClass="infomessages"/></div>
+                <hr class="red"/>
+                <div id="content">
+                    <h:form prependId="false">
+                        <rich:dataTable id="subsDetailDataList" styleClass="meal-plan" value="#{systemResultViewUtil.subscriptionDetailList}" var="subsData" rowKeyVar="rowId" rendered="#{systemResultViewUtil.subscriptionDetailList != null}" rowClass="#{rowId%2 == 0 ? 'alt-row1':'alt-row'}" style="width: 100%">
+                            <f:facet name="header">
+                                <rich:columnGroup>
+                                    <rich:column styleClass="header" >
+                                        Package
+                                    </rich:column>
+                                    <rich:column styleClass="header" >
+                                        Activated on
+                                    </rich:column>
+                                    <rich:column styleClass="header" >
+                                        Expires on
+                                    </rich:column>
+                                    <rich:column styleClass="header" >
+                                        Referred by
+                                    </rich:column>
+                                    <rich:column styleClass="header" >
+                                        Sessions left
+                                    </rich:column>
+                                    <rich:column styleClass="header" style="text-align: center">
+                                        Status
+                                    </rich:column>
+                                </rich:columnGroup>
+                            </f:facet>
+                            <rich:column width="18%">
+                                <h:outputLabel value="#{subsData.programName}" style="float: left"/>
+                            </rich:column>
+                            <rich:column width="15%">
+                                <h:outputLabel value="#{subsData.activationDate}" rendered="#{subsData.activationDate != null}">
+                                    <f:convertDateTime pattern="MM/dd/yyyy" type="date" timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                </h:outputLabel>
+                                <h:outputLabel value="N/A" rendered="#{subsData.activationDate == null}" />
+                            </rich:column>
+                            <rich:column width="14%">
+                                <h:outputLabel value="#{subsData.expirationDate}" rendered="#{subsData.expirationDate != null}">
+                                    <f:convertDateTime pattern="MM/dd/yyyy" type="date" timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                </h:outputLabel>
+                                <h:outputLabel value="N/A" rendered="#{subsData.expirationDate == null}" />
+                            </rich:column>
+                            <rich:column width="20%">
+                                <h:outputLabel value="#{subsData.referredByName}" />
+                            </rich:column>
+                            <rich:column width="16%">
+                                <h:outputLabel value="#{(subsData.unit - subsData.unitsUsed)}/#{subsData.unit}" rendered="#{subsData.unit gt 0}" />
+                                <h:outputLabel value="N/A" rendered="#{subsData.unit le 0}" />
+                            </rich:column>
+                            <rich:column width="5%" style="text-align: center">
+                                <h:graphicImage value="#{subsData.activeStatus == 1 ?'/images/activate.png' : subsData.activeStatus == 0 ? '/images/deactivate.png' : '/images/queued.png'}" style="border: none;" />
+                            </rich:column>
+                        </rich:dataTable>
+                        <hr class="red" style="display: #{systemResultViewUtil.subscriptionDetailList != null ? 'block' : 'none'}"/>
+                        <h:inputHidden value="#{userServiceBean.memberId}" />
+                        <table width="80%" border="0" cellspacing="0" cellpadding="0" class="form-table" align="center">
+                            <tr>
+                                <th width="25%">Package<sup><font color="red">*</font></sup></th>
+                                <td width="25%">
+                                    <h:selectOneMenu style="width: 100%;"
+                                                     id="program" value="#{memberSubscriptionDetailDataBean.program}" required="true" requiredMessage="Select package" onchange="setProgramId('programId', this.value);">
+                                        <f:selectItem itemLabel="-- Select --" />
+                                        <f:selectItems value="#{userServiceBean.programList}" />
+                                        <f:ajax event="blur" render="programMsg" />
+                                        <a4j:ajax event="change" listener="#{userServiceBean.renderProgramFees}" render="cashPanel,progFees" />
+                                    </h:selectOneMenu>
+                                    <br/>
+                                    <rich:message for="program" style="color: red" id="programMsg" />
+                                </td>
+                                <th width="25%">Was referred by</th>
+                                <td width="25%">
+                                    <h:selectOneMenu style="width: 100%;" value="#{memberSubscriptionDetailDataBean.referredBy}">
+                                        <f:selectItem itemLabel="-- Select --" />
+                                        <f:selectItems value="#{userServiceBean.adminList}" />
+                                    </h:selectOneMenu>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Payment method</th>
+                                <td>
+                                    <h:inputHidden id="programId" value="#{memberSubscriptionDetailDataBean.program}" />
+                                    <h:selectOneMenu style="width: 100%;" id="paidby" value="#{systemResultViewUtil.paidBy}">
+                                        <f:selectItems value="#{userServiceBean.paymentModeList}" />
+                                        <a4j:ajax event="change" render="accpanel" listener="#{userServiceBean.renderProgramFees}" oncomplete="getDatePickerForCheque('chequedate');" execute="programId" />
+                                    </h:selectOneMenu>
+                                    <br/>
+                                </td>
+
+                                <td colspan="2">
+                                </td>
+                            </tr>
+                        </table>
+                        <a4j:outputPanel id="accpanel">
+                            <table width="80%" border="0" cellspacing="0" cellpadding="0" class="form-table" align="center">
+                                <tr>
+                                    <th width="25%">
+                                        <h:outputLabel rendered="#{systemResultViewUtil.paidBy == 'CS'}">Amount<sup><font color="red">*</font></sup></h:outputLabel>
+                                        <h:outputLabel rendered="#{systemResultViewUtil.paidBy == 'CR'}">Transaction Id<sup><font color="red">*</font></sup></h:outputLabel>
+                                        <h:outputLabel rendered="#{systemResultViewUtil.paidBy == 'CQ'}">Check Date<sup><font color="red">*</font></sup></h:outputLabel>
+                                    </th>
+                                    <td width="25%">
+                                        <a4j:outputPanel id="cashPanel">
+                                            <h:inputText style="width: 100%;" rendered="#{systemResultViewUtil.paidBy == 'CS'}" styleClass="medium" id="amount" value="#{memberSubscriptionDetailDataBean.fees}" required="true" requiredMessage="Enter amount" maxlength="7" converter="#{javax.faces.converter.DoubleConverter.DOUBLE}" converterMessage="Invalid amount">
+                                                <f:ajax event="blur" render="amountMsg" />
+                                            </h:inputText>
+                                        </a4j:outputPanel>
+                                        <h:inputHidden value="#{memberSubscriptionDetailDataBean.fees}" id="progFees" />
+                                        <h:inputText rendered="#{systemResultViewUtil.paidBy == 'CR'}" style="width: 100%;" styleClass="medium" id="transid" value="#{memberSubscriptionDetailDataBean.transactionNumber}" required="true" requiredMessage="Enter transation id" maxlength="15">
+                                            <f:ajax event="blur" render="transidMsg" />
+                                        </h:inputText>
+                                        <h:inputText rendered="#{systemResultViewUtil.paidBy == 'CQ'}" id="chequedate" style="width: 100%;" styleClass="medium" required="true" requiredMessage="Enter check date" value="#{memberSubscriptionDetailDataBean.transactionDate}">
+                                            <f:convertDateTime type="date" dateStyle="MM/dd/yyyy" pattern="MM/dd/yyyy"  timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                            <!--                                                    <f:ajax event="blur" render="chequeDMsg" />
+                                                                                                <f:ajax event="change" render="chequeDMsg" />-->
+                                        </h:inputText>
+                                        <br/>
+                                        <rich:message for="amount" id="amountMsg" style="color: red" />
+                                        <rich:message for="transid" id="transidMsg" style="color: red" />
+                                        <rich:message for="chequedate" id="chequeDMsg" style="color: red" />
+                                    </td>
+                                    <th width="25%">
+                                        <h:outputLabel rendered="#{systemResultViewUtil.paidBy == 'CS'}">Received by</h:outputLabel>
+                                        <h:outputLabel rendered="#{systemResultViewUtil.paidBy == 'CQ'}">Check Number<sup><font color="red">*</font></sup></h:outputLabel>
+                                    </th>
+                                    <td width="25%">
+                                        <h:selectOneMenu style="width: 100%;" rendered="#{systemResultViewUtil.paidBy == 'CS'}" value="#{memberSubscriptionDetailDataBean.receivedBy}" id="receivedby" required="true" requiredMessage="Select received by">
+                                            <f:selectItem itemLabel="-- Select --" />
+                                            <f:selectItems value="#{userServiceBean.adminList}" />
+                                            <f:ajax event="blur" render="receivedbyMsg" />
+                                        </h:selectOneMenu>
+                                        <h:inputText rendered="#{systemResultViewUtil.paidBy == 'CQ'}" style="width: 100%;" value="#{memberSubscriptionDetailDataBean.chequeNumber}" styleClass="medium" id="chequenum" required="true" requiredMessage="Enter check number" maxlength="8">
+                                            <f:ajax event="blur" render="chequeNMsg" />
+                                        </h:inputText>
+                                        <br/>
+                                        <rich:message for="receivedby" style="color: red" id="receivedbyMsg" />
+                                        <rich:message for="chequenum" id="chequeNMsg" style="color: red" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        <h:outputLabel rendered="#{systemResultViewUtil.paidBy == 'CQ'}">Check Status</h:outputLabel>
+                                    </th>
+                                    <td>
+                                        <h:selectOneMenu style="width: 100%;" rendered="#{systemResultViewUtil.paidBy == 'CQ'}" value="#{memberSubscriptionDetailDataBean.status}">
+                                            <f:selectItems value="#{userServiceBean.chequeStatusList}" />
+                                        </h:selectOneMenu>
+                                    </td>
+                                    <th></th>
+                                    <td></td>
+                                </tr>
+                            </table>
+                        </a4j:outputPanel>
+                        <table width="80%" border="0" cellspacing="0" cellpadding="0" class="form-table" align="center">
+                            <tr>
+                                <th valign="top" width="25%">
+                                    Description
+                                </th>
+                                <td>
+                                    <h:inputTextarea style="width: 300px" value="#{memberSubscriptionDetailDataBean.description}" id="descC" onfocus="counterForTextArea('descC','descCounterC',120)" onkeyup="counterForTextArea('descC','descCounterC',120)">
+                                    </h:inputTextarea>
+                                    <div style="text-align:left" ><i><h:outputText value="(You can type" style="color: grey;"/> &#160;<h:outputText id="descCounterC" value="120" style="color: grey;"/> &#160;<h:outputText value="more characters)" style="color: grey;"/></i></div>
+                                </td>
+                            </tr>
+                        </table>
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" align="center">
+                            <tr>
+                                <td colspan="2">
+                                    <div align="center">
+                                        <hr class="red"/>
+                                        <a4j:commandButton value="Submit" action="#{userServiceBean.addNewSubscription()}" onclick="loadWaitPanel('accDiv');"
+                                                           oncomplete="stopWaitPanel('accDiv');if(#{messageDataBean.isSuccess != null and messageDataBean.isSuccess}) {window.close();};"
+                                                           styleClass="standard-button" render="accpanel,subsDetailDataList,dataMessage" >
+                                        </a4j:commandButton>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </h:form>
+                    <script type="text/javascript">
+                        function getDatePickerForCheque(id) {
+                            id = "#" + id;
+                            $(id).datepicker({
+                                changeMonth: true,
+                                changeYear: true,
+                                dateFormat: 'mm/dd/yy',
+                                minDate:+0,
+                                height: 200,
+                                width:200
+                            })
+                            .attr( 'readOnly' , 'true' );
+                        }
+
+                    function setProgramId(id,value) {
+                        if (value != null) {
+                            document.getElementById(id).value = value;
+                        } else {
+                            document.getElementById(id).value = 0;
+                        }
+                    }
+                    </script>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

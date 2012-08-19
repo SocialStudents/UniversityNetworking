@@ -1,0 +1,288 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <body>
+        <ui:composition template="./../layout/adminLayout.xhtml">
+            <ui:define name="content">
+                <script type="text/javascript">
+                    if(document.getElementById("manageRoster") != null) {
+                        document.getElementById("manageRoster").setAttribute("class", "active");
+                    } else {
+                        location.href ="#{loginDataBean.lendingPage}";
+                    }                    
+                </script>
+                <f:metadata>
+                    <f:event type="preRenderView" listener="#{userServiceBean.clearFlashData()}"/>
+                </f:metadata>
+                <h3>Enter Shift Details</h3>
+                <div align="right" style="margin-top: -23px"> <h:outputText value="(Fields marked with * are mandatory)" styleClass="infomessages"/></div>                 
+                <hr class="red"/>
+                <div id="content">
+                    <h:form prependId="false"> 
+                        <script type="text/javascript">
+                            var availableTags = [];
+                            $(document).ready(function() {
+
+                            function split( val ) {
+                                    return val.split( /,\s*/ );
+                            }
+                            function extractLast( term ) {
+                                    return split( term ).pop();
+                            }
+
+                            if(selectedDay.length != 0){
+                                $(".star").css("display","inline");
+                            }else{
+                                $(".star").css("display","none");
+                            }
+                                  $("#trainers").data("placeholder", "Select Specialist").chosen();
+                            });
+                        </script>
+                        <h:inputHidden id="selectedDays" value="#{schedulerServiceBean.slotDay}"/>
+                        <ui:include src="../common/message.xhtml" /> 
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table">
+                            <tr style="text-align: center">
+                                <td>
+                                    <div class="days" id="SUN" style="background-size: cover;margin-left: 0px;float: left;top: -3px;width: 34px;height: 34px;cursor: pointer;background-repeat: no-repeat;background-image:url(#{facesContext.externalContext.requestContextPath}/images/book-slot.png)" onclick="selectDay('SUN')">
+                                        <center><div style="padding-top: 10px;"><span class="day" style="width: 46px;height: 25px;font-family: Arial; font-size: 14px; font-weight: bold; font-style: normal; text-decoration: none; color:black; ">S</span></div></center>
+                                    </div>
+                                    <div class="days" id="MON" style=" background-size: cover;margin-left: 10px;float:left;top: -3px;width: 34px;height: 34px;cursor: pointer;background-repeat: no-repeat;background-image:url(#{facesContext.externalContext.requestContextPath}/images/book-slot.png)" onclick="selectDay('MON')">
+                                        <center><div style="padding-top: 10px"><span class="day" style="width: 46px;height: 25px;font-family: Arial; font-size: 14px; font-weight: bold; font-style: normal; text-decoration: none; color: black; ">M</span></div></center>
+                                    </div>
+                                    <div class="days" id="TUE" style=" background-size: cover;margin-left: 10px;float:left;top: -3px;width: 34px;height: 34px;cursor: pointer;background-repeat: no-repeat;background-image:url(#{facesContext.externalContext.requestContextPath}/images/book-slot.png)" onclick="selectDay('TUE')">
+                                        <center><div style="padding-top: 10px"><span class="day" style="width: 46px;height: 25px;font-family: Arial; font-size: 14px; font-weight: bold; font-style: normal; text-decoration: none; color: black; ">T</span></div></center>
+                                    </div>
+                                    <div class="days" id="WED" style=" background-size: cover;margin-left: 10px;float:left;top: -3px;width: 34px;height: 34px;cursor: pointer;background-repeat: no-repeat;background-image:url(#{facesContext.externalContext.requestContextPath}/images/book-slot.png)" onclick="selectDay('WED')">
+                                        <center><div style="padding-top: 10px"><span class="day" style="width: 46px;height: 25px;font-family: Arial; font-size: 14px; font-weight: bold; font-style: normal; text-decoration: none; color: black; ">W</span></div></center>
+                                    </div>
+                                    <div class="days" id="THU" style=" background-size: cover;margin-left: 10px;float:left;top: -3px;width: 34px;height: 34px;cursor: pointer;background-repeat: no-repeat;background-image:url(#{facesContext.externalContext.requestContextPath}/images/book-slot.png)" onclick="selectDay('THU')">
+                                        <center><div style="padding-top: 10px;"><span class="day" style="width: 46px;height: 25px;font-family: Arial; font-size: 14px; font-weight: bold; font-style: normal; text-decoration: none; color: black;">T</span></div></center>
+                                    </div>
+                                    <div class="days" id="FRI" style=" background-size: cover;margin-left: 10px;float:left;top: -3px;width: 34px;height: 34px;cursor: pointer;background-repeat: no-repeat;background-image:url(#{facesContext.externalContext.requestContextPath}/images/book-slot.png)" onclick="selectDay('FRI')">
+                                        <center><div style="padding-top: 10px"><span class="day" style="width: 46px;height: 25px;font-family: Arial; font-size: 14px; font-weight: bold; font-style: normal; text-decoration: none; color: black;">F</span></div></center>
+                                    </div>
+                                    <div class="days" id="SAT" style=" background-size: cover;margin-left: 10px;float:left;top: -3px;width: 34px;height: 34px;cursor: pointer;background-repeat: no-repeat;background-image:url(#{facesContext.externalContext.requestContextPath}/images/book-slot.png)" onclick="selectDay('SAT')">
+                                        <center><div style="padding-top: 10px"><span class="day" style="width: 46px;height: 25px;font-family: Arial; font-size: 14px; font-weight: bold; font-style: normal; text-decoration: none; color: black;">S</span></div></center>
+                                    </div>
+                                    <div style="float: left">
+                                        <div style="margin-left: 10px;padding-top: 20px">
+                                            <span id="clearAll" style="display:none;font-family:Arial;font-size:11px;font-weight:bold;font-style:normal;text-decoration:none;color:#0000FF;cursor: pointer;" onclick="clearAllSelectedDay();">Clear All</span>
+                                            <span id="selectAll" style="font-family:Arial;font-size:11px;font-weight:bold;font-style:normal;text-decoration:none;color:#0000FF;cursor: pointer" onclick="selectAllDay();">Select All</span>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                        <table width="55%" border="0" cellspacing="0" cellpadding="0" class="form-table">
+                            <tr>
+                                <th valign="top">Specialist<sup><font class="star" style="display: none" color="red">*</font></sup></th>
+                                <td>
+                                    <h:selectManyMenu id="trainers" value="#{schedulerServiceBean.selectedTrainerList}" required="true" requiredMessage="Select PB Specialists" styleClass="medium" style="width: 240px">
+                                        <c:if test="#{schedulerServiceBean.trainerList.size() == 0}">
+                                            <f:selectItem itemLabel="" itemValue="0"/>
+                                        </c:if>
+                                        <f:selectItems value="#{schedulerServiceBean.trainerList}"/>
+                                    </h:selectManyMenu>&#160;<rich:message for="trainers"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th valign="top">Max. Session count<sup><font class="star" style="display: none" color="red">*</font></sup></th>
+                                <td>
+                                    <h:inputText value="#{schedulerServiceBean.strength}" styleClass="small" required="true" requiredMessage="Enter Strength" id="strength" maxlength="4" validatorMessage="Invalid strength">
+                                        <f:validateLongRange minimum="1" maximum="9999"/>
+                                    </h:inputText>&#160;<rich:message for="strength"/>
+                                </td>
+                            </tr>
+                        </table>
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table">
+                            <tr>
+                                <td style="width:1%">
+                                    <h:selectOneMenu value="#{shiftDataBean.startHour}" style="width: 100px"  id="startHour" required="true" requiredMessage="Select start hour">
+                                        <f:selectItem itemLabel="-- Hour --"/>
+                                        <f:selectItem itemValue="0" itemLabel="00"/>
+                                        <f:selectItem itemValue="1" itemLabel="01"/>
+                                        <f:selectItem itemValue="2" itemLabel="02"/>
+                                        <f:selectItem itemValue="3" itemLabel="03"/>
+                                        <f:selectItem itemValue="4" itemLabel="04"/>
+                                        <f:selectItem itemValue="5" itemLabel="05"/>
+                                        <f:selectItem itemValue="6" itemLabel="06"/>
+                                        <f:selectItem itemValue="7" itemLabel="07"/>
+                                        <f:selectItem itemValue="8" itemLabel="08"/>
+                                        <f:selectItem itemValue="9" itemLabel="09"/>
+                                        <f:selectItem itemValue="10" itemLabel="10"/>
+                                        <f:selectItem itemValue="11" itemLabel="11"/>
+                                        <f:selectItem itemValue="12" itemLabel="12"/>
+                                        <f:selectItem itemValue="13" itemLabel="13"/>
+                                        <f:selectItem itemValue="14" itemLabel="14"/>
+                                        <f:selectItem itemValue="15" itemLabel="15"/>
+                                        <f:selectItem itemValue="16" itemLabel="16"/>
+                                        <f:selectItem itemValue="17" itemLabel="17"/>
+                                        <f:selectItem itemValue="18" itemLabel="18"/>
+                                        <f:selectItem itemValue="19" itemLabel="19"/>
+                                        <f:selectItem itemValue="20" itemLabel="20"/>
+                                        <f:selectItem itemValue="21" itemLabel="21"/>
+                                        <f:selectItem itemValue="22" itemLabel="22"/>
+                                        <f:selectItem itemValue="23" itemLabel="23"/>
+                                    </h:selectOneMenu>
+                                </td>
+                                <td style="width:115px">
+                                    <h:selectOneMenu value="#{shiftDataBean.startMin}" style="width: 100px" id="startMin" required="true" requiredMessage="Select start minute">
+                                        <f:selectItem itemLabel="-- Minutes --"/>
+                                        <f:selectItem itemValue="0" itemLabel="00"/>
+                                        <f:selectItem itemValue="15" itemLabel="15"/>
+                                        <f:selectItem itemValue="30" itemLabel="30"/>
+                                        <f:selectItem itemValue="45" itemLabel="45"/>
+                                    </h:selectOneMenu>&#160;<font color="red">*</font>
+                                </td>
+                                <td style="width: 10px;">
+                                    &#160;to&#160;&#160;
+                                </td>
+                                <td style="width: 1%">
+                                    <h:selectOneMenu value="#{shiftDataBean.endHour}" style="width: 100px"  id="endHour" required="true" requiredMessage="Select end hour">
+                                        <f:selectItem itemLabel="-- Hour --"/>
+                                        <f:selectItem itemValue="0" itemLabel="00"/>
+                                        <f:selectItem itemValue="1" itemLabel="01"/>
+                                        <f:selectItem itemValue="2" itemLabel="02"/>
+                                        <f:selectItem itemValue="3" itemLabel="03"/>
+                                        <f:selectItem itemValue="4" itemLabel="04"/>
+                                        <f:selectItem itemValue="5" itemLabel="05"/>
+                                        <f:selectItem itemValue="6" itemLabel="06"/>
+                                        <f:selectItem itemValue="7" itemLabel="07"/>
+                                        <f:selectItem itemValue="8" itemLabel="08"/>
+                                        <f:selectItem itemValue="9" itemLabel="09"/>
+                                        <f:selectItem itemValue="10" itemLabel="10"/>
+                                        <f:selectItem itemValue="11" itemLabel="11"/>
+                                        <f:selectItem itemValue="12" itemLabel="12"/>
+                                        <f:selectItem itemValue="13" itemLabel="13"/>
+                                        <f:selectItem itemValue="14" itemLabel="14"/>
+                                        <f:selectItem itemValue="15" itemLabel="15"/>
+                                        <f:selectItem itemValue="16" itemLabel="16"/>
+                                        <f:selectItem itemValue="17" itemLabel="17"/>
+                                        <f:selectItem itemValue="18" itemLabel="18"/>
+                                        <f:selectItem itemValue="19" itemLabel="19"/>
+                                        <f:selectItem itemValue="20" itemLabel="20"/>
+                                        <f:selectItem itemValue="21" itemLabel="21"/>
+                                        <f:selectItem itemValue="22" itemLabel="22"/>
+                                        <f:selectItem itemValue="23" itemLabel="23"/>
+                                    </h:selectOneMenu>
+                                </td>
+                                <td>
+                                    <h:selectOneMenu value="#{shiftDataBean.endMin}" style="width: 100px" id="endMin" required="true" requiredMessage="Select end minute">
+                                        <f:selectItem itemLabel="-- Minutes --"/>
+                                        <f:selectItem itemValue="0" itemLabel="00"/>
+                                        <f:selectItem itemValue="15" itemLabel="15"/>
+                                        <f:selectItem itemValue="30" itemLabel="30"/>
+                                        <f:selectItem itemValue="45" itemLabel="45"/>
+                                    </h:selectOneMenu> &#160;<font color="red">*</font>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <rich:message for="startHour" style="width: 25%"/>
+                                </td>
+                                <td>
+                                    <rich:message for="startMin" style="width: 25%"/>
+                                </td>
+                                <td>
+
+                                </td>
+                                <td>
+                                    <rich:message for="endHour" style="width: 25%"/>
+                                </td>
+                                <td>
+                                    <rich:message for="endMin" style="width: 25%"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="5" align="center">
+                                    <hr class="red"/>
+                                    <div align="center">
+                                        <a4j:commandButton value="Submit" action="#{schedulerServiceBean.createShift}" styleClass="standard-button" render="dataMessage" onclick="validateField();" onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content');"/>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </h:form>
+                </div>
+                <script type="text/javascript">
+                   var selectedDay = [];
+                   document.getElementById("selectedDays").value = selectedDay;
+                   document.getElementById("strength").value = "";
+                   jQuery("#strength").numeric();
+
+                   function selectDay(day){
+                       var arrayIndex = $.inArray(day,selectedDay);
+                       if(arrayIndex != -1){
+                           $("#"+day).css("background-image","url(#{facesContext.externalContext.requestContextPath}/images/book-slot.png)");
+                           $("#"+day+" span").css("color","black");
+                           selectedDay.splice(arrayIndex,1);
+                       }else{
+                           $("#"+day).css("background-image","url(#{facesContext.externalContext.requestContextPath}/images/book-slot-selected.png)");
+                           $("#"+day+" span").css("color","#FFFFFF");
+                           selectedDay.push(day);
+                       }
+                    if(selectedDay.length == 7){
+                        document.getElementById("selectAll").style.display = "none";
+                        document.getElementById("clearAll").style.display = "block";
+                    }else{
+                        document.getElementById("selectAll").style.display = "block";
+                        document.getElementById("clearAll").style.display = "none";
+                    }
+
+                    if(selectedDay.length != 0){
+                        $(".star").css("display","inline");
+                    }else{
+                        $(".star").css("display","none");
+                    }
+                       document.getElementById("selectedDays").value = selectedDay;
+                   }
+
+                   function clearAllSelectedDay(){
+                       selectedDay.splice(0,selectedDay.length);
+                       document.getElementById("selectAll").style.display = "block";
+                       document.getElementById("clearAll").style.display = "none";
+                       $(".days").css("background-image","url(#{facesContext.externalContext.requestContextPath}/images/book-slot.png)");
+                       $(".day").css("color","black");
+                       document.getElementById("selectedDays").value = selectedDay;
+
+                       if(selectedDay.length != 0){
+                        $(".star").css("display","inline");
+                    }else{
+                        $(".star").css("display","none");
+                    }
+                   }
+
+                   function selectAllDay(){
+                       clearAllSelectedDay();
+                       selectedDay = ["SUN","MON","TUE","WED","THU","FRI","SAT"];
+                       document.getElementById("selectAll").style.display = "none";
+                       document.getElementById("clearAll").style.display = "block";
+                       $(".days").css("background-image","url(#{facesContext.externalContext.requestContextPath}/images/book-slot-selected.png)");
+                       $(".day").css("color","#FFFFFF");
+                       document.getElementById("selectedDays").value = selectedDay;
+                       if(selectedDay.length != 0){
+                        $(".star").css("display","inline");
+                    }else{
+                        $(".star").css("display","none");
+                    }
+                   }
+
+                   function validateField(){
+                       if(selectedDay.length == 0){
+                            document.getElementById("trainers").options[0].selected = true;
+                            document.getElementById("strength").value = 1;
+                       }
+                   }                 
+                </script>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>
+

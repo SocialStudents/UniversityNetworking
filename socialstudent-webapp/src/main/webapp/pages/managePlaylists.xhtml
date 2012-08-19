@@ -1,0 +1,232 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:body>       
+        <ui:composition template="./layout/homeLayout.xhtml">
+            <ui:define name="content">
+                <script src="#{facesContext.externalContext.requestContextPath}/scripts/jquery/jquery.hint.js" type="text/javascript"></script>
+                <f:event listener="#{videoServiceBean.retrievePlaylists()}" type="preRenderComponent"/>
+                <h:form prependId="false">
+                    <div id="left" style="margin-top:80PX;">
+                        <h6>CATEGORIES
+                        </h6><hr class="red" />
+                        <h:outputLabel id="menuPanel">
+                            <ul id="subnav" style="margin:0PX;">
+                                <a4j:commandLink immediate="true" action="videos?faces-redirect=true" onclick="loadWaitPanel('content');">
+                                    <li id="All">
+                                        ALL
+                                    </li>
+                                    <f:setPropertyActionListener target="#{systemResultSessionUtil.categorySelected}" value="ALL"/>
+                                    <f:setPropertyActionListener target="#{systemResultSessionUtil.videoCategoryName}" value="All"/>
+                                </a4j:commandLink>
+                                <a4j:commandLink immediate="true" action="videos?faces-redirect=true" onclick="loadWaitPanel('content');">
+                                    <li id="NEW">
+                                        NEW
+                                    </li>
+                                    <f:setPropertyActionListener target="#{systemResultSessionUtil.categorySelected}" value="NEW"/>
+                                    <f:setPropertyActionListener target="#{systemResultSessionUtil.videoCategoryName}" value="NEW"/>
+                                </a4j:commandLink>
+                                <ui:repeat var="videoCategories" value="#{videoServiceBean.retrieveVideoCategories()}" rendered="#{videoServiceBean.retrieveVideoCategories()!=null}">
+                                    <h:commandLink immediate="true" style="width: 100%" action="videos?faces-redirect=true" onclick="loadWaitPanel('content');">
+                                        <li id="#{videoCategories.label}">
+                                            #{videoCategories.label.toUpperCase()}
+                                        </li>
+                                        <f:setPropertyActionListener target="#{systemResultSessionUtil.categorySelected}" value="#{videoCategories.value}"/>
+                                        <f:setPropertyActionListener target="#{systemResultSessionUtil.videoCategoryName}" value="#{videoCategories.label}"/>
+                                    </h:commandLink>
+                                </ui:repeat>
+
+                                <a4j:commandLink immediate="true" action="#{videoServiceBean.navigateToQuestions()}">
+                                    <li id="QUESTIONS">
+                                        QUESTIONS
+                                        <h:outputText value="(#{videoForumServiceBean.questionCountAnswered})" rendered="#{videoForumServiceBean.questionCountAnswered ne '0' }"/>
+                                    </li>
+                                </a4j:commandLink>
+                                <a4j:commandLink immediate="true" action="#{videoServiceBean.navigateToPlaylists()}">
+                                    <li id="PLAYLISTS">
+                                        PLAYLISTS
+                                    </li>
+                                </a4j:commandLink>
+                                <a4j:commandLink immediate="true" action="videos?faces-redirect=true" onclick="loadWaitPanel('content');">
+                                    <li id="FAVOURITES">
+                                        FAVOURITES
+                                    </li>
+                                    <f:setPropertyActionListener target="#{systemResultSessionUtil.videoCategoryName}" value="FAVOURITES"/>
+                                    <f:setPropertyActionListener target="#{systemResultSessionUtil.categorySelected}" value="FAVOURITES"/>
+                                </a4j:commandLink>
+                            </ul>
+
+                        </h:outputLabel>
+                    </div>
+
+                    <div id="right">
+
+                        <h3 ><img src="#{facesContext.externalContext.requestContextPath}/images/video-icon.jpg" alt="video" width="43" height="32" />Playlists</h3>
+                        <a4j:commandLink title="New Playlist" oncomplete="#{rich:component('addPlaylist')}.show();" render="innerDataM"> 
+                            <img src="#{facesContext.externalContext.requestContextPath}/images/new-button.jpg"/>
+                        </a4j:commandLink>         
+                        <hr class="red" />
+                        <div class="content" style="margin-top:20px;min-height: 500px">
+                            <!-- message page included-->
+                            <ui:include src="./common/message.xhtml" /> 
+                            <div id="content" style="min-height: 500px">
+                                <!--                                New code-->
+                                <a4j:outputPanel id="videoPanel" style="text-align: center">      
+
+
+                                    <rich:dataTable rowKeyVar="rowId" styleClass="meal-plan" style="width: 100%;" rowClass="#{rowId%2 == 0 ? 'alt-row1':'alt-row'}" 
+                                                    id="videoDataList" value="#{systemResultViewUtil.playlistDataBeanList}" 
+                                                    rendered="#{systemResultViewUtil.playlistDataBeanList!=null and not empty systemResultViewUtil.playlistDataBeanList}" var="playlist">
+                                        <rich:column style="width:550px;">
+                                            <h:inputText maxlength="50"  id="name" onkeyup="fillValue('#{playlist.id}', this.value);" value="#{playlist.name}" class="large" style="border: 1px solid #ccc; height: 30px;width: 100%">
+                                                <a4j:ajax event="blur"  execute="nameHidden,idHidden" listener="#{videoServiceBean.updatePlaylist()}"/>
+                                            </h:inputText>
+                                        </rich:column>
+                                        <rich:column>
+                                            <a4j:commandLink action="#{videoServiceBean.playPlaylist()}"  title="Play Playlist" style="margin-left: 15%" onclick="loadWaitPanel('content');" oncomplete="showPopUp();stopWaitPanel('content');" render="playVideo,dataMessage"  execute="@this">
+                                                <img src="#{facesContext.externalContext.requestContextPath}/images/play.png"/>
+
+                                                <f:setPropertyActionListener target="#{systemResultViewUtil.id}" value="#{playlist.id}"/>
+                                            </a4j:commandLink>
+                                            <a4j:commandLink immediate="true" action="playlist?faces-redirect=true"  title="Playlist Detail" style="margin-left: 5%" >
+                                                <img src="#{facesContext.externalContext.requestContextPath}/images/details.png"/>
+                                                <f:setPropertyActionListener target="#{systemResultSessionUtil.id}" value="#{playlist.id}"/>
+                                                <f:setPropertyActionListener target="#{systemResultSessionUtil.name}" value="#{playlist.name}"/>
+                                            </a4j:commandLink>
+                                            <a4j:commandLink execute="@this" action="#{videoServiceBean.deletePlaylist()}" render="videoPanel,dataMessage" title="Delete Playlist" style="margin-left: 5%" >
+                                                <img src="#{facesContext.externalContext.requestContextPath}/images/discard-red.png"/>
+                                                <f:setPropertyActionListener target="#{systemResultViewUtil.id}" value="#{playlist.id}"/>
+                                            </a4j:commandLink>
+                                        </rich:column>
+                                    </rich:dataTable>
+                                    <h:inputHidden id="idHidden" value="#{playlistDataBean.id}"/>
+                                    <h:inputHidden id="nameHidden" value="#{playlistDataBean.name}"/>
+                                </a4j:outputPanel>
+                            </div><!--content ends here -->
+                        </div> 
+                    </div>
+                </h:form>
+
+                <rich:popupPanel id="playVideo" onbeforeshow="showPlayer();" minHeight="490" minWidth="820">
+                    <div class="login-header">
+                        <h:outputText id="playlistheader" value="#{systemResultViewUtil.fileName}" style="color: white"/>
+                        <a4j:commandLink onclick="#{rich:component('playVideo')}.hide();" style="float: right" render="videoPanel,dataMessage">
+                            <img src="#{facesContext.externalContext.requestContextPath}/images/close-btn.jpg" alt="close" title="Close" align="texttop"/>
+                        </a4j:commandLink>
+                    </div>
+                    <div id="video"/>
+                    <script src="#{facesContext.externalContext.requestContextPath}/scripts/jquery/jwplayer.js" type="text/javascript"></script>
+                    <script type="text/javascript">
+                        var plalistarr=new Array();
+                        function showPlayer(){
+                            initPlaylist();
+                            jwplayer("video").setup({
+                                height: 446,
+                                width: 814,
+                                'playlist.position': "right",
+                                'playlist.size': 200,
+                                'playlist' : plalistarr,
+                                'frontcolor': '444444',
+                                'lightcolor': '333333',
+                                'backcolor': 'ededed',
+                                //                                'skin': '#{facesContext.externalContext.requestContextPath}/videos/flashskinsBlue16demo.swf',
+                                'controlbar': 'bottom',
+                                'modes': [
+                                    {type: 'html5'},
+                                    {type: 'flash', src: '#{facesContext.externalContext.requestContextPath}/videos/player.swf'},
+                                    {type: 'download'}
+                                ], 
+                                repeat : 'list',
+                                'events':
+                                    {
+                                    'onPlaylistItem':      function(event) {
+                                        document.getElementById('playlistheader').innerHTML=jwplayer().getPlaylistItem(event.index).description;
+                                    }
+                                }
+                            });
+                            
+                        }
+                        function initPlaylist(){
+                            var i=0;
+                                <ui:repeat value="#{systemResultViewUtil.videoDataBeanList}" var="video">
+                                var newItem = {
+                                file: '#{facesContext.externalContext.requestContextPath}/videos/#{video.path}',
+                                image: '#{facesContext.externalContext.requestContextPath}/videos/#{video.imageName}',
+                                title: i+1,
+                                description : '#{video.title}',
+                            };
+                            plalistarr[i]=newItem;
+                            i=i+1;
+                                </ui:repeat>
+                            }
+                   
+                        //                        $('input[title!=""]').hint();
+                        function fillValue(id, name)
+                        {
+                            document.getElementById('idHidden').value = id;
+                            document.getElementById('nameHidden').value = name;
+                        }
+                        function showPopUp(){
+                            if('#{systemResultViewUtil.videoDataBeanList.size()}' > 0){
+                        #{rich:component('playVideo')}.show();
+                                        }
+                                    }
+                        
+                    </script>
+
+                </rich:popupPanel>
+
+                <!--                Add new Playlist panel-->
+                <rich:popupPanel id="addPlaylist" autosized="true" minWidth="580">
+                    <h:form prependId="false">
+                        <a4j:outputPanel id="manageinq">
+
+                            <h6>Create Playlist
+                                <h:outputLink value="managePlaylists" style="float: right">
+                                    <img src="#{facesContext.externalContext.requestContextPath}/images/close-btn.jpg" alt="close" title="Close" align="texttop"/>
+                                </h:outputLink></h6><hr class="red"/>
+                            <a4j:outputPanel id="innerDataM">
+                                <h:outputLabel rendered="#{not messageDataBean.isSuccess and messageDataBean.message != null}">
+                                    <div class="ui-widget">
+                                        <div class="ui-state-error ui-corner-all" style="padding:0px 5px; margin-bottom:10px; font-weight:bold; line-height:16px; "> 
+                                            <p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span> 
+                                                #{messageDataBean.message}</p><div class="clearing"></div>
+                                        </div>                
+                                    </div>
+                                </h:outputLabel>
+                            </a4j:outputPanel>
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" >
+                                <tr>
+                                    <td width="30%"></td>
+                                </tr> 
+                                <tr >
+                                    <th>Playlist Name<sup><font color="red">*</font></sup></th>
+                                    <td colspan="2">
+                                        <h:inputText id="iName" value="#{playlistDataBean.name}"  styleClass="medium" maxlength="50">
+                                            <f:ajax event="blur" render="iNameMessage"/>
+                                        </h:inputText>
+                                        <rich:message id="iNameMessage" for="iName"/>
+                                    </td>
+                                </tr>
+                            </table>
+                            <br/><br/>
+                            <hr class="red"/>
+                            <div align="center" style="width: 100%;">
+                                <a4j:commandButton value="Submit" action="#{videoServiceBean.createPlaylist()}" styleClass="standard-button" render="videoPanel, dataMessage, innerDataM" oncomplete="if(#{messageDataBean.isSuccess != null and messageDataBean.isSuccess}) {#{rich:component('addPlaylist')}.hide();};" />
+                            </div>
+                        </a4j:outputPanel>
+                    </h:form>
+
+                </rich:popupPanel>
+                <script type="text/javascript">
+                    document.getElementById("PLAYLISTS").setAttribute("class", "active");
+                </script>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

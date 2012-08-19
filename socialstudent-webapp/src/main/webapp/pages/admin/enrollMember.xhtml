@@ -1,0 +1,887 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+
+    <body>
+
+        <ui:composition template="./../layout/adminLayout.xhtml">
+
+            <ui:define name="content">
+                <script type="text/javascript">
+                    if(document.getElementById("enrollMember") != null) {
+                        document.getElementById("enrollMember").setAttribute("class", "active");
+                    } else {
+                        location.href ="#{loginDataBean.lendingPage}";
+                    } 
+                    $(function() {
+                        $( "#enrollmember" ).tabs();
+                    });
+        
+                    var data = [];
+                    var globalUid = null;
+                                       
+                    $(document).ready(function() {
+                                   
+                
+                        function split( val ) {
+                            return val.split( /,\s*/ );
+                        }
+                        function extractLast( term ) {
+                            return split( term ).pop();
+                        }   
+                        function onSubmitId(){
+                            document.getElementById("uid").value=globalUid;
+                        }
+                        $("#list").autocomplete({
+                            source: data,
+                            select: function( event, ui ) {
+                                document.getElementById("list").value=ui.item.label;
+                                document.getElementById("uid").value=ui.item.value;
+                                globalUid = ui.item.value;
+                                document.getElementById("go").click();      
+                                return false;
+                            },focus: function (event, ui) {
+                                   this.value = ui.item.label;
+                                   event.preventDefault(); // Prevent the default focus behavior.
+                                }
+                        });
+                   
+                                    
+                    });
+                    
+                  
+                    
+                    
+                </script>
+
+
+                <style>
+                    .rf-fu-lst {
+                        height: 60px;
+                    }
+                    .rf-fu-itm {
+                        border: 0;
+                    }
+
+                </style>
+
+                <f:metadata>
+                    <f:event type="preRenderView" listener="#{userServiceBean.initEnrollMember()}"/>
+                </f:metadata>
+
+                <h:form prependId="false">
+                    <h3>Enroll PBers</h3>
+                    <div align="right" style="margin-top: -23px"> <h:outputText value="(Fields marked with * are mandatory)" styleClass="infomessages"/></div>                 
+                    <hr class="red" /> 
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0" class="form-table">
+                        <tr>
+                            <th width="20%">&#160;</th>
+                            <td width="30%">&#160;</td>
+                            <th width="20%">Search Prospect</th>
+                            <td width="30%"><div id="search-box-bg"><h:inputText id="list" styleClass="search-txt-box"/></div></td>
+                        </tr>
+                    </table>                   
+                    <h:inputHidden id="uid" value="#{systemResultViewUtil.id}"/>
+                    <a4j:commandButton id="go" value="Go" action="#{userServiceBean.retrieveRegisteredUserInfo()}" style="display: none" 
+                                       render="basicPanel,measPanel,healthPanel,subsPanel" execute="uid" oncomplete="getDatePickerForDOB();textboxHint('basic');"/>                    
+                    <div id="enrollmember">
+                        <ui:include src="../common/message.xhtml" />  
+                        <ul>
+                            <li><a href="#basic">General</a></li>
+                            <li><a href="#measurement">Measurement</a></li>
+                            <li><a href="#health">Medical Information</a></li>
+                            <li><a href="#account">Account</a></li>
+                        </ul>
+
+                        <div id="basic">
+                            <a4j:outputPanel id="basicPanel">
+                                <table width="100%" border="0" cellpadding="0" cellspacing="0" class="form-table">
+                                    <tr>
+                                        <th width="22%">&#160;</th>
+                                        <td width="30%"><h6>Personal Info</h6><hr class="red"/></td>
+                                        <th width="18%">&#160;</th>
+                                        <td width="30%"><h6>Contact Info</h6><hr class="red"/></td>
+                                    </tr>
+                                </table>
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" align="center">
+                                    <tr>
+                                        <th width="22%">Username<sup><font color="red">*</font></sup></th>
+                                        <td width="30%">
+                                            <a4j:region>
+                                                <h:inputText tabindex="1" style="width: 100%;" styleClass="medium"  value="#{userDataBean.userId}" id="UserId" 
+                                                             required="true" requiredMessage="Enter username" maxlength="30"
+                                                             onkeyup="convertToLowerCase(this.id,event);" onchange="convertToLowerCase(this.id,event);"
+                                                             rendered="#{systemResultViewUtil.id == null}">
+                                                    <f:ajax event="blur" render="useridMsg check" listener="#{userServiceBean.isUserExist()}" />
+                                                </h:inputText>
+                                            </a4j:region>
+                                            <h:outputLabel rendered="#{systemResultViewUtil.id != null}">
+                                                #{userDataBean.custom1 != null and userDataBean.custom1 == 1 ? 'N/A' : userDataBean.userId}
+                                            </h:outputLabel>
+                                            <h:outputLabel id="check" style="color: #{userServiceBean.isUserExistFlag ? 'green' : 'red'};display: #{userServiceBean.isUserAvailable != null and not empty userServiceBean ? 'inline' : 'none'};">
+                                                #{userServiceBean.isUserAvailable}
+                                            </h:outputLabel>
+                                            <rich:message for="UserId" id="useridMsg" style="color: red" />
+                                        </td>
+                                        <th width="18%" >Email address<sup><font color="red">*</font></sup></th>
+                                        <td width="30%" >
+                                            <h:inputText tabindex="11" style="width: 100%;" styleClass="medium" value="#{userDataBean.email}" id="email" required="true" requiredMessage="Enter email address">
+                                                <f:ajax event="blur" render="emailMsg" />
+                                            </h:inputText>
+                                            <rich:message for="email" id="emailMsg" style="color: red" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>First name<sup><font color="red">*</font></sup></th>
+                                        <td >
+                                            <h:inputText tabindex="2" style="width: 100%;" styleClass="medium" value="#{userDataBean.firstName}" id="firstName" maxlength="30" required="true" requiredMessage="Enter first name">
+                                                <f:ajax event="blur" render="firstnameMsg" />
+                                            </h:inputText>
+                                            <br/>
+                                            <rich:message for="firstName" id="firstnameMsg" style="color: red" />
+                                        </td>
+                                        <th valign="top">Cell phone</th>
+                                        <td valign="top">
+                                            <h:inputText tabindex="12" style="width: 100%;" styleClass="medium" value="#{userDataBean.phoneNo}" maxlength="12" id="phone" onkeyup="formatContact(event, 'phone');" onkeypress="var keycode; if (window.event) { keycode = window.event.keyCode;}else {return true;} if (keycode == 13) {return false;}else {return true;}">
+                                                <f:ajax event="blur" render="phoneMsg" />
+                                            </h:inputText>
+                                            <br/>
+                                            <rich:message for="phone" id="phoneMsg" style="color: red" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Last name<sup><font color="red">*</font></sup></th>
+                                        <td >
+                                            <h:inputText tabindex="3" style="width: 100%;" styleClass="medium" value="#{userDataBean.lastName}" id="lastName" maxlength="30" required="true" requiredMessage="Enter last name">
+                                                <f:ajax event="blur" render="lastnameMsg" />
+                                            </h:inputText>
+                                            <br/>
+                                            <rich:message for="lastName" id="lastnameMsg" style="color: red" />
+                                        </td>
+                                        <th valign="top">Home phone</th>
+                                        <td valign="top">
+                                            <h:inputText tabindex="13" style="width: 100%;" styleClass="medium" value="#{userDataBean.alternatePhoneNo}" maxlength="12" id="hphone" onkeyup="formatContact(event, 'hphone');" onkeypress="var keycode; if (window.event) { keycode = window.event.keyCode;}else {return true;} if (keycode == 13) {return false;}else {return true;}">
+                                                <f:ajax event="blur" render="hphoneMsg" />
+                                            </h:inputText>                                  
+                                            <br/>
+                                            <h:message for="hphone" style="color: red" id="hphoneMsg" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th valign="top">Gender</th>
+                                        <td  valign="top">
+                                            <h:selectOneMenu tabindex="4" id="gender" style="width: 100%;" value="#{userDataBean.gender}" required="true" requiredMessage="Select gender">
+                                                <f:selectItem itemLabel="Male" itemValue="M" />
+                                                <f:selectItem itemLabel="Female" itemValue="F" />                                                
+                                            </h:selectOneMenu>                                        
+                                            <br/>
+                                            <rich:message for="gender" style="color: red" />
+                                        </td>
+                                        <th>
+                                            Address<sup><font color="red">*</font></sup>
+                                        </th>
+                                        <td >
+                                            <h:inputText tabindex="14" style="width: 100%;" maxlength="100" styleClass="medium" value="#{userDataBean.address}" id="address1" required="true" requiredMessage="Enter street 1" title="Street 1">
+                                                <f:ajax event="blur" render="street1Msg" />
+                                            </h:inputText>
+                                            <br/>
+                                            <rich:message for="address1" id="street1Msg" style="color: red" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>DOB<sup><font color="red">*</font></sup></th>
+                                        <td >
+                                            <h:inputText tabindex="5" value="#{userDataBean.dob}" id="dateofbirth" style="width: 100%;" styleClass="medium" required="true" requiredMessage="Enter birth date">
+                                                <f:convertDateTime type="date" dateStyle="MM/dd/yyyy" pattern="MM/dd/yyyy"  timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                                <!--                                                <f:ajax event="blur" render="dobMsg" />
+                                                                                                <f:ajax event="change" render="dobMsg" />-->
+                                            </h:inputText>
+                                            <br/>
+                                            <rich:message for="dateofbirth" id="dobMsg" style="color: red" />
+                                        </td>
+                                        <th></th>
+                                        <td valign="top">
+                                            <h:inputText tabindex="15" style="width: 100%;" styleClass="medium" maxlength="100" id="address2" value="#{userDataBean.address2}" title="Street 2" >
+                                            </h:inputText>
+                                            <br/>
+                                            <rich:message for="address2" style="color: red" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th valign="top">Occupation</th>
+                                        <td  valign="top">
+                                            <h:inputText tabindex="6" style="width: 100%;" styleClass="medium" id="work" maxlength="50" value="#{memberBasicDetailDataBean.designation}">
+                                                <f:ajax event="blur" render="desigMsg" />
+                                            </h:inputText>
+                                            <br/>
+                                            <rich:message for="work" id="desigMsg" style="color: red" />
+                                        </td>
+                                        <th>
+                                        </th>
+                                        <td >
+                                            <h:inputText tabindex="16" style="width: 100%;" styleClass="medium" id="city" value="#{userDataBean.city}" required="true" requiredMessage="Enter city" title="City">
+                                                <f:ajax event="blur" render="cityMsg" />
+                                            </h:inputText>
+                                            <br/>
+                                            <rich:message for="city" style="color: red" id="cityMsg" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Dietary preference</th>
+                                        <td >
+                                            <h:selectOneMenu tabindex="7" style="width: 100%;" id="dietFood" value="#{memberBasicDetailDataBean.eatingPreference}">
+                                                <f:selectItem itemLabel="-- Select --" />
+                                                <f:selectItems value="#{userServiceBean.dietFoodList}"/>
+                                            </h:selectOneMenu>
+                                        </td>
+                                        <th>
+                                        </th>
+                                        <td >
+                                            <h:selectOneMenu tabindex="17" id="state" style="width: 47%" value="#{userDataBean.state}" required="true" requiredMessage="Select state ">
+                                                <f:selectItems value="#{userServiceBean.stateList}" />
+                                            </h:selectOneMenu>&#160;
+                                            <h:inputText tabindex="18" style="width: 47%; float: right" styleClass="small" id="zip" maxlength="10" value="#{userDataBean.zipCode}" required="true" requiredMessage="Enter zip code" title="Zip Code"
+                                                         onkeyup="formatZipCode(event, 'zip');" >
+                                                <f:ajax event="blur" render="zipMsg" />
+                                            </h:inputText>
+                                            <br/>                            
+                                            <rich:message for="state" style="color: red" />                                    
+                                            <rich:message for="zip" id="zipMsg" style="color: red;" />
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <th>Goal</th>    
+                                        <td>
+                                            <h:selectOneMenu tabindex="8" style="width: 100%;" value="#{memberBasicDetailDataBean.goal}">
+                                                <f:selectItems value="#{userServiceBean.contactUsGoals}" />
+                                            </h:selectOneMenu>
+                                        </td>
+                                        <th>
+                                            Facebook page
+                                        </th>
+                                        <td >
+                                            <h:inputText tabindex="19" style="width: 100%;" maxlength="50" styleClass="medium" id="facebookpage" value="#{userDataBean.facebookPage}">
+                                            </h:inputText>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Assigned PB Specialist</th>    
+                                        <td>
+                                            <h:selectOneMenu tabindex="9" style="width: 100%;" id="assignedPB" value="#{memberBasicDetailDataBean.assignedPBSpecialist}">
+                                                <f:selectItem itemLabel="-- Select --" />
+                                                <f:selectItems value="#{userServiceBean.specialistList}" />
+                                                <f:ajax event="blur" render="asspbMsg" />
+                                            </h:selectOneMenu>
+                                            <rich:message for="assignedPB" id="asspbMsg" style="color: red" />
+                                        </td>
+                                        <th>Heard About us</th>
+                                        <td>
+                                        <h:inputHidden value="#{memberBasicDetailDataBean.source}" id="cntSrc" />
+                                            <h:selectOneMenu tabindex="20" style="width: 100%;" value="#{systemResultViewUtil.city}" id="contactSrc">
+                                                <f:selectItems value="#{userServiceBean.contactUsSource}" />
+                                                <a4j:ajax event="change" render="srcTxt" oncomplete="document.getElementById('cntSrc').value = document.getElementById('contactSrc').value;"/>
+                                            </h:selectOneMenu>
+                                        </td>
+                                    </tr>
+                                <tr id="srcTxtTr">
+                                    <th></th>
+                                    <td></td>
+                                    <th></th>
+                                    <td>
+                                        <h:outputLabel id="srcTxt">
+                                            <h:inputText styleClass="small" style="width: 100%;" maxlength="50" value="#{memberBasicDetailDataBean.otherSource}" rendered="#{systemResultViewUtil.city == 'FR' or systemResultViewUtil.city == 'NE' or systemResultViewUtil.city == 'PP'}" />
+                                        </h:outputLabel>
+                                    </td>
+                                </tr>
+                                    <tr>
+                                        <th colspan="4"></th>
+                                    </tr>
+                                    <tr>
+                                        <th style="vertical-align: top;">
+                                            Image
+                                        </th>    
+                                        <td colspan="3">
+                                            <a4j:commandButton tabindex="10" id="stopBtn" styleClass="stopBtn" value="Stop" immediate="true"
+                                                               render="picComp" oncomplete="document.getElementById('stopBtn').style.display='none'" />
+
+                                            <script type="text/javascript">
+                                            document.getElementById('stopBtn').style.display='none';                                                
+                                            </script>
+                                            <rich:fileUpload
+                                                addLabel="Add Picture"
+                                                style="height: 80px; width: 300px"
+                                                fileUploadListener="#{fileUploadListener.imageUploadListener}"
+                                                acceptedTypes="jpg,jpeg,bmp,png,gif"
+                                                id="picComp"
+                                                onfilesubmit="document.getElementById('stopBtn').style.display=''"
+                                                onuploadcomplete="document.getElementById('stopBtn').style.display='none'"
+                                                >
+                                            </rich:fileUpload>
+                                            <div style="font-size:11px; width: 300px" align="right">
+                                                Maximum Upload File-Size is
+                                                <h:outputText style="font-size: 11px; text-align:right " value="#{initParam['org.richfaces.fileUpload.maxRequestSize']/(1024*1024)}">
+                                                    <f:convertNumber  maxFractionDigits="0" />
+                                                </h:outputText> MB
+                                                <br/>
+                                                Allowed types are JPG, PNG, GIF, BMP and JPEG only
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                </table>
+
+                            </a4j:outputPanel>
+                        </div>
+
+                        <div id="measurement">
+                            <a4j:outputPanel id="measPanel">
+                                <table width="50%" border="0" cellpadding="0" cellspacing="0" class="form-table">
+                                    <tr>
+                                        <td>
+                                            <span style="color: red" id="meaMsg">
+                                                Enter all values
+                                            </span>
+                                            <h:inputHidden value="#{userServiceBean.countOfData}" id="addMea" />
+                                            <script type="text/javascript">
+                                                document.getElementById('meaMsg').style.display = 'none';                                                
+                                            </script>
+                                        </td>
+                                    </tr>
+                                </table>
+
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" align="center">
+                                    <tr>
+                                        <th>
+                                            Weight in lbs
+                                        </th>
+                                        <td>
+                                            <h:inputText tabindex="1" style="width: 100%;" styleClass="medium" id="weight" value="#{memberMeasurementDetailDataBean.weight}" converter="#{javax.faces.converter.DoubleConverter.DOUBLE}" converterMessage="Invalid weight" maxlength="6">
+                                                <f:ajax event="blur" render="weightMsg" />
+                                            </h:inputText>
+                                            <br/>
+                                            <rich:message for="weight" id="weightMsg" style="color: red" />                                        
+                                        </td>
+                                        <th>
+                                            Total BF%
+                                        </th>
+                                        <td>
+                                            <h:inputText tabindex="2" style="width: 100%;" styleClass="medium" id="bf" value="#{memberMeasurementDetailDataBean.totalBf}" converter="#{javax.faces.converter.DoubleConverter.DOUBLE}" converterMessage="Invalid BF%" maxlength="5">
+                                                <f:ajax event="blur" render="bfMsg" />
+                                            </h:inputText>
+                                            <br/>
+                                            <rich:message for="bf" id="bfMsg" style="color: red" /> 
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th width="20%" class="header">&#160;</th>
+                                        <th width="30%" class="header">Tape (inches)</th>
+                                        <th width="20%" class="header">&#160;</th>
+                                        <th width="30%" class="header">Calipers (mm)</th>
+                                    </tr>
+                                    <tr>
+                                        <th width="20%">Arm</th>
+                                        <td width="30%">
+                                            <h:inputText tabindex="3" style="width: 100%;" styleClass="medium" id="arm" value="#{memberMeasurementDetailDataBean.tapeArm}" converter="#{javax.faces.converter.DoubleConverter.DOUBLE}" converterMessage="Invalid arm measuremnts" maxlength="5">
+                                                <f:ajax event="blur" render="armMsg" />
+                                            </h:inputText>
+                                            <br/>
+                                            <rich:message for="arm" id="armMsg" style="color: red" />
+                                        </td>
+                                        <th width="20%">Biceps</th>
+                                        <td width="30%">
+                                            <h:inputText tabindex="8" style="width: 100%;" styleClass="medium" id="biceps" value="#{memberMeasurementDetailDataBean.callipersBiceps}" converter="#{javax.faces.converter.DoubleConverter.DOUBLE}" converterMessage="Invalid biceps measurements" maxlength="6"
+                                                         onblur="calculateTotal()">
+                                                <f:ajax event="blur" render="bicepsMsg" />
+                                            </h:inputText>
+                                            <br/>
+                                            <rich:message for="biceps" id="bicepsMsg" style="color: red" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th width="20%">Waist</th>
+                                        <td width="30%">
+                                            <h:inputText tabindex="4" style="width: 100%;" styleClass="medium" id="waist" value="#{memberMeasurementDetailDataBean.tapeWaist}" converter="#{javax.faces.converter.DoubleConverter.DOUBLE}" converterMessage="Invalid waist measurements" maxlength="5">
+                                                <f:ajax event="blur" render="waistMsg" />
+                                            </h:inputText>
+                                            <br/>
+                                            <rich:message for="waist" id="waistMsg" style="color: red" />
+                                        </td>
+                                        <th width="20%">Triceps</th>
+                                        <td width="30%">
+                                            <h:inputText tabindex="9" style="width: 100%;" styleClass="medium" id="triceps" value="#{memberMeasurementDetailDataBean.callipersTriceps}" converter="#{javax.faces.converter.DoubleConverter.DOUBLE}" converterMessage="Invalid triceps measurements" maxlength="6"
+                                                         onblur="calculateTotal()">
+                                                <f:ajax event="blur" render="tricepsMsg" />
+                                            </h:inputText>
+                                            <br/>
+                                            <rich:message for="triceps" id="tricepsMsg" style="color: red" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th width="20%">Hip</th>
+                                        <td width="30%">
+                                            <h:inputText tabindex="5" style="width: 100%;" styleClass="medium" id="hip" value="#{memberMeasurementDetailDataBean.tapeHip}" converter="#{javax.faces.converter.DoubleConverter.DOUBLE}" converterMessage="Invalid hip measurements" maxlength="5">
+                                                <f:ajax event="blur" render="hipMsg" />
+                                            </h:inputText>
+                                            <br/>
+                                            <rich:message for="hip" id="hipMsg" style="color: red" />
+                                        </td>
+                                        <th width="20%">Hip</th>
+                                        <td width="30%">
+                                            <h:inputText tabindex="10" style="width: 100%;" styleClass="medium" id="hip1" value="#{memberMeasurementDetailDataBean.callipersHip}" converter="#{javax.faces.converter.DoubleConverter.DOUBLE}" converterMessage="Invalid hip caliper measurements" maxlength="6"
+                                                         onblur="calculateTotal()">
+                                                <f:ajax event="blur" render="hip1Msg" />
+                                            </h:inputText>
+                                            <br/>
+                                            <rich:message for="hip1" id="hip1Msg" style="color: red" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th width="20%">Thigh</th>
+                                        <td width="30%">
+                                            <h:inputText tabindex="6" style="width: 100%;" styleClass="medium" id="thigh" value="#{memberMeasurementDetailDataBean.tapeThigh}" converter="#{javax.faces.converter.DoubleConverter.DOUBLE}" converterMessage="Invalid thigh measurements" maxlength="5">
+                                                <f:ajax event="blur" render="thighMsg" />
+                                            </h:inputText>
+                                            <br/>
+                                            <rich:message for="thigh" id="thighMsg" style="color: red" />
+                                        </td>
+                                        <th width="20%">Back</th>
+                                        <td width="30%">
+                                            <h:inputText tabindex="11" style="width: 100%;" styleClass="medium" id="back"
+                                                         value="#{memberMeasurementDetailDataBean.callipersBack}" converter="#{javax.faces.converter.DoubleConverter.DOUBLE}" converterMessage="Invalid back measurements" maxlength="6"
+                                                         onblur="calculateTotal()">
+                                                <f:ajax event="blur" render="backMsg" />
+                                            </h:inputText>
+                                            <br/>
+                                            <rich:message for="back" id="backMsg" style="color: red" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th width="20%">Calf</th>
+                                        <td width="30%">
+                                            <h:inputText tabindex="7" style="width: 100%;" styleClass="medium" id="calf" value="#{memberMeasurementDetailDataBean.tapeCalf}" converter="#{javax.faces.converter.DoubleConverter.DOUBLE}" converterMessage="Invalid calf measurements" maxlength="5">
+                                                <f:ajax event="blur" render="calfMsg" />
+                                            </h:inputText>
+                                            <br/>
+                                            <rich:message for="calf" id="calfMsg" style="color: red" />
+                                        </td>
+                                        <th width="20%">Total</th>
+                                        <td width="30%">
+                                            <h:outputLabel id="total">
+                                                #{memberMeasurementDetailDataBean.total}                                                
+                                            </h:outputLabel>
+                                        </td>
+                                    </tr>
+                                    <!--tr>
+                                        <td colspan="4" align="left">
+                                            <br/>
+                                            <h:outputLabel value="Next Measurement scheduled for " styleClass="medium" />
+    
+                                            <h:outputText value="{memberMeasurementDetailDataBean.nextMeasurementDate}" styleClass="medium">
+                                                <f:convertDateTime pattern="dd MMM yyyy" type="date" />
+                                            </h:outputText>                                    
+                                        </td>
+                                    </tr-->
+                                </table>
+                            </a4j:outputPanel>
+                        </div>
+
+                        <div id="health">
+                            <a4j:outputPanel id="healthPanel">
+                                <div id="healthmsg" style="color: red"></div>
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" align="center">
+                                    <thead>
+                                        <th width="28%" class="header">Medical Condition</th>
+                                        <th width="22%" class="header">Intensity</th>
+                                        <th width="22%" class="header">Status</th>
+                                        <th width="22%" class="header">Last updated on</th>
+                                        <th class="header"></th>
+                                    </thead>
+                                    <tr>
+                                        <td >
+                                            <h:selectOneMenu style="width: 100%" id="injurymenu" onchange="document.getElementById('injury').value = this.value;">
+                                                <f:selectItem itemLabel="-- Select affected area --" />
+                                                <f:selectItems value="#{userServiceBean.injuryList}" />
+                                            </h:selectOneMenu>
+                                            <h:inputHidden id="injury" value="#{memberHealthDetailDataBean.injuryName}" required="true" requiredMessage="Select medical condition" />
+                                            <rich:message for="injury" />
+                                            <div id="injurymsg" style="color: red"></div>
+                                        </td>
+                                        <td >
+                                            <h:selectOneMenu style="width: 100%" id="intensitymenu" onchange="document.getElementById('intensity').value = this.value;">
+                                                <f:selectItem itemLabel="-- Select --" />
+                                                <f:selectItems value="#{userServiceBean.injuryIntensityList}" />
+                                            </h:selectOneMenu>   
+                                            <h:inputHidden id="intensity" value="#{memberHealthDetailDataBean.intensity}" required="true" requiredMessage="Select intensity" />
+                                            <rich:message for="intensity" />
+                                            <div id="intensitymsg" style="color: red"></div>
+                                        </td>
+                                        <td >
+                                            <h:selectOneMenu style="width: 100%" id="statusmenu" onchange="document.getElementById('status').value = this.value;">
+                                                <f:selectItem itemLabel="-- Select --" />
+                                                <f:selectItems value="#{userServiceBean.injuryStatusList}" />
+                                            </h:selectOneMenu>                                        
+                                            <h:inputHidden id="status" value="#{memberHealthDetailDataBean.status}" required="true" requiredMessage="Select status" />
+                                            <rich:message for="status" />
+                                            <div id="statusmsg" style="color: red"></div>
+                                        </td>
+                                        <td>
+
+                                        </td>
+                                        <td >
+                                            <a4j:commandLink execute="injury,intensity,status" action="#{userServiceBean.addInjuryToHealthBeanList()}" render="healthPanel,dataMessage" oncomplete="resetInjuryValue();">
+                                                <img src="#{facesContext.externalContext.requestContextPath}/images/add-more-btn.jpg" alt="Add" />
+                                            </a4j:commandLink>
+                                        </td>
+                                    </tr>
+                                </table>       
+                                <rich:dataTable id="healthDetailDataList" value="#{systemResultViewUtil.healthDetailList}" var="healthData" style="border: none; width: 100%" rowKeyVar="rowId">
+                                    <rich:column>
+                                        <table class="form-table" cellpadding="0" cellspacing="0" border="0" width="100%">
+                                            <tr>
+                                                <td width="28%">
+                                                    #{healthData.injuryName}
+                                                </td>
+                                                <td width="22%">
+                                                    <h:selectOneMenu style="width: 100%" id="intensity1" value="#{healthData.intensity}">
+                                                        <f:selectItems value="#{userServiceBean.injuryIntensityList}" />
+                                                    </h:selectOneMenu> 
+                                                </td>
+                                                <td width="22%">
+                                                    <h:selectOneMenu style="width: 100%" value="#{healthData.status}">
+                                                        <f:selectItems value="#{userServiceBean.injuryStatusList}" />
+                                                    </h:selectOneMenu> 
+                                                </td>
+                                                <td width="22%">
+                                                    <h:outputText style="width: 100%" value="#{healthData.lastModifiedDate}">
+                                                        <f:convertDateTime type="date" pattern="MM/dd/yyyy" />
+                                                    </h:outputText>
+
+                                                </td>
+                                                <td>
+                                                    <a4j:commandLink value="remove" execute="healthDetailDataList" action="#{userServiceBean.removeInjuryFromHealthBeanList()}" render="healthDetailDataList">
+                                                        <f:setPropertyActionListener target="#{userServiceBean.injury}" value="#{healthData.injury}" />
+                                                    </a4j:commandLink>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </rich:column>
+                                </rich:dataTable>
+                            </a4j:outputPanel>
+                        </div>
+
+                        <div id="account">
+                            <a4j:outputPanel id="subsPanel">
+                                <h6>Subscription Info</h6>  
+                                <hr class="red"/>
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" align="center">
+                                    <tr>
+                                        <th width="20%" >Package<sup><font color="red">*</font></sup></th>
+                                        <td width="30%" >
+                                            <h:selectOneMenu style="width: 100%;" id="program" value="#{memberSubscriptionDetailDataBean.program}" required="true" requiredMessage="Select package" onchange="setProgramId(this.value);">
+                                                <f:selectItem itemLabel="-- Select --" />
+                                                <f:selectItems value="#{userServiceBean.programList}" />
+                                                <a4j:ajax event="change" execute="receivedby" listener="#{userServiceBean.renderProgramFees}" render="accpanel,progFees" />
+                                            </h:selectOneMenu>
+                                            <br/>
+                                            <rich:message for="program" style="color: red" />
+                                        </td>
+                                        <th width="20%" >Was referred by</th>
+                                        <td width="30%" >
+                                            <h:selectOneMenu style="width: 100%;" value="#{memberSubscriptionDetailDataBean.referredBy}">
+                                                <f:selectItem itemLabel="-- Select --" />
+                                                <f:selectItems value="#{userServiceBean.adminList}" />
+                                            </h:selectOneMenu>                                        
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th >Payment method</th>
+                                        <td >
+                                            <h:inputHidden id="programId" value="#{memberSubscriptionDetailDataBean.program}" />
+                                            <h:selectOneMenu style="width: 100%;" id="paidby" value="#{systemResultViewUtil.paidBy}">
+                                                <f:selectItems value="#{userServiceBean.paymentModeList}" />
+                                                <a4j:ajax event="change" render="accpanel" listener="#{userServiceBean.renderProgramFees}" oncomplete="getDatePickerForCheque();" execute="programId" />
+                                            </h:selectOneMenu> 
+                                            <br/>
+                                        </td>
+
+                                        <td colspan="2">
+                                            <!--                                        <h:outputLabel id="cardtypelbl">
+                                                                                        <h:selectOneRadio>
+                                                                                            <f:selectItem itemLabel="Swipe Machine" itemValue="SM" />
+                                                                                            <f:selectItem itemLabel="Manual Entry" itemValue="ME" />
+                                                                                            <a4j:ajax event="change" render="acclabel" />
+                                                                                        </h:selectOneRadio>
+                                                                                    </h:outputLabel>-->
+                                        </td>
+                                    </tr>
+                                </table>
+                                <a4j:outputPanel id="accpanel">
+                                    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" align="center">
+
+                                        <tr>
+                                            <th width="20%" >
+                                                <h:outputLabel rendered="#{systemResultViewUtil.paidBy == 'CS'}">Amount<sup><font color="red">*</font></sup></h:outputLabel>
+                                                <h:outputLabel rendered="#{systemResultViewUtil.paidBy == 'CR'}">Transaction Id<sup><font color="red">*</font></sup></h:outputLabel>
+                                                <h:outputLabel rendered="#{systemResultViewUtil.paidBy == 'CQ'}">Check Date<sup><font color="red">*</font></sup></h:outputLabel>
+                                            </th>
+                                            <td width="30%" >
+                                                <h:inputHidden value="#{memberSubscriptionDetailDataBean.fees}" id="progFees" />
+                                                <h:inputText style="width: 100%;" rendered="#{systemResultViewUtil.paidBy == 'CS'}" styleClass="medium" id="amount" value="#{memberSubscriptionDetailDataBean.fees}" required="true" requiredMessage="Enter amount" maxlength="7" converter="#{javax.faces.converter.DoubleConverter.DOUBLE}" converterMessage="Invalid amount">
+                                                    <f:ajax event="blur" render="amountMsg" />
+                                                </h:inputText>
+                                                <h:inputText rendered="#{systemResultViewUtil.paidBy == 'CR'}" style="width: 100%;" styleClass="medium" id="transid" value="#{memberSubscriptionDetailDataBean.transactionNumber}" maxlength="15" required="true" requiredMessage="Enter transaction id">
+                                                </h:inputText>
+                                                <h:inputText rendered="#{systemResultViewUtil.paidBy == 'CQ'}" id="chequedate" style="width: 100%;" styleClass="medium" required="true" requiredMessage="Enter check date" value="#{memberSubscriptionDetailDataBean.transactionDate}">
+                                                    <f:convertDateTime type="date" dateStyle="MM/dd/yyyy" pattern="MM/dd/yyyy"  timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                                    <!--                                                    <f:ajax event="change" render="chequedateMsg" />-->
+                                                </h:inputText>
+                                                <br/>
+                                                <rich:message for="amount" id="amountMsg" style="color: red" />
+                                                <rich:message for="transid" id="transidMsg" style="color: red" />
+                                                <rich:message for="chequedate" id="chequedateMsg" style="color: red" />
+                                            </td>
+                                            <th width="20%" >
+                                                <h:outputLabel rendered="#{systemResultViewUtil.paidBy == 'CS'}">Helped by</h:outputLabel>
+                                                <h:outputLabel rendered="#{systemResultViewUtil.paidBy == 'CQ'}">Check Number<sup><font color="red">*</font></sup></h:outputLabel>
+                                            </th>
+                                            <td width="30%" >
+                                                <h:selectOneMenu style="width: 100%;" rendered="#{systemResultViewUtil.paidBy == 'CS'}" value="#{memberSubscriptionDetailDataBean.receivedBy}" id="receivedby" required="true" requiredMessage="Select helped by">
+                                                    <f:selectItems value="#{userServiceBean.adminList}" />
+                                                </h:selectOneMenu>         
+                                                <h:inputText rendered="#{systemResultViewUtil.paidBy == 'CQ'}" style="width: 100%;" value="#{memberSubscriptionDetailDataBean.chequeNumber}" styleClass="medium" id="chequenum" required="true" requiredMessage="Enter check number" maxlength="8">
+                                                    <f:ajax event="blur" render="chequenumMsg" />
+                                                </h:inputText>
+                                                <br/>
+                                                <rich:message for="receivedby" style="color: red" />
+                                                <rich:message for="chequenum" id="chequenumMsg" style="color: red" />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th >
+                                                <h:outputLabel rendered="#{systemResultViewUtil.paidBy == 'CQ'}">Check Status</h:outputLabel>                                        
+                                            </th>
+                                            <td > 
+                                                <h:selectOneMenu style="width: 100%;" rendered="#{systemResultViewUtil.paidBy == 'CQ'}" value="#{memberSubscriptionDetailDataBean.status}">
+                                                    <f:selectItems value="#{userServiceBean.chequeStatusList}" />
+                                                </h:selectOneMenu>
+                                            </td>
+                                            <th></th>
+                                            <td></td>
+                                        </tr>
+                                    </table>
+                                </a4j:outputPanel>
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table">
+                                        <tr>
+                                            <th valign="top">
+                                                Description
+                                            </th>
+                                            <td colspan="3">
+                                                <h:inputTextarea style="width: 300px" value="#{memberSubscriptionDetailDataBean.description}" id="desc" onfocus="counterForTextArea('desc','descCounter',120)" onkeyup="counterForTextArea('desc','descCounter',120)">
+                                                </h:inputTextarea>
+                                                <div style="text-align:left" ><i><h:outputText value="(You can type" style="color: grey;"/> &#160;<h:outputText id="descCounter"  value="120" style="color: grey;"/> &#160;<h:outputText value="more characters)" style="color: grey;"/></i></div>
+                                            </td>
+                                        </tr>
+                                </table>
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table">
+                                    <tr>
+                                        <th width="24%" valign="top">Upload waiver
+                                            <!--                                            <sup><font color="red">*</font></sup>-->
+                                        </th>
+                                        <td width="31%">
+                                            <a4j:commandButton id="stopDocBtn" styleClass="stopBtn" value="Stop" immediate="true"
+                                                               render="docComp" oncomplete="document.getElementById('stopDocBtn').style.display='none'" />
+                                            <script type="text/javascript">
+                                                document.getElementById('stopDocBtn').style.display='none';
+                                            </script>
+                                            <rich:fileUpload  fileUploadListener="#{fileUploadListener.pdfUploadListener}" 
+                                                              addLabel="Upload Waiver" 
+                                                              sizeExceededLabel="File size exceeded maximum upload limit"
+                                                              style="height: 80px; width: 300px"
+                                                              acceptedTypes="txt,jpg,gif,png,bmp,jpeg,doc,docx,pdf"
+                                                              ontyperejected="alert('Only JPG, PNG, GIF, BMP, JPEG, TXT, DOC, DOCX and PDF files are accepted');" 
+                                                              onuploadcomplete="document.getElementById('stopDocBtn').style.display='none';"
+                                                              id="docComp"
+                                                              onfilesubmit="document.getElementById('stopDocBtn').style.display=''"
+                                                              >
+                                            </rich:fileUpload>
+
+                                            <div style="font-size:11px" align="right">
+                                                Maximum Upload File-Size is
+                                                <h:outputText id="maxFileSize" style="font-size: 11px; text-align:right " value="#{initParam['org.richfaces.fileUpload.maxRequestSize']/(1024*1024)}">
+                                                    <f:convertNumber  maxFractionDigits="0" />
+                                                </h:outputText> MB
+                                                <br/>
+                                                Allowed types are JPG, PNG, GIF, BMP, JPEG, TXT, DOC, DOCX and PDF only
+                                            </div>
+                                        </td>
+                                        <td width="45%">&#160;</td>
+
+                                    </tr>
+                                    <!--                                        <input type="hidden" id="docuploaded" value="false" />-->
+                                    <!--                                        <div id="docuploadedmsg" style="color: red"></div>-->
+                                </table>
+                            </a4j:outputPanel>
+                        </div>
+
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" align="center">
+                            <tr>
+                                <td>
+                                    <hr class="red"/>
+                                    <div align="center">
+                                        <a4j:commandButton value="Submit" onclick="clearBlurredData('basic');setInjuryValues();loadWaitPanel('enrollmember');checkMeasurement();" 
+                                                           oncomplete="stopWaitPanel('enrollmember');textboxHint('basic');resetOldInjuryValues();" 
+                                                           styleClass="standard-button" render="dataMessage" >
+                                        </a4j:commandButton>
+                                        <a4j:commandButton action="#{userServiceBean.enrollStudioMember()}" id="finalBtn" style="display: none" />
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </h:form>
+                <ui:repeat value="#{userServiceBean.registeredUsersList}" var="result">
+                    <script type="text/javascript">
+                        data.push({
+                            label:"#{result.label}",
+                            value:"#{result.value}"
+                        }
+                    );
+                    </script>
+                </ui:repeat>
+
+                <script type="text/javascript">
+                    //<![CDATA[
+                    function getDatePickerForDOB() {
+                        $("#dateofbirth").datepicker({
+                            changeMonth: true,
+                            changeYear: true,
+                            dateFormat: 'mm/dd/yy',
+                            maxDate:+0,
+                            height: 200,
+                            width:200
+                       
+                        })
+                        .attr( 'readOnly' , 'true' );
+                    }
+                           
+                    function resetInjuryValue() {
+                        var injury = document.getElementById("injury").value;
+                        if (injury != '') {
+                            document.getElementById("injurymenu").value = injury;
+                        }
+                        var intensity = document.getElementById("intensity").value;
+                        if (intensity != '') {
+                            document.getElementById("intensitymenu").value = intensity;                           
+                        }
+                        var status = document.getElementById("status").value;
+                        if (status != '') {
+                            document.getElementById("statusmenu").value = status;
+                        }
+                    }
+                           
+                    function setInjuryValues() {
+                        var injury = document.getElementById("injury").value;                               
+                        if (injury == '') {
+                            document.getElementById("injury").value = "-1";
+                            if (document.getElementById("intensity").value == '') {
+                                document.getElementById("intensity").value = "-1";
+                            }
+                            if (document.getElementById("status").value == '') {
+                                document.getElementById("status").value = "-1";
+                            }
+                        }
+                    }
+                           
+                    function resetOldInjuryValues() {
+                        if (document.getElementById("injury").value == "-1") {
+                            document.getElementById("injury").value = "";
+                        }
+                        if (document.getElementById("intensity").value == "-1") {
+                            document.getElementById("intensity").value = "";                                   
+                        }
+                        if (document.getElementById("status").value == "-1") {
+                            document.getElementById("status").value = "";                                   
+                        }
+                    }
+                   
+                    function getDatePickerForCheque() {
+                        $("#chequedate").datepicker({
+                            changeMonth: true,
+                            changeYear: true,
+                            dateFormat: 'mm/dd/yy',
+                            minDate:+0,
+                            height: 200,
+                            width:200
+                       
+                        })
+                        .attr( 'readOnly' , 'true' );
+                    }
+                    
+                    function calculateTotal() {
+                        var hip1 = document.getElementById('hip1').value;
+                        var back = document.getElementById('back').value;
+                        var biceps = document.getElementById('biceps').value;
+                        var triceps = document.getElementById('triceps').value;
+                        
+                        if (hip1 != null && hip1 != '' && back != null && back != '' && biceps != null && biceps != '' && triceps != null && triceps != '') {
+                            var totalVal = parseFloat(hip1) + parseFloat(back) + parseFloat(biceps) + parseFloat(triceps);                  
+                            totalVal = roundNumber(totalVal,2);  
+                            document.getElementById('total').innerHTML = totalVal;
+                        } else {
+                            document.getElementById('total').innerHTML = '';
+                        }
+                    }
+                    
+                    function setProgramId(value) {
+                        if (value != null && value != '') {
+                            document.getElementById('programId').value = value;
+                        } else {
+                            document.getElementById('programId').value = 0;
+                        }
+                    }
+                    
+                    function checkMeasurement() {
+                        var weight = document.getElementById('weight').value;
+                        var bf = document.getElementById('bf').value;
+                        var arm = document.getElementById('arm').value;
+                        var biceps = document.getElementById('biceps').value;
+                        var waist = document.getElementById('waist').value;
+                        var triceps = document.getElementById('triceps').value;
+                        var hip = document.getElementById('hip').value;
+                        var hip1 = document.getElementById('hip1').value;
+                        var thigh = document.getElementById('thigh').value;
+                        var back = document.getElementById('back').value;
+                        var calf = document.getElementById('calf').value;
+                        
+                        if (weight == '' && bf == '' && arm == '' && biceps == '' && waist == '' 
+                            && triceps == '' && hip == '' && hip1 == '' && thigh == '' && back == '' && calf == '') {
+                            document.getElementById('meaMsg').style.display = 'none';
+                            document.getElementById('addMea').value = 0;
+                            document.getElementById('finalBtn').click();
+                        } else if (weight != '' && bf != '' && arm != '' && biceps != '' && waist != '' 
+                            && triceps != '' && hip != '' && hip1 != '' && thigh != '' && back != '' && calf != '') {
+                            document.getElementById('meaMsg').style.display = 'none';
+                            document.getElementById('addMea').value = 1;
+                            document.getElementById('finalBtn').click();
+                        } else {
+                            document.getElementById('meaMsg').style.display = '';
+                            document.getElementById('addMea').value = 0;
+                        }
+                    }
+                
+                    getDatePickerForDOB();
+                    textboxHint("basic");    
+                    //]]>
+                </script>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

@@ -1,0 +1,168 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+    <h:body>
+        <ui:composition template="../layout/adminLayout.xhtml">
+            <ui:define name="content">
+                <script type="text/javascript">
+                    if(document.getElementById("manageRecipe") != null) {
+                        document.getElementById("manageRecipe").setAttribute("class", "active");
+                    } else {
+                        location.href ="#{loginDataBean.lendingPage}";
+                    }                    
+                </script>
+                <f:metadata>
+                    <f:event type="preRenderView" listener="#{userServiceBean.clearFlashData()}"/>
+                </f:metadata>
+
+                <div id="content">
+                    <h:outputLabel>
+                        <h3>Write A New Recipe</h3>
+                    </h:outputLabel>
+                    <div align="right" style="margin-top: -23px"> <h:outputText value="(Fields marked with * are mandatory)" styleClass="infomessages"/></div>                 
+                    <hr class="red"/>                                  
+                    <h:form prependId="false">
+                        <ui:include src="../common/message.xhtml" /> 
+                        <table width="100%" border="0" cellpadding="0" cellspacing="0" class="form-table">
+                            <tr>
+                                <th width="20%">
+                                    <h:outputText value="Title" /><sup><font color="red">*</font></sup>
+                                </th>
+                                <td width="80%">
+                                    <h:inputHidden id="hiddenBox" value="#{systemResultSessionUtil.recipeName}" />
+                                    <h:inputHidden id="categoryhidden" value="#{systemResultSessionUtil.mealPlanCategory }" />
+                                    <h:inputText style="width: 56.55%;" styleClass="medium" value="#{recipeDataBean.name}" id="Title" required="true" requiredMessage="Enter Title" maxlength="60">
+                                        <f:ajax event="blur" render="titleMsg" />
+                                    </h:inputText>
+                                    <rich:message for="Title" style="color: red" id="titleMsg" />
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <th width="20%" >
+                                    <h:outputText value="Category"/>
+                                </th>
+                                <td colspan="3">
+                                    <h:selectOneMenu id="category" value="#{recipeDataBean.category}" style="width: 124px">
+                                        <f:selectItem itemLabel="Vegetarian" itemValue="V" />
+                                        <f:selectItem itemLabel="Non-Vegetarian" itemValue="NV"/>                                                
+                                    </h:selectOneMenu>
+                                    <!--                                </td>
+                                                                    <th width="20%">-->
+                                    <h:outputText value="SubCategory"/>
+                                    <!--                                </th>
+                                                                    <td>-->
+                                    <h:selectOneMenu id="sub-category" value="#{recipeDataBean.sub_category}" style="width: 116px">
+                                        <f:selectItem itemLabel="Breakfast" itemValue="BF"/>
+                                        <f:selectItem itemLabel="Lunch/Dinner" itemValue="LD"/>
+                                        <f:selectItem itemLabel="Snack" itemValue="SN"/>
+                                    </h:selectOneMenu>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th width="20%"  valign="top">
+                                    <h:outputText value="Serving"/><sup><font color="red">*</font></sup>
+                                </th>
+                                <td width="25%">
+                                    <h:inputTextarea id="description" value="#{recipeDataBean.description}" onfocus="counterForTextArea('description','descriptionCounter',200)" onkeyup="counterForTextArea('description','descriptionCounter',200)" required="true" requiredMessage="Enter Serving" >
+                                        <f:ajax event="blur" render="descriptionMsg" />
+                                    </h:inputTextarea>
+
+                                    <div style="text-align:left" ><i><h:outputText value="(You can type" style="color: grey;"/> &#160;<h:outputText id="descriptionCounter"  value="200" style="color: grey;"/> &#160;<h:outputText value="more characters)" style="color: grey;"/></i></div>
+                                    <rich:message for="description" style="color: red" id="descriptionMsg" />
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <th width="20%"  valign="top">
+                                    <h:outputText value="Ingredient"/><sup><font color="red">*</font></sup>
+                                </th>
+                                <td width="25%">
+                                    <h:inputTextarea id="ingredient" value="#{recipeDataBean.ingredent}" onfocus="counterForTextArea('ingredient','ingredientCounter',2000)" onkeyup="counterForTextArea('ingredient','ingredientCounter',2000)" required="true" requiredMessage="Enter Ingredient">
+                                        <f:ajax event="blur" render="ingredientMsg" />
+                                    </h:inputTextarea>
+                                    <div style="text-align:left" ><i><h:outputText value="(You can type" style="color: grey;"/> &#160;<h:outputText id="ingredientCounter"  value="2000" style="color: grey;"/> &#160;<h:outputText value="more characters)" style="color: grey;"/></i></div>
+                                    <rich:message for="ingredient" style="color: red" id="ingredientMsg" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <th width="20%"  valign="top"> 
+                                    <h:outputText value="Directions" /><sup><font color="red">*</font></sup>
+                                </th>
+                                <td width="25%"> 
+                                    <h:inputTextarea id="method" value="#{recipeDataBean.method}" onfocus="counterForTextArea('method','methodCounter',3000)" onkeyup="counterForTextArea('method','methodCounter',3000)" required="true" requiredMessage="Enter Directions">
+                                        <f:ajax event="blur" render="methodMsg" />
+                                    </h:inputTextarea>
+                                    <div style="text-align:left" ><i><h:outputText value="(You can type" style="color: grey;"/> &#160;<h:outputText id="methodCounter"  value="3000" style="color: grey;"/> &#160;<h:outputText value="more characters)" style="color: grey;"/></i></div>
+                                    <rich:message for="method" style="color: red" id="methodMsg"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th width="20%"  valign="top">
+                                    <h:outputText value="Picture"/>
+                                </th>
+                                <td>
+                                    <a4j:commandButton id="stopBtn" styleClass="stopBtn" value="Stop" immediate="true"
+                                                       render="picComp" oncomplete="document.getElementById('stopBtn').style.display='none'" />
+                                    <rich:fileUpload fileUploadListener="#{fileUploadListener.imageUploadListener}" 
+                                                     addLabel="Upload Picture"
+                                                     style="height: 80px; width: 300px"
+                                                     acceptedTypes="jpg,jpeg,bmp,png,gif"
+                                                     id="picComp"
+                                                     onfilesubmit="document.getElementById('stopBtn').style.display=''"
+                                                     onuploadcomplete="document.getElementById('stopBtn').style.display='none'">
+                                    </rich:fileUpload>
+                                    <div style="font-size:11px; width: 300px" align="right">
+                                        Maximum Upload File-Size is
+                                        <h:outputText style="font-size: 11px; text-align:right " value="#{initParam['org.richfaces.fileUpload.maxRequestSize']/(1024*1024)}">
+                                            <f:convertNumber  maxFractionDigits="0" />
+                                        </h:outputText> MB
+                                        <br/>
+                                        Allowed types are JPG, PNG, GIF, BMP and JPEG only
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td colspan="4" align="center">
+                                    <hr class="red"/>
+                                    <div align="center">
+                                        <a4j:commandButton value="Submit" action="#{recipeServiceBean.createRecipe()}" styleClass="standard-button" onclick="escapeValue();" onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content');">                                            
+                                        </a4j:commandButton>
+                                    </div>
+                                </td>
+                            </tr>
+
+
+                        </table>
+                    </h:form>
+
+                </div>
+
+                <script type="text/javascript">                    
+                    function escapeValue(){
+                        document.getElementById('Title').value = trim(document.getElementById('Title').value);
+                        document.getElementById('description').value = escape(trim(document.getElementById('description').value));
+                        document.getElementById('ingredient').value = escape(trim(document.getElementById('ingredient').value));
+                        document.getElementById('method').value = escape(trim(document.getElementById('method').value));
+
+                    }
+                    
+                    document.getElementById('stopBtn').style.display='none';
+                    
+                    var temp = document.getElementById('hiddenBox').value;
+                    var temp1 = document.getElementById('categoryhidden').value;
+                    document.getElementById("Title").value = temp;
+                    document.getElementById("category").value = temp1;
+                </script>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+
+

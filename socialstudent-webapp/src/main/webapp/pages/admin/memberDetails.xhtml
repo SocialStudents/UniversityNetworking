@@ -1,0 +1,161 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+
+    <ui:composition template="../layout/adminReportLayout.xhtml">
+        <ui:define name="content">
+            <f:metadata>
+                <f:event listener="#{userServiceBean.retrieveMemberDetailsForSession()}" type="preRenderView"/>
+            </f:metadata>
+
+            <div id="content">
+                <h:form prependId="false">
+                    <script type="text/javascript">
+                        if("#{userRightsDataBean.haveUserReportsRights}" == "false") {                          
+                            location.href ="#{loginDataBean.lendingPage}";
+                        } 
+                        $(document).ready(function() {
+                            sorting();
+                        } );
+                    </script>
+                    <ui:include src="../common/message.xhtml" /> 
+
+                    <div id="SearchPanel">
+                        <table class="form-table" border="0" id="selectionTable">
+                            <tr>
+                                <th width="15%" >
+                                    <h:outputText value="Session Date "/>
+                                </th>
+                                <td width="10%">
+                                    <h:outputText id="sessionDate" style="width: 90%;" styleClass="medium" value="#{systemResultSessionUtil.sessionDate}" >
+                                        <f:convertDateTime type="date" dateStyle="MM/dd/yyyy" pattern="MM/dd/yyyy" timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                    </h:outputText>
+                                </td>
+                                <th width="15%">
+                                    <h:outputText value="Session Time "/>
+                                </th>
+                                <td width="20%">
+                                    <h:outputText value="#{userDataBean.startHour}">
+                                        <f:convertNumber minIntegerDigits="2"/>
+                                    </h:outputText>
+                                    :
+                                    <h:outputText value="#{userDataBean.startMin}">
+                                        <f:convertNumber minIntegerDigits="2"/>
+                                    </h:outputText>
+                                    -
+                                    <h:outputText value="#{userDataBean.endHour}">
+                                        <f:convertNumber minIntegerDigits="2"/>
+                                    </h:outputText> :
+                                    <h:outputText value="#{userDataBean.endMin}">
+                                        <f:convertNumber minIntegerDigits="2"/>
+                                    </h:outputText>
+                                </td>
+                                <td width="35%">
+
+                                </td>
+                                <td width="5%" style="color: blue">
+                                    <h:commandLink action="#{userServiceBean.navigateToAttendanceReport()}">
+                                        <img src="#{facesContext.externalContext.requestContextPath}/images/back-btn.png"/>
+                                        <f:setPropertyActionListener target="#{systemResultSessionUtil.prevView}" value="sessionSummaryReport?faces-redirect=true" />
+                                    </h:commandLink>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+
+                    <div class="content">
+                        <a4j:outputPanel id="downloadLink" >
+                            <h:commandLink action="#{reportToPdfServiceBean.memberDetailiReport()}" rendered="#{systemResultViewUtil.searchUserList !=null and not empty systemResultViewUtil.searchUserList}">
+                                <h:graphicImage value="/images/download-pdf.jpg" style="border: none; float: right" title="Click to Download Report"/>
+                                &nbsp;&nbsp;&nbsp;
+                            </h:commandLink>
+                            <br></br>
+                        </a4j:outputPanel>
+                        <a4j:outputPanel id="reportListPanel">
+                            <rich:dataTable  id="reportDataList" rowKeyVar="rowId"  var="report" value="#{systemResultViewUtil.searchUserList}" styleClass="meal-plan" style="width: 100%;line-height: 12px;" rendered="#{systemResultViewUtil.searchUserList !=null and not empty systemResultViewUtil.searchUserList}" rowClass="#{rowId%2 == 0 ? 'alt-row1':'alt-row'}" >
+                                <f:facet name="header">
+                                    <rich:columnGroup>
+                                        <rich:column style="width: 30%" styleClass="header">
+                                            <h:outputText value="PBer Name"/>
+                                        </rich:column>
+                                        <rich:column style="width: 25%"  styleClass="header">
+                                            <h:outputText value="Email address" />
+                                        </rich:column>
+                                        <rich:column style="width: 25%"  styleClass="header">
+                                            <h:outputText value="Mobile Number"/>
+                                        </rich:column>
+                                        <rich:column style="width: 20%"  styleClass="header">
+                                            <h:outputText value="Status"/>
+                                        </rich:column>
+                                    </rich:columnGroup>
+                                </f:facet>
+                                <rich:column style="vertical-align: top">
+                                    <h:commandLink title="Click here to view PBer Details For Session" action="#{userServiceBean.navigateToMemberAttendanceReport()}">
+                                        <h:outputText value="#{report.firstName} #{report.lastName}"/>
+                                        <f:setPropertyActionListener target="#{systemResultSessionUtil.id}" value="#{report.id}"/>
+                                        <f:setPropertyActionListener target="#{systemResultSessionUtil.prevView}" value="#{report.id}"/>
+                                        <f:setPropertyActionListener target="#{systemResultSessionUtil.name}" value="#{report.firstName} #{report.lastName}"/>
+                                    </h:commandLink>
+
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{report.email == null || report.email == '' ? 'N/A' : report.email}" />
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{report.phoneNo == null || report.phoneNo == '' ? 'N/A' : report.phoneNo}" />
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="No Show" rendered="#{report.status eq 's'}" />
+                                    <h:outputText value="Attended" rendered="#{report.status eq 'a'}" />
+                                </rich:column>
+                            </rich:dataTable>
+                        </a4j:outputPanel>
+                    </div>
+
+
+
+
+                </h:form>
+            </div>
+            <script type="text/javascript">
+
+            
+                $(window).load(function() {
+                    jsf.ajax.addOnEvent(function (data) {
+                           
+                        if (data.status === "success") {
+                            sorting();
+                        }
+                    })
+                });
+                   
+                function sorting(){
+                    $('#reportDataList').dataTable( {
+                        "aoColumns": [
+                            null,
+                            null,
+                            null,
+                            null,
+                        ],
+                        "bJQueryUI": false,
+                        "sPaginationType": "full_numbers",
+                        "bRetrieve" : true,
+
+                        "bFilter": true,
+                        "bInfo": false,
+                        "bAutoWidth": false 
+                    } );
+                }
+                
+                 
+            </script>
+        </ui:define>
+    </ui:composition>
+</html>
+

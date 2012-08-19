@@ -1,0 +1,232 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+    <h:body>
+
+        <ui:composition template="../layout/adminLayout.xhtml">
+            <ui:define name="content">
+                <script type="text/javascript">
+                    if(document.getElementById("videoForum") != null) {
+                        document.getElementById("videoForum").setAttribute("class", "active");
+                    } else {
+                        location.href ="#{loginDataBean.lendingPage}";
+                    }                    
+                </script>
+                <h:form prependId="false">
+                    <f:event listener="#{videoForumServiceBean.retrieveQuestions()}" type="preRenderComponent"/>
+                    <h3>Video Forum</h3>
+                    <hr class="red" />
+                    <div class="content" style="margin-top:20px;">
+                        <div id="content">
+                            <!--                            New code-->
+                            <h:outputLabel id="questionPanel">  
+                                <!-- message page included-->
+                                <ui:include src="../common/message.xhtml" /> 
+                                <rich:dataTable  id="videoForumDataList" rowKeyVar="rowId" rows="10" rendered="#{systemResultViewUtil.videoForumDataBeanList!=null and not empty systemResultViewUtil.videoForumDataBeanList}"
+                                                 var="question" value="#{systemResultViewUtil.videoForumDataBeanList}" styleClass="meal-plan" style="width: 100%" rowClass="#{rowId%2 == 0 ? 'alt-row1':'alt-row'}" >
+
+                                    <f:facet name="header">
+                                        <rich:columnGroup>
+                                            <rich:column style="width: 18%" styleClass="header">
+                                                <h:outputText value="Name"/>
+                                            </rich:column>
+                                            <rich:column style="width: 12%" styleClass="header">
+                                                <h:outputText value="PBer Status"/>
+                                            </rich:column>                                        
+                                            <rich:column style="width: 34%"  styleClass="header">
+                                                <h:outputText value="Question" />
+                                            </rich:column>
+                                            <rich:column style="width: 14%; text-align: center;"  styleClass="header">
+                                                <h:outputText value="Action" />
+                                            </rich:column>
+                                        </rich:columnGroup>
+                                    </f:facet>           
+
+                                    <rich:column style="vertical-align: top">
+                                        <h:outputText value="#{question.memberName}"/><br/>
+                                        <h:outputText value="#{question.questionDate}" style="color: grey">
+                                            <f:convertDateTime type="date" pattern="MM/dd/yyyy" />
+                                        </h:outputText>
+                                    </rich:column>
+                                    <rich:column style="vertical-align: top">
+                                        <h:outputText value="#{question.memberStatus}"/>
+                                    </rich:column>
+                                    <rich:column style="vertical-align: top">
+                                        <h:outputText value="#{question.question}">                            
+                                        </h:outputText>
+                                    </rich:column>
+                                    <rich:column style="vertical-align: top">
+                                        <h:outputLabel id="statusPanel">
+                                            &#160;&#160;&#160;
+                                            <a4j:commandLink title="Click here to Reply" action="#{videoServiceBean.retrieveVideosByCategory()}" onclick="loadWaitPanel('content')" oncomplete="#{rich:component('replyPanel')}.show();stopWaitPanel('content');"  rendered="#{question.isActive != null}" render="videoPanel,uploadVideoPanel">
+                                                <h:graphicImage value="/images/reply.png" style="border: none;vertical-align: middle;" />
+                                                <f:setPropertyActionListener target="#{systemResultViewUtil.id}" value="#{question.id}"/>
+                                                <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="ALL"/>
+                                                <f:setPropertyActionListener target="#{systemResultViewUtil.videoCategoryName}" value="ALL"/>
+                                            </a4j:commandLink>
+                                            &#160;&#160;&#160;&#160;&#160;&#160;
+                                            <h:commandLink title="Click to remove this question" onclick="loadWaitPanel('content');" action="#{videoForumServiceBean.deactivateQuestion()}" rendered="#{question.isActive != null}">
+                                                <h:graphicImage value="/images/discard.png" style="border: none;vertical-align: middle;" />
+                                                <f:setPropertyActionListener target="#{systemResultViewUtil.id}" value="#{question.id}"/>
+                                            </h:commandLink>
+                                        </h:outputLabel>
+                                    </rich:column>
+                                </rich:dataTable>
+                            </h:outputLabel>
+                        </div><!--content ends here -->
+                    </div>                   
+                    <a4j:commandLink id="all" style="display: none" value="ALL" action="videos?faces-redirect=true" onclick="loadWaitPanel('content');">
+                        <f:setPropertyActionListener target="#{systemResultSessionUtil.categorySelected}" value="ALL"/>
+                        <f:setPropertyActionListener target="#{systemResultSessionUtil.videoCategoryName}" value="ALL"/>
+                    </a4j:commandLink>
+                </h:form>
+
+                <!--Reply Panel-->
+
+                <rich:popupPanel id="replyPanel" autosized="true">
+                    <h:form prependId="false">
+                        <f:metadata>
+                            <f:event listener="#{videoForumServiceBean.retrieveQuestions()}" type="preRenderComponent"/>
+                        </f:metadata>
+                        <div id="right">
+                            <h3>
+                                <a4j:commandLink style="float: right" render="questionPanel" onclick="#{rich:component('replyPanel')}.hide();">
+                                    <img src="#{facesContext.externalContext.requestContextPath}/images/close-btn.jpg" alt="close" title="Close" align="texttop"/>
+                                </a4j:commandLink>
+                                <img src="#{facesContext.externalContext.requestContextPath}/images/video-icon.jpg" alt="video" width="43" height="32" />PB Video Gallery</h3>
+
+
+                            <div id="search-panel"> 
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                    <tbody>
+                                        <tr>
+                                            <td width="37%" valign="bottom">   
+                                                <div>
+                                                    <h:outputLabel id="uploadVideoPanel">
+                                                        <a4j:commandLink title="Upload Video" action="#{videoForumServiceBean.navigateToAddVideo()}" execute="@this" render="manageinq"> 
+                                                            <img src="#{facesContext.externalContext.requestContextPath}/images/new-button.jpg"/>
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.questionId}" value="#{systemResultViewUtil.id}"/>
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.redirectedFromVideoForum}" value="#{videoForumDataBean.redirectFlag}"/>
+                                                        </a4j:commandLink>          
+                                                    </h:outputLabel>
+                                                </div>
+                                            </td>
+                                            <td width="40%" style="vertical-align: middle;">
+
+                                            </td>
+                                            <td width="35%"><div id="search-box-bg">
+                                                    <h:inputText onkeypress="return disableEnter(event);" title="Search Here" value="#{systemResultViewUtil.searchString}" id="searchString" maxlength="50" class="search-txt-box" >
+                                                        <a4j:ajax event="keyup" onbegin="loadWaitPanel('content1');" render="videoPanel" oncomplete="stopWaitPanel('content1');" listener="#{videoServiceBean.retrieveVideosByCategory()}"/> 
+                                                    </h:inputText>
+                                                </div></td>
+                                            <td width="11%" style="vertical-align: middle;"> &#160;                                               
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>                   
+                            <hr class="red" />
+                            <div class="content" style="margin-top:20px;">
+                                <div id="content1">
+                                    <!--                                New code-->
+                                    <h:outputLabel id="videoPanel">
+                                        <!--                                         Messages Panel-->
+
+                                        <a4j:outputPanel id="dataMessageNew">
+                                            <h:outputLabel rendered="#{messageDataBean.isSuccess and messageDataBean.message != null}" >
+                                                <div class="ui-widget">
+                                                    <div class="ui-state-highlight ui-corner-all" style="margin-top: 10px; margin-bottom:10px; padding: 0 .7em; font-weight:bold; line-height:16px; "> 
+                                                        <p><span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>
+                                                            #{messageDataBean.message}
+                                                        </p>
+                                                    </div>
+                                                </div>                       
+                                            </h:outputLabel>
+                                            <h:outputLabel rendered="#{not messageDataBean.isSuccess and messageDataBean.message != null}">
+                                                <div class="ui-widget">
+                                                    <div class="ui-state-error ui-corner-all" style="padding:0px 5px; margin-bottom:10px; font-weight:bold; line-height:16px; "> 
+                                                        <p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span> 
+                                                            <h:outputText value="#{messageDataBean.message}" escape="false"/></p><div class="clearing"></div>
+                                                    </div>                
+                                                </div>
+                                            </h:outputLabel>
+                                            <h:outputLabel rendered="#{messageDataBean.isSuccess == null and flash.messageDataBean.isSuccess and flash.messageDataBean.message != null}" >
+                                                <div class="ui-widget">
+                                                    <div class="ui-state-highlight ui-corner-all" style="margin-top: 10px; margin-bottom:10px; padding: 0 .7em; font-weight:bold; line-height:16px; "> 
+                                                        <p><span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>
+                                                            #{flash.messageDataBean.message}</p>
+                                                    </div>
+                                                </div>                       
+                                            </h:outputLabel>
+                                            <h:outputLabel rendered="#{messageDataBean.isSuccess == null and not flash.messageDataBean.isSuccess and flash.messageDataBean.message != null}">
+                                                <div class="ui-widget">
+                                                    <div class="ui-state-error ui-corner-all" style="padding:0px 5px; margin-bottom:10px; font-weight:bold; line-height:16px; "> 
+                                                        <p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span> 
+                                                            #{flash.messageDataBean.message}</p><div class="clearing"></div>
+                                                    </div>                
+                                                </div>
+                                            </h:outputLabel>
+                                        </a4j:outputPanel>    
+
+
+                                        <rich:dataGrid  id="videoDataList" columns="2" rowKeyVar="rowId" rows="6" rendered="#{systemResultViewUtil.videoDataBeanList!=null and not empty systemResultViewUtil.videoDataBeanList}"
+                                                        var="video" value="#{systemResultViewUtil.videoDataBeanList}" style="width: 100%;" >
+
+                                            <table width="350px" border="0" cellpadding="0" cellspacing="0" class="form-table">
+                                                <tbody>
+                                                    <tr>
+                                                        <td width="40%">
+
+                                                            <a4j:commandLink title="Click to set video as your answer" action="#{videoForumServiceBean.saveAnswer()}" onclick="loadWaitPanel('content');" oncomplete="#{rich:component('replyPanel')}.hide();stopWaitPanel('content');" render="manageinq,questionPanel,videoForumCounter">                                        
+                                                                <a4j:mediaOutput id="u7_img" style="float: left;border:none; width: 170px; height: 130px" value="#{video.imagePath}" element="img" createContent="#{systemResultSessionUtil.drawImage}" mimeType="image/jpg"  styleClass="u7"/>
+                                                                <f:setPropertyActionListener target="#{systemResultViewUtil.videoId}" value="#{video.id}"/>
+                                                            </a4j:commandLink>    
+                                                        </td>
+                                                        <td width="60%" class="video-txt">
+                                                            <span class="video-heading">
+                                                                <h:outputText title="#{video.title}" style="float: left;" value="#{video.videoTitleDisplay}" styleClass="video-heading"></h:outputText>
+                                                            </span><br/>
+                                                            <div style="width: 150px">
+                                                                <h:outputText style="font-size: 12px" title="#{video.description}" value="#{video.descriptionView}"/>
+                                                            </div>
+                                                            <f:verbatim rendered="#{video.descriptionView.length() le 25}">
+                                                                <br/>
+                                                            </f:verbatim>
+                                                            <br/>
+                                                            <h:outputText title="#{video.userFullName}" style="float: left;font-size: 12px;" value="by #{video.lastModifiedByDisplay}" styleClass="video-txt"></h:outputText>
+                                                            <br/>
+
+                                                            <img style="margin-bottom: -5px;" src="#{facesContext.externalContext.requestContextPath}/images/like.png"/>
+                                                            <h:outputText style="font-size: 12px" id="videoVote" value="#{video.likes}">
+                                                                <f:convertNumber pattern="##,##,##,###"/>
+                                                            </h:outputText> &#160;|&#160;
+                                                            <h:outputText value="#{video.views}" styleClass="video-txt" style="font-size: 12px">
+                                                                <f:convertNumber pattern="##,##,##,###"/>
+                                                            </h:outputText>
+                                                            <h:outputText value=" views" styleClass="video-txt" style="font-size: 12px"></h:outputText>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>          
+                                            <f:facet name="footer" >                                    
+                                                <div align="center" style="width: 100%;">
+                                                    <rich:dataScroller for="videoDataList" maxPages="10" fastStep="5"></rich:dataScroller>  
+                                                </div>                                    
+                                            </f:facet>
+                                        </rich:dataGrid>
+                                    </h:outputLabel>
+                                </div><!--content ends here -->
+                            </div> 
+                        </div>
+                    </h:form>
+                </rich:popupPanel>
+
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

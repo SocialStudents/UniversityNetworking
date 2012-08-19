@@ -1,0 +1,125 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+
+    <ui:composition template="../layout/adminReportLayout.xhtml">
+        <ui:define name="content">
+            <f:metadata>
+                <f:event listener="#{userServiceBean.retrieveMemberDetailsAccordingToPbSpecialsit()}" type="preRenderView"/>
+            </f:metadata>
+
+            <div id="content">
+                <h:form prependId="false">
+                    <script type="text/javascript">
+                        if("#{userRightsDataBean.haveUserReportsRights}" == "false") {                          
+                            location.href ="#{loginDataBean.lendingPage}";
+                        } 
+                        $(document).ready(function() {
+                            sorting();
+                        } );
+                    </script>
+                    <ui:include src="../common/message.xhtml" /> 
+                    <div>
+                        <h:outputLabel id="memberinfo" style="float: left">
+                            <font color="#C11B1D" style="font-size: 15px;font-weight: bold;">PB Specialist Session Report for - #{systemResultSessionUtil.roleName}</font>
+                        </h:outputLabel>
+                        <div align="right">
+                            <h:commandLink action="#{userServiceBean.navigateToPbSpecialistSessionReportPage()}">
+                                <img src="#{facesContext.externalContext.requestContextPath}/images/back-btn.png"/>
+                                <f:setPropertyActionListener target="#{systemResultSessionUtil.prevView}" value="pbSpecialistSessionReport?faces-redirect=true" />
+                            </h:commandLink>
+                        </div>
+                    </div>
+                    <div class="content">
+                        <a4j:outputPanel id="downloadLink" >
+                            <h:commandLink action="#{reportToPdfServiceBean.memberDetailAccordingPBSpecialistiReport()}" rendered="#{systemResultViewUtil.searchUserList !=null and not empty systemResultViewUtil.searchUserList}">
+                                <h:graphicImage value="/images/download-pdf.jpg" style="border: none; float: right" title="Click to Download Report"/>
+                                &nbsp;&nbsp;&nbsp;
+                            </h:commandLink>
+                            <br></br>
+                        </a4j:outputPanel>
+                        <a4j:outputPanel id="reportListPanel">
+                            <rich:dataTable  id="reportDataList" rowKeyVar="rowId"  var="report" value="#{systemResultViewUtil.searchUserList}" styleClass="meal-plan" style="width: 100%;line-height: 12px;" rendered="#{systemResultViewUtil.searchUserList !=null and not empty systemResultViewUtil.searchUserList}" rowClass="#{rowId%2 == 0 ? 'alt-row1':'alt-row'}" >
+                                <f:facet name="header">
+                                    <rich:columnGroup>
+                                        <rich:column style="width: 20%" styleClass="header">
+                                            <h:outputText value="Session Date"/>
+                                        </rich:column>
+                                        <rich:column style="width: 14%"  styleClass="header">
+                                            <h:outputText value="Session Time" />
+                                        </rich:column>
+                                        <rich:column style="width: 10%"  styleClass="header">
+                                            <h:outputText value="PBers Attended" />
+                                        </rich:column>
+                                    </rich:columnGroup>
+                                </f:facet>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{report.sessionDate}">
+                                        <f:convertDateTime type="date" pattern="MM/dd/yyyy" timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                    </h:outputText>
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{report.startHour}">
+                                        <f:convertNumber minIntegerDigits="2"/>
+                                    </h:outputText>
+                                    :
+                                    <h:outputText value="#{report.startMin}">
+                                        <f:convertNumber minIntegerDigits="2"/>
+                                    </h:outputText>
+                                    -
+                                    <h:outputText value="#{report.endHour}">
+                                        <f:convertNumber minIntegerDigits="2"/>
+                                    </h:outputText> :
+                                    <h:outputText value="#{report.endMin}">
+                                        <f:convertNumber minIntegerDigits="2"/>
+                                    </h:outputText>
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{report.memberAttended}" />
+                                </rich:column>
+                            </rich:dataTable>
+                        </a4j:outputPanel>
+                    </div>
+
+
+                </h:form>
+            </div>
+            <script type="text/javascript">
+                getDatePickerForRange('subscriptionFromDate','subscriptionToDate');
+                
+                $(window).load(function() {
+                    jsf.ajax.addOnEvent(function (data) {
+                           
+                        if (data.status === "success") {
+                            sorting();
+                        }
+                    })
+                });
+                   
+                function sorting(){
+                    $('#reportDataList').dataTable( {
+                        "aoColumns": [
+                            { "sType": "eu_date" },
+                            null,
+                            null,
+                        ],
+                        "bJQueryUI": false,
+                        "sPaginationType": "full_numbers",
+                        "bRetrieve" : true,
+
+                        "bFilter": true,
+                        "bInfo": false,
+                        "bAutoWidth": false 
+                    } );
+                }
+            </script>
+        </ui:define>
+    </ui:composition>
+
+</html>
+

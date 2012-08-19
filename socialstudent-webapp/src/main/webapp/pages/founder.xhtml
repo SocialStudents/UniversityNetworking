@@ -1,0 +1,43 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html">
+    <h:body>       
+        <ui:composition template="./layout/homeLayout.xhtml">
+            <ui:define name="content">
+                <div id="left">
+                    <ul id="subnav">
+                        <a href="/aboutus"><li >Philosophy</li></a>
+                        <li class="active">Founder &amp; Creator</li>                        
+                    </ul>
+                    <div class="contact-bg">
+                        <h4>Questions?</h4>
+                        <h5>Just call and talk to us:</h5>
+                        (510) 668-0701<br/>                      
+                        <br/>
+                        <a href="/contact">
+                            <div id="emailus">&#160;</div>
+                        </a>                      
+                    </div>
+                </div>
+                <div id="right">
+                    <h3 >Michael</h3>
+                    <div class="breadcrumbs"> <a href="/login">HOME</a> |  FOUNDER &amp; CREATOR</div>
+
+                    <div class="content">
+                        <p> Early in his life, Michael was a talented basketball player and energetic young man.He worked hard and played hard his whole life. Despite this, he became overweight
+                            at a young age and struggled for many years with his body image and fitness failures. Possessing all of the skills, drive and intellect to be an extremely busy and happy
+                            professional, his lack of energy and the negative image he presented interfered with the achievement of his goals in life.</p><p>Tired of being overweight, tired of having no energy, tired of not feeling as good as he should, and...just plain tired, Michael became determined to lose weight, get in shape, and create the body type he always wanted. He tried all the quick fixes, bought into the weight loss pills and drinks, adopted all the fad diets and worked out as hard as he could 3 hours a day, 7 days a week. Nothing seemed to work. He tried everything he could find--probably many of the same things you’ve tried!--all to no avail. He was tired and frustrated with the way he looked and all the failed attempts. Finally, Michael gave up on the myths and the get-thin-quick promises and began doing his own research. Experimenting on himself, he discovered a regimen that worked perfectly for him. At last, he lost the weight. His body fat percentage dropped significantly. His body leaned out and became defined and took on the shape he had always wanted.</p><p> Developing his new concept, he decided to become a certified trainer in 2002 and began applying his concepts with everyone he trained. In April of 2007, Michael opened Perfect Balance and began encouraging more and more people to hang on to their goals and desires and dreams. Never one to sit back and rest, Michael continues to move forward, seeking more ways to help people find good health, positive energy and build confidence...oh, and to shed those pounds and uncover the bodies they’ve always wanted!! </p>
+
+                        <!--content ends here -->
+                    </div>           
+                </div>
+                <script type="text/javascript">
+                     document.getElementById("aboutus").setAttribute("class", "active")
+                </script>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

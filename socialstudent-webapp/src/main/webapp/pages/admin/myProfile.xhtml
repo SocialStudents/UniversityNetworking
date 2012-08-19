@@ -1,0 +1,332 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+    <body>
+        <ui:composition template="../layout/adminLayout.xhtml">
+            <ui:define name="content">
+                <script type="text/javascript">
+                               $(document).ready(
+                               function() {
+                                    textboxHint("content");
+                               });
+                    
+                              
+                </script>
+                <div id="content">
+                    <h3>My Profile</h3>
+                    <div align="right" style="margin-top: -23px"> <h:outputText value="(Fields marked with * are mandatory)" styleClass="infomessages"/></div>                 
+                    <hr class="red"/>
+                    <h:form prependId="false">                       
+                        <ui:include src="../common/message.xhtml" />
+                        <f:event type="preRenderView" listener="#{userServiceBean.retrieveUserInfoForMyProfile()}" />
+                        <a4j:outputPanel id="myprofile">                            
+                            <table width="100%" border="0" cellpadding="0" cellspacing="0" class="form-table">
+                                <tr>
+                                    <th width="20%">&nbsp;</th>
+                                    <td width="30%"><h6>Personal Info</h6><hr class="red"/></td>
+                                    <th width="20%">&nbsp;</th>
+                                    <td width="30%"><h6>Contact Info</h6><hr class="red"/></td>
+                                </tr>
+                            </table>
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" align="center">
+                                <tr>
+                                    <th width="20%">Username</th>
+                                    <td width="30%">
+                                        <h:outputLabel value="#{userDataBean.userId}" id="UserId">
+                                        </h:outputLabel>
+                                    </td>
+
+                                    <th width="20%">Email address<sup><font color="red">*</font></sup></th>
+                                    <td width="30%" >
+                                        <h:inputText tabindex="4" style="width: 100%;" styleClass="medium" value="#{userDataBean.email}" id="email" required="true" requiredMessage="Enter email address">
+                                            <f:ajax event="blur" render="emailMsg" />
+                                        </h:inputText>                                    
+                                        <br/>
+                                        <h:message for="email" style="color: red" id="emailMsg" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>First name<sup><font color="red">*</font></sup></th>
+                                    <td>
+                                        <h:inputText tabindex="1" style="width: 100%;" styleClass="medium" value="#{userDataBean.firstName}" id="fname" required="true" requiredMessage="Enter first name">
+                                            <f:ajax event="blur" render="fnameMsg" />
+                                        </h:inputText>                                     
+                                        <br/>
+                                        <h:message for="fname" style="color: red" id="fnameMsg" />
+                                    </td>
+                                    <th>Cell phone</th>
+                                    <td >
+                                        <h:inputText tabindex="5" style="width: 100%;" styleClass="medium" value="#{userDataBean.phoneNo}" maxlength="12" id="phone" onkeyup="formatContact(event, 'phone');" onkeypress="var keycode; if (window.event) { keycode = window.event.keyCode;}else {return true;} if (keycode == 13) {return false;}else {return true;}">
+                                            <rich:validator/>
+                                        </h:inputText>
+                                        <br/>
+                                        <rich:message for="phone"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Last name<sup><font color="red">*</font></sup></th>
+                                    <td>
+                                        <h:inputText tabindex="2" style="width: 100%;" styleClass="medium" value="#{userDataBean.lastName}" id="lname" required="true" requiredMessage="Enter last name">
+                                            <f:ajax event="blur" render="lnameMsg" />
+                                        </h:inputText>                                      
+                                        <br/>
+                                        <h:message for="lname" style="color: red" id="lnameMsg" />
+                                    </td>
+                                    <th>Home phone</th>
+                                    <td >
+                                        <h:inputText tabindex="6" style="width: 100%;" styleClass="medium" value="#{userDataBean.alternatePhoneNo}" maxlength="12" id="hphone" onkeyup="formatContact(event, 'hphone');" onkeypress="var keycode; if (window.event) { keycode = window.event.keyCode;}else {return true;} if (keycode == 13) {return false;}else {return true;}">
+                                            <f:ajax event="blur" render="hphoneMsg" />
+                                        </h:inputText>                                  
+                                        <br/>
+                                        <h:message for="hphone" style="color: red" id="hphoneMsg" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Password</th>
+                                    <td >
+                                        <a4j:commandLink style="color: blue; font-style: italic; text-decoration: underline;" title="Change Password" oncomplete="#{rich:component('changePassword')}.show();" action="#{userServiceBean.clearData()}" render="changepassword">
+                                            Change Password</a4j:commandLink>
+                                    </td>
+                                    <th>
+                                        Address<sup><font color="red">*</font></sup>
+                                    </th>
+                                    <td >
+                                        <h:inputText tabindex="7" style="width: 100%;" maxlength="30" styleClass="medium" value="#{userDataBean.address}" id="address1" required="true" requiredMessage="Enter street 1" title="Street 1">
+                                            <f:ajax event="blur" render="street1Msg" />
+                                        </h:inputText>                                       
+                                        <br/>
+                                        <h:message for="address1" style="color: red" id="street1Msg" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Joined on</th>
+                                    <td>
+                                        <h:outputLabel value="#{userDataBean.createdOn}" id="joinedon">
+                                            <f:convertDateTime type="date" pattern="MM/dd/yyyy" />
+                                        </h:outputLabel>
+                                    </td>
+                                    <th></th>
+                                    <td >
+                                        <h:inputText tabindex="8" style="width: 100%;" styleClass="medium" id="address2" value="#{userDataBean.address2}" title="Street 2">
+                                        </h:inputText>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>DOB<sup><font color="red">*</font></sup></th>
+                                        <td >
+                                            <h:inputText tabindex="3" value="#{userDataBean.dob}" id="dateofbirth" style="width: 100%;" styleClass="medium" required="true" requiredMessage="Enter birth date">
+                                                <f:convertDateTime type="date" dateStyle="MM/dd/yyyy" pattern="MM/dd/yyyy"  timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                                <f:ajax event="blur" render="dateofbirthMsg" />
+                                            </h:inputText>                                           
+                                            <br/>
+                                            <rich:message for="dateofbirth" style="color: red" id="dateofbirthMsg" />
+                                        </td>
+                                    <th>
+                                    </th>
+                                    <td >
+                                        <h:inputText tabindex="9" style="width: 100%;" styleClass="medium" id="city" value="#{userDataBean.city}" required="true" requiredMessage="Enter city" title="City">
+                                            <f:ajax event="blur" render="cityMsg" />
+                                        </h:inputText>                                      
+                                        <br/>
+                                        <h:message for="city" style="color: red" id="cityMsg"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Gender</th>
+                                    <td>
+                                        <h:outputLabel id="gender" value="#{userDataBean.gender == 'F' ? 'Female' : 'Male'}">
+                                        </h:outputLabel>
+                                    </td>
+                                    <th>
+                                    </th>
+                                    <td>
+                                        <h:selectOneMenu tabindex="10" id="state" style="width: 47%" value="#{userDataBean.state}" required="true" requiredMessage="Select state ">
+                                            <f:selectItems value="#{userServiceBean.stateList}" />
+                                        </h:selectOneMenu>&#160;
+                                        <h:inputText tabindex="11" style="width: 47%; float: right" styleClass="small" id="zip" maxlength="10" value="#{userDataBean.zipCode}" required="true" requiredMessage="Enter zip code" title="Zip Code"
+                                                     onkeyup="formatZipCode(event, 'zip');" >
+                                            <f:ajax event="blur" render="zipMsg" />
+                                        </h:inputText>                                                               
+                                        <rich:message for="state" style="color: red" />                                    
+                                        <rich:message for="zip" style="color: red" id="zipMsg"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Primary role</th>
+                                    <td>
+                                        <h:outputLabel id="role" value="#{userDataBean.userRole}">
+                                        </h:outputLabel>
+                                    </td>
+                                    <th>
+                                        Facebook page
+                                    </th>
+                                    <td >
+                                        <h:inputText tabindex="12" style="width: 100%;" maxlength="50" styleClass="medium" id="facebookpage" value="#{userDataBean.facebookPage}">
+                                        </h:inputText>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Secondary role</th>
+                                    <td>
+                                        <h:outputLabel id="secondaryRole" value="#{userDataBean.secondaryRoleName}">
+                                        </h:outputLabel>
+                                    </td>
+
+                                </tr>
+                                <tr id="pbrow">
+                                    <td colspan="4">
+                                        <table width="100%" border="0" cellpadding="0" cellspacing="0" class="form-table">
+                                            <tr>
+                                                <td colspan="4">
+                                                    <h:outputLabel rendered="#{userDataBean.userRole == 'PB Specialist' or userDataBean.secondaryRoleName == 'PB Specialist'}">
+                                                        <hr class="red"/>
+                                                    </h:outputLabel>
+                                                </td>
+                                            </tr>
+                                            <tr>                                    
+                                                <th width="20%">
+                                                    <h:outputLabel rendered="#{userDataBean.userRole == 'PB Specialist' or userDataBean.secondaryRoleName == 'PB Specialist'}">
+                                                        Sessions taken
+                                                    </h:outputLabel>
+                                                </th>  
+                                                <td width="30%">
+                                                    <h:outputText value="#{userDataBean.sessions}" rendered="#{userDataBean.userRole == 'PB Specialist' or userDataBean.secondaryRoleName == 'PB Specialist'}" />
+                                                </td>
+                                                <th width="20%">
+                                                    <h:outputLabel rendered="#{userDataBean.userRole == 'PB Specialist' or userDataBean.secondaryRoleName == 'PB Specialist'}">
+                                                        Weekly sessions
+                                                    </h:outputLabel>
+                                                </th>
+                                                <td width="30%">
+                                                    <h:outputText value="#{userDataBean.weeklySessions}" rendered="#{userDataBean.userRole == 'PB Specialist' or userDataBean.secondaryRoleName == 'PB Specialist'}" />
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>
+                                                    <h:outputLabel rendered="#{userDataBean.userRole == 'PB Specialist' or userDataBean.secondaryRoleName == 'PB Specialist'}">
+                                                        PBers referred
+                                                    </h:outputLabel>
+                                                </th>
+                                                <td>
+                                                    <h:outputText value="#{userDataBean.refferredCount}" rendered="#{userDataBean.userRole == 'PB Specialist' or userDataBean.secondaryRoleName == 'PB Specialist'}" />
+                                                </td>
+                                                <th>
+                                                </th>
+                                                <td>
+                                                    <h:outputLink value="viewSchedule" style="color: blue; font-style: italic; text-decoration: underline;" onclick="loadWaitPanel('content');"
+                                                                  rendered="#{userDataBean.userRole == 'PB Specialist' or userDataBean.secondaryRoleName == 'PB Specialist'}">
+                                                        View Schedule
+                                                    </h:outputLink>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+
+                            </table>
+                        </a4j:outputPanel>
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" align="center">
+                            <tr>
+                                <td colspan="4" align="center">
+                                    <hr class="red"/>
+                                    <div align="center">
+                                        <a4j:commandButton value="Submit" onclick="clearBlurredData('content');loadWaitPanel('content');" action="#{userServiceBean.updateUser()}" styleClass="standard-button" oncomplete="stopWaitPanel('content');textboxHint('content');">
+                                            <a4j:param assignTo="#{systemResultSessionUtil.id}" value="#{userDataBean.id}"/>
+                                            <a4j:param assignTo="#{userDataBean.isMyProfile}" value="true"/>
+                                        </a4j:commandButton>
+                                    </div>
+                                </td>
+                            </tr>
+
+                        </table>
+                        <h:inputHidden value="#{userDataBean.id}"/>
+                        <h:inputHidden value="#{userDataBean.role}"/>
+                    </h:form>
+                </div>
+                <rich:popupPanel id="changePassword" minHeight="220" width="420" autosized="true">
+                    <h:form>
+                        <a4j:outputPanel id="changepassword">
+
+                            <h6>Change password
+                                <h:outputLink value="myProfile" style="float: right">
+                                    <img src="#{facesContext.externalContext.requestContextPath}/images/close-btn.jpg" alt="close" title="Close" align="texttop"/>
+                                </h:outputLink></h6><hr class="red"/>
+                            <a4j:outputPanel id="innerDataM">
+                                <h:outputLabel rendered="#{not messageDataBean.isSuccess and messageDataBean.message != null}">
+                                    <div class="ui-widget">
+                                        <div class="ui-state-error ui-corner-all" style="padding:0px 5px; margin-bottom:10px; font-weight:bold; line-height:16px; ">
+                                            <p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span>
+                                                #{messageDataBean.message}</p><div class="clearing"></div>
+                                        </div>
+                                    </div>
+                                </h:outputLabel>
+                            </a4j:outputPanel>
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" >
+                                <tr>
+                                    <td width="35%"></td>
+                                    <td width="65%"></td>
+                                </tr>
+                                <tr>
+                                    <th>Current password<sup><font color="red">*</font></sup></th>
+                                    <td>
+                                        <h:inputSecret id="currentPassword" style="width: 92%" value="#{userDataBean.password}" styleClass="medium" required="true" requiredMessage="Enter current password">
+                                            <f:ajax event="blur" render="currentPasswordMsg" />
+                                        </h:inputSecret>
+                                        <rich:message for="currentPassword"  id="currentPasswordMsg"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>New password<sup><font color="red">*</font></sup></th>
+                                    <td>
+                                        <h:inputSecret id="newPassword" style="width: 92%" value="#{userDataBean.newPassword}" styleClass="medium" required="true" requiredMessage="Enter new password" >
+                                            <f:ajax event="blur" render="newPasswordMsg" />
+                                        </h:inputSecret>
+                                        <rich:message for="newPassword" id="newPasswordMsg"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Re-enter password<sup><font color="red">*</font></sup></th>
+                                    <td>
+                                        <h:inputSecret id="reenterPassword" style="width: 92%" value="#{userDataBean.confirmNewPassword}" styleClass="medium" required="true" requiredMessage="Enter confirm password">
+                                            <f:ajax event="blur" render="reenterPasswordMsg" />
+                                        </h:inputSecret>
+                                        <rich:message for="reenterPassword" id="reenterPasswordMsg"/>
+                                    </td>
+                                </tr>
+                            </table>
+                            <br/>
+                            <hr class="red"/>
+                            <div align="center" style="width: 100%;">
+                                <a4j:commandButton value="Submit" action="#{userServiceBean.changePassword()}" styleClass="standard-button" render="myprofile, dataMessage, innerDataM" oncomplete="if(#{messageDataBean.isSuccess != null and messageDataBean.isSuccess}) {#{rich:component('changePassword')}.hide();}" />
+                            </div>
+                        </a4j:outputPanel>
+                    </h:form>
+                </rich:popupPanel>
+                <script type="text/javascript">
+                    if (!('#{userDataBean.userRole}' == 'PB Specialist' || '#{userDataBean.secondaryRoleName}' == 'PB Specialist')) {
+                        document.getElementById('pbrow').style.display = 'none';
+                    }
+                    
+                    $("#dateofbirth").datepicker({
+                        changeMonth: true,
+                        changeYear: true,
+                        dateFormat: 'mm/dd/yy',
+                        maxDate:+0,
+                        height: 200,
+                        width:200
+                       
+                    })
+                    .attr( 'readOnly' , 'true' );
+                    
+                   document.getElementById("myProfile").setAttribute("class", "active");
+                </script>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>
+

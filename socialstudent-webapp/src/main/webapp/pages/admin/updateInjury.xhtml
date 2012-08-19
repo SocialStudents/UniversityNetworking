@@ -1,0 +1,337 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+    <h:body>
+        <ui:composition template="../layout/adminLayout.xhtml">
+
+            <ui:define name="content">
+                <h:form prependId="false">
+                    <script type="text/javascript">
+                        
+                        var preView = '#{systemResultSessionUtil.prevView}';
+                        if (preView != '') {
+                             if(document.getElementById("searchMember") != null) {
+                                document.getElementById("searchMember").setAttribute("class", "active");
+                            } else {
+                                location.href ="#{loginDataBean.lendingPage}";
+                            }                             
+                        } else {
+                             if(document.getElementById("updateInjury") != null) {
+                                document.getElementById("updateInjury").setAttribute("class", "active");
+                            } else {
+                                location.href ="#{loginDataBean.lendingPage}";
+                            }                             
+                        }
+                                   var data = [];
+                                      var noResult = []
+                            noResult.push({
+                                label:"No results found",
+                                value:""
+                            });
+                                       var globalUid = null;
+                                       
+                                   $(document).ready(function() {
+                                   
+                
+                function split( val ) {
+                        return val.split( /,\s*/ );
+                }
+                function extractLast( term ) {
+                        return split( term ).pop();
+                }   
+                function onSubmitId(){
+                    document.getElementById("uid").value=globalUid;
+                }
+                                  $("#list").autocomplete({
+                                           source: data,
+                                           select: function( event, ui ) {
+                                                if(ui.item.label != 'No results found'){
+                                               document.getElementById("list").value=ui.item.label;
+                                               document.getElementById("uid").value=ui.item.value;
+                                               globalUid = ui.item.value;
+                                               document.getElementById("go").click();
+                                                }
+
+                                                if(ui.item.label == 'No results found'){
+                                    document.getElementById("list").value="";
+                                }
+                                                           return false;
+                                                   },focus: function (event, ui) {
+                                   this.value = ui.item.label;
+                                   event.preventDefault(); // Prevent the default focus behavior.
+                                },source: function(req, responseFn) {
+                                    document.getElementById("uid").value="";
+                                    var re = $.ui.autocomplete.escapeRegex(req.term);                                    
+                                    var matcher = new RegExp(re, "i" );
+                                    var a = $.grep( data, function(item,index){
+                                        return matcher.test(item.label);
+                                    });
+                                    if (!a.length) {
+                                        re = $.ui.autocomplete.escapeRegex("N");
+                                        matcher = new RegExp( "^" + re, "i" );
+                                        a = $.grep( noResult, function(item,index){
+                                            return matcher.test(item.label);
+                                        });
+                                    }
+                                    responseFn( a );
+                              }
+                                       });
+                
+                                   });
+                    </script>
+                    <h:inputHidden id="uid" value="#{systemResultViewUtil.id}"/>
+                    <div class="content">
+                        <h3>Update Medical Conditions</h3>
+                        <hr class="red"/>
+                        <div style="float: right; display: inline;">
+                            <h:outputLink value="#{systemResultSessionUtil.prevView}" rendered="#{systemResultSessionUtil.prevView != null}">
+                                <img src="#{facesContext.externalContext.requestContextPath}/images/back-btn.png"/>                            
+                            </h:outputLink>
+                        </div>
+                        <h:outputLabel rendered="#{systemResultSessionUtil.prevView != null}">
+                        <br/>           
+                        </h:outputLabel>
+                        <ui:include src="../common/message.xhtml" /> 
+                        <h:outputLabel rendered="#{systemResultSessionUtil.prevView != null}">
+                        <br/>                        
+                        </h:outputLabel>                        
+                        <table width="100%" border="0" cellpadding="0" cellspacing="0" class="form-table" id="listTable">
+                            <tr>
+                                <th width="30%">
+                                    <h:outputLabel rendered="#{systemResultSessionUtil.prevView == null}">
+                                        Update medical conditions for
+                                    </h:outputLabel>
+                                </th>
+                                <td width="70%">
+                                    <div id="search-box-bg">
+                                        <h:inputText id="list" styleClass="search-txt-box" rendered="#{systemResultSessionUtil.prevView == null}"/>
+                                    </div>
+                                </td>                                   
+                            </tr>
+                        </table>
+                        <a4j:commandButton id="go" value="Go" action="#{userServiceBean.retrieveMemberInjuryInfo()}" style="display: none" render="memberinfo, healthPannel, dataMessage" execute="uid"/>
+                        <a4j:outputPanel id="memberinfo">
+                            <div style="display :#{systemResultViewUtil.isMemberInfo  ? 'block' : 'none'}" class="userinfo">
+                                <table width="70%" border="0" cellspacing="0" style="padding-left: 0" cellpadding="0" class="form-table">
+                                    <tr>
+                                        <td colspan="2" style="font-weight: bold; text-align: left;">#{userDataBean.firstName} #{userDataBean.lastName}, #{userDataBean.gender == 'F' ? 'Female' : 'Male'}, #{userDataBean.age}</td>
+                                        <td>&#160;</td>
+                                        <td>&#160;</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Username : </th>
+                                        <td>
+                                            <h:outputLabel value="#{userDataBean.userId}" id="UserId">
+                                            </h:outputLabel>
+                                        </td>
+                                        <td>&#160;</td>
+                                        <td>&#160;</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Email address : </th>
+                                        <td>
+                                            <h:outputLabel rendered="#{systemResultViewUtil.id != null}">
+                                                #{(userDataBean.email == null || userDataBean.email == '') ?  'N/A' : userDataBean.email}
+                                            </h:outputLabel>
+                                        </td>
+                                        <th>Contact : </th>
+                                        <td>
+                                            <h:outputLabel rendered="#{systemResultViewUtil.id != null}">
+                                                #{(userDataBean.phoneNo == null || userDataBean.phoneNo == '') ?  'N/A' : userDataBean.phoneNo}
+                                            </h:outputLabel>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </a4j:outputPanel>
+                        <a4j:outputPanel id="healthPannel">
+                            <div id="health" style="display :#{systemResultViewUtil.isMemberInfo  ? 'block' : 'none'}">
+                                <div id="healthmsg" style="color: red"></div>
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" >
+                                    <thead>
+                                        <th width="28%" class="header">Medical Condition</th>
+                                        <th width="20%" class="header">Intensity</th>
+                                        <th width="20%" class="header">Status</th>
+                                        <th width="20%" class="header">Last updated on</th>
+                                        <th width="12%" class="header">Action</th>
+                                    </thead>
+                                </table>
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" >
+                                    <tr>
+                                        <td width="28%"></td>
+                                        <td width="20%"></td>
+                                        <td width="20%"></td>
+                                        <td width="20%"></td>
+                                        <td width="12%"></td>
+                                    </tr>
+                                    <tr>
+                                        <td valign="top">
+                                            <h:selectOneMenu style="width: 100%" id="injurymenu" onchange="document.getElementById('injury').value = this.value;">
+                                                <f:selectItem itemLabel="-- Select affected area --" />
+                                                <f:selectItems value="#{userServiceBean.injuryList}" />
+                                            </h:selectOneMenu>
+                                            <h:inputHidden id="injury" value="#{memberHealthDetailDataBean.injuryName}"  required="true" requiredMessage="Select medical condition"/>
+                                            <rich:message for="injury" />
+                                        </td>
+                                        <td valign="top">
+                                            <h:selectOneMenu style="width: 100%" id="intensitymenu"  onchange="document.getElementById('intensity').value = this.value;">
+                                                <f:selectItem itemLabel="-- Select --" />
+                                                <f:selectItems value="#{userServiceBean.injuryIntensityList}" />
+                                            </h:selectOneMenu>   
+                                            <h:inputHidden id="intensity" value="#{memberHealthDetailDataBean.intensity}"  required="true" requiredMessage="Select intensity"/>
+                                            <rich:message for="intensity" />
+                                        </td>
+                                        <td valign="top">
+                                            <h:selectOneMenu style="width: 100%" id="statusmenu" onchange="document.getElementById('status').value = this.value;">
+                                                <f:selectItem itemLabel="-- Select --" />
+                                                <f:selectItems value="#{userServiceBean.injuryStatusList}" />
+                                            </h:selectOneMenu>         
+                                            <h:inputHidden id="status" value="#{memberHealthDetailDataBean.status}" required="true" requiredMessage="Select status"/>
+                                            <rich:message for="status" />
+                                        </td>
+                                        <td></td>
+                                        <td>
+                                            <a4j:commandLink title="Add Medical Condition" action="#{userServiceBean.addInjuryToHealthBeanList()}" render="healthPannel,dataMessage" execute="uid,injury,intensity,status" oncomplete="resetInjuryValue();">
+                                                &#160;<img src="#{facesContext.externalContext.requestContextPath}/images/add-more-btn.jpg" alt="Add" />
+                                            </a4j:commandLink>
+                                        </td>
+                                    </tr>
+                                </table> 
+                                <rich:dataTable id="healthDetailDataList" value="#{systemResultViewUtil.healthDetailList}" var="healthData" style="border: none; width: 100%" rowKeyVar="rowId" styleClass="form-table">
+                                    <rich:column>                                    
+                                        <tr>
+                                            <td width="28%">
+                                                #{healthData.injuryName}
+                                            </td>
+                                            <td width="20%">
+                                                <h:selectOneMenu style="width: 100%" id="intensity1" value="#{healthData.intensity}">
+                                                    <f:selectItems value="#{userServiceBean.injuryIntensityList}" />
+                                                </h:selectOneMenu> 
+                                            </td>
+                                            <td width="20%">
+                                                <h:selectOneMenu style="width: 100%" value="#{healthData.status}">
+                                                    <f:selectItems value="#{userServiceBean.injuryStatusList}" />
+                                                </h:selectOneMenu> 
+                                            </td>
+                                            <td width="20%">
+                                                <h:outputText style="width: 100%" value="#{healthData.lastModifiedDate}">
+                                                    <f:convertDateTime type="date" pattern="MM/dd/yyyy" timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                                </h:outputText>
+
+                                            </td>
+                                            <td>
+                                                <a4j:commandLink execute="healthDetailDataList" action="#{userServiceBean.removeInjury()}" render="healthDetailDataList,dataMessage" style="text-decoration: underline;">
+                                                    <img src="#{facesContext.externalContext.requestContextPath}/images/remove.jpg" alt="Add" />
+                                                    <f:setPropertyActionListener target="#{systemResultViewUtil.id}" value="#{healthData.userId}" />
+                                                    <f:setPropertyActionListener target="#{userServiceBean.injury}" value="#{healthData.injury}" />
+                                                </a4j:commandLink>
+                                            </td>
+                                        </tr>
+
+                                    </rich:column>
+                                </rich:dataTable>
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" align="center">
+                                    <tr>
+                                        <td>
+                                            <hr class="red"/>
+                                            <div align="center">
+                                                <a4j:commandButton value="Submit" action="#{userServiceBean.updateInjury}" styleClass="standard-button" render="dataMessage,healthPannel" onclick="setInjuryValues();setId();" >
+                                                </a4j:commandButton>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </a4j:outputPanel>
+
+
+
+                    </div>
+                </h:form>
+
+
+                <ui:repeat value="#{userServiceBean.userList}" var="result">
+                    <script type="text/javascript">
+                        data.push({
+                         label:"#{result.label}",
+                          value:"#{result.value}"
+                        }
+                        );
+                    </script>
+                </ui:repeat>
+                <script type="text/javascript">
+                    
+                      function blankValues(){
+                          document.getElementById("injurymenu").value = '';
+                          document.getElementById("intensitymenu").value = '';   
+                          document.getElementById("statusmenu").value = '';
+                      }
+                      
+                     function resetInjuryValue() {
+                      var injury = document.getElementById("injury").value;
+                      if (injury != '') {
+                          document.getElementById("injurymenu").value = injury;
+                      }
+                      var intensity = document.getElementById("intensity").value;
+                      if (intensity != '') {
+                          document.getElementById("intensitymenu").value = intensity;                           
+                      }
+                      var status = document.getElementById("status").value;
+                      if (status != '') {
+                          document.getElementById("statusmenu").value = status;
+                      }
+                  }
+                           
+                  function setInjuryValues() {
+                      var injury = document.getElementById("injury").value;                               
+                      if (injury == '') {
+                          document.getElementById("injury").value = "-1";
+                          if (document.getElementById("intensity").value == '') {
+                          document.getElementById("intensity").value = "-1";
+                          }
+                          if (document.getElementById("status").value == '') {
+                          document.getElementById("status").value = "-1";
+                          }
+                      } else {
+                                   
+                      }
+                                        }
+                           
+                  function resetOldInjuryValues() {
+                      if (document.getElementById("injury").value == "-1") {
+                          document.getElementById("injury").value = "";
+                      }
+                      if (document.getElementById("intensity").value == "-1") {
+                          document.getElementById("intensity").value = "";                                   
+                      }
+                      if (document.getElementById("status").value == "-1") {
+                          document.getElementById("status").value = "";                                   
+                      }
+                  }
+                   
+                    function setId() {
+                        if (!(globalUid == '' || globalUid == null)) {
+                            document.getElementById("uid").value = globalUid;
+                        }
+                    }                
+                    
+                    var preView = '#{systemResultSessionUtil.prevView}';
+                    if (preView != '') {
+                        document.getElementById("uid").value = '#{systemResultSessionUtil.id}';
+                        document.getElementById("go").click();
+                        document.getElementById("searchMember").setAttribute("class", "active");
+                        document.getElementById("search-box-bg").style.display = "none";
+                        document.getElementById("listTable").style.display = "none";
+                    } else {
+                        document.getElementById("updateInjury").setAttribute("class", "active");                        
+                    }
+                </script>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

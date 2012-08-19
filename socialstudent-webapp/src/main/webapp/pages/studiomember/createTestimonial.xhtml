@@ -1,0 +1,213 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+
+    <h:body>
+        <ui:composition template="../layout/studioMemberLayout.xhtml">
+            <ui:define name="content">
+                <script type="text/javascript">
+                    if(document.getElementById("testimonial") != null) {
+                        document.getElementById("testimonial").setAttribute("class", "active");
+                    } else {
+                        location.href ="/mySession";
+                    }
+                </script>
+                <h3>Write A New Testimonial</h3>
+                <div align="right" style="margin-top: -23px"> <h:outputText value="(Fields marked with * are mandatory)" styleClass="infomessages"/></div>                 
+                <hr class="red"/>                
+                <ui:include src="../common/message.xhtml" /> 
+                <h:form prependId="false">
+                    <f:metadata>
+                        <f:event type="preRenderView" listener="#{userServiceBean.retrieveAlbumList()}"/>
+                    </f:metadata>
+                    <div id="inputmessage" class="content">
+                        <table>
+                            <tr>
+                                <td align="center">
+                                    <h:outputText value="Before" class="content"/>                                
+                                </td>
+                                <td align="center">
+                                    <h:outputText value="After" class="content"/>                                
+                                </td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td width="25%" align="center" style="vertical-align: top">
+                                    <a4j:outputPanel id="beforeImagePanel">
+                                        <h:inputHidden id="beforeFinalImage" value="#{memberTestimonialDetailDataBean.imagePathOld}"/>
+                                        <a4j:commandLink onclick="#{rich:component('albumPanel')}.show();" >
+                                            <img id="beforeAvtarImg" src="#{facesContext.externalContext.requestContextPath}/images/defaultuser.jpg"
+                                                 style="display: none"/>
+
+                                            <a4j:mediaOutput id="image" style="border:none; width: 150px; height: 130px"
+                                                             element="img"
+                                                             createContent="#{systemResultSessionUtil.drawImage}"
+                                                             value="#{memberTestimonialDetailDataBean.imagePathOld}"
+                                                             rendered="#{memberTestimonialDetailDataBean.imagePathOld != null and systemResultSessionUtil.imageData == null}"
+                                                             mimeType="image/jpg"
+                                                             styleClass="u7" />
+                                            <a4j:mediaOutput id="image1" style="border:none; width: 150px; height: 130px"
+                                                             element="img"
+                                                             createContent="#{systemResultSessionUtil.drawImage}"
+                                                             mimeType="image/jpg"
+                                                             styleClass="u7"
+                                                             rendered="#{systemResultSessionUtil.imageData != null}"/>
+                                        </a4j:commandLink>
+                                    </a4j:outputPanel>
+                                </td>
+
+                                <td width="15%" align="center" style="vertical-align: top">
+                                    <a4j:outputPanel id="afterImagePanel">
+                                        <h:inputHidden id="afterFinalImage" value="#{memberTestimonialDetailDataBean.imagePathNew}"/>
+                                        <a4j:commandLink onclick="#{rich:component('albumPanelAfter')}.show();">
+                                            <img id="afterAvtarImg" src="#{facesContext.externalContext.requestContextPath}/images/defaultuser.jpg"
+                                                 style="display: none"/>
+                                            <a4j:mediaOutput id="image2" style="border:none; width: 150px; height: 130px"
+                                                             element="img"
+                                                             createContent="#{systemResultSessionUtil.drawImage}"
+                                                             value="#{memberTestimonialDetailDataBean.imagePathNew}"
+                                                             rendered="#{memberTestimonialDetailDataBean.imagePathNew != null and systemResultSessionUtil.imgData == null}"
+                                                             mimeType="image/jpg"
+                                                             styleClass="u7" />
+                                            <a4j:mediaOutput id="image3" style="border:none; width: 150px; height: 130px"
+                                                             element="img"
+                                                             createContent="#{systemResultSessionUtil.drawOtherImage}"
+                                                             mimeType="image/jpg"
+                                                             styleClass="u7"
+                                                             rendered="#{systemResultSessionUtil.imgData != null}"/>
+
+                                        </a4j:commandLink>
+                                    </a4j:outputPanel>
+
+                                </td>
+                                <td width="60%" align="right" style="vertical-align: top">
+                                    <h:inputTextarea id="testimonialMessage" rows="8" cols="46" value="#{memberTestimonialDetailDataBean.message}" onfocus="counterForTextArea('testimonialMessage','testimonialMessageCounter',400)" onkeyup="counterForTextArea('testimonialMessage','testimonialMessageCounter',400)" required="true" requiredMessage="Enter message" />
+                                    <font color="red">*</font>
+                                    <div style="text-align: right" ><i><h:outputText value="(You can type" style="color: grey;"/> &#160;<h:outputText id="testimonialMessageCounter"  value="400" style="color: grey;"/> &#160;<h:outputText value="more characters)" style="color: grey;"/></i></div>
+                                </td> 
+                            </tr>
+                            <tr>
+                                <td><rich:message for="beforeFinalImage" style="color: red"/></td>
+                                <td><rich:message for="afterFinalImage" style="color: red"/></td>
+                                <td><rich:message for="testimonialMessage" style="color: red"/></td>
+                            </tr>
+                        </table>
+                        <hr class="red"/>
+                        <a4j:commandButton value="Post" style="float: right;width: 100px" action="#{userServiceBean.createTestimonial()}" styleClass="standard-button" onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content');">
+                        </a4j:commandButton>
+                    </div>
+                </h:form>
+
+                <rich:popupPanel id="albumPanel" minWidth="730" minHeight="400" autosized="false">
+                    <div id="albumDiv">
+                        <h:form prependId="false">
+                            <h6 align="left"> Upload Image 
+                                <a4j:commandLink immediate="true" style="float: right" onclick="#{rich:component('albumPanel')}.hide();">
+                                    <img src="#{facesContext.externalContext.requestContextPath}/images/close-btn.jpg" alt="close" title="Close" align="texttop"/>
+                                </a4j:commandLink>
+                                <hr class="red"/>
+                            </h6>
+                            <div align="center">
+                                <rich:fileUpload  fileUploadListener="#{fileUploadListener.imageUploadListener}" 
+                                                  addLabel="Upload Picture11"
+                                                  style="height: 80px; width: 300px"
+                                                  onuploadcomplete="#{rich:component('albumPanel')}.hide();document.getElementById('beforeAvtarImg').style.display='none';document.getElementById('beforeFinalImage').value='';"
+                                                  >
+
+                                    <a4j:ajax event="uploadcomplete" render="beforeImagePanel" oncomplete="document.getElementById('beforeFinalImage').value = '#{systemResultSessionUtil.imageName}'" />
+
+                                </rich:fileUpload> 
+                            </div>
+                            <br></br>
+                            <h:outputLabel rendered="#{systemResultViewUtil.albumList.size() gt 0}">
+                                <div align="center" style="color: #333333;"><span style="letter-spacing:-3px;">------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</span>&nbsp;<em><strong>OR</strong></em>&nbsp;
+                                    <span style="letter-spacing:-3px;">------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</span></div>
+                            </h:outputLabel>
+                            <div class="albumPanel">
+                                <h:inputHidden id="beforeImg" value="#{memberTestimonialDetailDataBean.imagePathOld}" />
+                                <br></br>
+                                <rich:dataGrid var="image" columns="6" value="#{systemResultViewUtil.albumList}" style="border: none">
+                                    <a4j:commandLink onclick="document.getElementById('beforeImg').value='#{image.path}';" render="beforeImagePanel"
+                                                     oncomplete="#{rich:component('albumPanel')}.hide();document.getElementById('beforeFinalImage').value='#{image.path}';"
+                                                     execute="beforeImg">
+                                        <a4j:mediaOutput id="pic" style="padding-left: 10px;border:none; width: 100px; height: 100px"
+                                                         element="img"
+                                                         createContent="#{systemResultSessionUtil.drawImage}"
+                                                         value="#{image.path}"
+                                                         rendered="#{image.path != null}"
+                                                         mimeType="image/jpg"
+                                                         styleClass="u7"/>
+                                        <f:setPropertyActionListener value="#{image.path}" target="#{memberTestimonialDetailDataBean.imagePathOld}" />
+                                        <f:setPropertyActionListener value="null" target="#{systemResultSessionUtil.imageName}" />
+                                        <f:setPropertyActionListener value="" target="#{systemResultSessionUtil.imageData}" />
+                                    </a4j:commandLink>
+                                </rich:dataGrid>
+                            </div>
+                        </h:form>
+                    </div>
+                </rich:popupPanel>
+
+                <rich:popupPanel id="albumPanelAfter" minWidth="730" minHeight="400" autosized="false">
+                    <div id="albumDiv1">
+                        <h:form prependId="false">
+                            <h6 align="left"> Upload Image 
+                                <a4j:commandLink immediate="true" style="float: right" onclick="#{rich:component('albumPanelAfter')}.hide();">
+                                    <img src="#{facesContext.externalContext.requestContextPath}/images/close-btn.jpg" alt="close" title="Close" align="texttop"/>
+                                </a4j:commandLink>
+                                <hr class="red"></hr>
+                            </h6>
+                            <div align="center">
+                                <rich:fileUpload  fileUploadListener="#{fileUploadListener.imageUploadListener1}" 
+                                                  addLabel="Upload Picture"
+                                                  style="height: 80px; width: 300px"
+                                                  onuploadcomplete="#{rich:component('albumPanelAfter')}.hide();document.getElementById('afterAvtarImg').style.display='none';"
+                                                  >
+                                    <a4j:ajax event="uploadcomplete" render="afterImagePanel" oncomplete="document.getElementById('afterFinalImage').value = '#{systemResultSessionUtil.imgName}'"/>
+                                </rich:fileUpload>  
+                            </div>
+                            <br></br>
+                            <h:outputLabel rendered="#{systemResultViewUtil.albumList.size() gt 0}">
+                                <div align="center" style="color: #333333;"><span style="letter-spacing:-3px;">------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</span>&nbsp;<em><strong>OR</strong></em>&nbsp;
+                                    <span style="letter-spacing:-3px;">------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------</span></div>
+                            </h:outputLabel>
+                            <br></br>
+                            <div class="albumPanel">
+                                <h:inputHidden id="newImage1" value="#{memberTestimonialDetailDataBean.imagePathNew}" />
+
+                                <rich:dataGrid var="image" columns="6" value="#{systemResultViewUtil.albumList}" style="border: none">
+                                    <a4j:commandLink onclick="document.getElementById('newImage1').value='#{image.path}'"
+                                                     render="afterImagePanel" 
+                                                     oncomplete="#{rich:component('albumPanelAfter')}.hide();document.getElementById('afterFinalImage').value='#{image.path}';"
+                                                     execute="newImage1">
+                                        <a4j:mediaOutput id="pic" style="padding-left: 10px;border:none; width: 100px; height: 100px"
+                                                         element="img"
+                                                         createContent="#{systemResultSessionUtil.drawImage}"
+                                                         value="#{image.path}"
+                                                         rendered="#{image.path != null}"
+                                                         mimeType="image/jpg"
+                                                         styleClass="u7"/>
+                                        <f:setPropertyActionListener value="#{image.path}" target="#{memberTestimonialDetailDataBean.imagePathNew}" />
+                                        <f:setPropertyActionListener value="null" target="#{systemResultSessionUtil.imgName}" />
+                                        <f:setPropertyActionListener value="" target="#{systemResultSessionUtil.imgData}" />
+                                    </a4j:commandLink>
+                                </rich:dataGrid>
+                            </div>
+                        </h:form>
+                    </div>
+                </rich:popupPanel>
+
+                <script type="text/javascript">
+                    
+                    document.getElementById('beforeAvtarImg').style.display='block';
+                    document.getElementById('afterAvtarImg').style.display='block';
+                </script>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

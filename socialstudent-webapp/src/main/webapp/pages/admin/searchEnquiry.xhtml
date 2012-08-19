@@ -1,0 +1,138 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+    <h:body>
+        <ui:composition template="../layout/adminLayout.xhtml">
+            <ui:define name="content">
+                 <script type="text/javascript">
+                    if(document.getElementById("searchEnquiry") != null) {
+                        document.getElementById("searchEnquiry").setAttribute("class", "active");
+                    } else {
+                        location.href ="#{loginDataBean.lendingPage}";
+                    }                    
+                </script>
+                <f:event listener="#{userServiceBean.loadContactUsList()}" type="preRenderComponent"/>
+                <h:form prependId="false">
+                    <h3>Inquiries</h3>
+                    <hr class="red"/>
+                    <div id="search-panel"> 
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tbody>
+                                <tr>
+                                    <td width="40%">   
+                                        <h:outputLink title="Create Inquiry" value="createEnquiry">
+                                            <img src="#{facesContext.externalContext.requestContextPath}/images/new-button.jpg"/>
+                                        </h:outputLink>
+                                    </td>
+                                    <td width="13%" style="vertical-align: middle;">
+                                        <h:selectBooleanCheckbox value="#{systemResultViewUtil.isShowInActiveData}" >
+                                            <a4j:ajax listener="#{userServiceBean.loadContactUsList()}" render="enquiryListPanel" />
+                                        </h:selectBooleanCheckbox>
+                                        <strong>Show All</strong></td>
+                                    <td width="35%"><div id="search-box-bg">
+                                            <h:inputText value="#{systemResultViewUtil.searchString}" id="searchString" maxlength="50" class="search-txt-box" />                                                
+                                        </div></td>
+                                    <td width="12%" style="vertical-align: middle;"> &#160;                                               
+                                        <a4j:commandButton value="Search"  action="#{userServiceBean.loadContactUsList()}" styleClass="standard-button"  onclick="loadWaitPanel('content');" oncomplete="stopWaitPanel('content');" render="enquiryListPanel, dataMessage"  title="Search Inquiry" status="status" />                                                 
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                    </div>                   
+                    <div class="content">
+                        <ui:include src="../common/message.xhtml" />                    
+
+                        <a4j:outputPanel id="enquiryListPanel">      
+                            <rich:dataTable  id="enquiryDataList" rowKeyVar="rowId" rows="10" rendered="#{systemResultViewUtil.contactusDataBeanList!=null and not empty systemResultViewUtil.contactusDataBeanList}"
+                                             var="enquiry" value="#{systemResultViewUtil.contactusDataBeanList}" styleClass="meal-plan" style="width: 100%" rowClass="#{rowId%2 == 0 ? 'alt-row1':'alt-row'}" >
+                                <f:facet name="header">
+                                    <rich:columnGroup>
+                                        <rich:column style="width: 15%" styleClass="header">
+                                            <h:outputText value="Name"/>
+                                        </rich:column>
+                                        <rich:column style="width: 11%" styleClass="header">
+                                            <h:outputText value="Date"/>
+                                        </rich:column>                                        
+                                        <rich:column style="width: 14%"  styleClass="header">
+                                            <h:outputText value="Inquired For" />
+                                        </rich:column>
+                                        <rich:column style="width: 15%"  styleClass="header">
+                                            <h:outputText value="Contact Time" />
+                                        </rich:column>
+                                        <rich:column style="width: 15%"  styleClass="header">
+                                            <h:outputText value="Address" />
+                                        </rich:column>
+                                        <rich:column style="width: 11%"  styleClass="header">
+                                            <h:outputText value="Follow up" />
+                                        </rich:column>
+                                        <rich:column style="width: 12%"  styleClass="header">
+                                            <h:outputText value="Lead Status" />
+                                        </rich:column>
+                                        <rich:column style="width: 7%; text-align: center;"  styleClass="header">
+                                            <h:outputText value="Status" />
+                                        </rich:column>
+                                    </rich:columnGroup>
+                                </f:facet>                              
+                                <rich:column style="vertical-align: top">
+                                    <a4j:commandLink title="Click here to Edit" value="#{enquiry.name}" action="pretty:updateEnquiry" onclick="loadWaitPanel('content');" render="manageinq" oncomplete="stopWaitPanel('content');">                                        
+                                        <f:setPropertyActionListener value="#{enquiry.id}" target="#{systemResultSessionUtil.id}"/>
+                                    </a4j:commandLink>                                    
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{enquiry.createdOn}">
+                                        <f:convertDateTime pattern="MM/dd/yyyy" timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                    </h:outputText>                                    
+                                </rich:column>   
+                                <rich:column style="vertical-align: top">
+                                    <a4j:commandLink action="#{userServiceBean.loadContactUsList()}" value="#{enquiry.enquiredFor}" render="enquiryListPanel" title="Click here to view all #{enquiry.enquiredFor}"
+                                                     onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content');">
+                                        <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="#{enquiry.enquiredFor}"/>                                        
+                                    </a4j:commandLink>
+                                </rich:column>   
+                                <rich:column style="vertical-align: top">
+                                    <a4j:commandLink action="#{userServiceBean.loadContactUsList()}" value="#{enquiry.contactTime}" render="enquiryListPanel" title="Click here to view all #{enquiry.contactTime}"
+                                                     onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content');">
+                                        <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="#{enquiry.contactTime}"/>                                        
+                                    </a4j:commandLink>                                                                    
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{enquiry.fullAddress}" escape="false">
+                                    </h:outputText>                                    
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                    <a4j:commandLink action="#{userServiceBean.loadContactUsList()}" value="#{enquiry.followupString}" render="enquiryListPanel" title="Click here to view all #{enquiry.followupString}"
+                                                     onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content');">
+                                        <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="#{enquiry.followupString}"/>                                        
+                                    </a4j:commandLink>                                                                     
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{enquiry.leadStatusString}">
+                                    </h:outputText>                                    
+                                </rich:column>
+                                <rich:column style="text-align: center;vertical-align: top">                                    
+                                    <h:outputLabel id="statusPanel">
+                                        <a4j:commandLink title="#{enquiry.isActive ? 'Click here to Deactivate':'Click here to Activate'}" onclick="loadWaitPanel('content');" action="#{userServiceBean.changeStatusOfEnquiry()}" rendered="#{enquiry.isActive != null}" render="enquiryListPanel,dataMessage" oncomplete="stopWaitPanel('content');">
+                                            <h:graphicImage value="#{enquiry.isActive ?'/images/activate.png' :'/images/deactivate.png'}" style="border: none;" />
+                                            <f:setPropertyActionListener value="#{enquiry.id}" target="#{contactusDataBean.id}"/>
+                                            <f:setPropertyActionListener value="#{not enquiry.isActive}" target="#{contactusDataBean.isActive}"/>
+                                        </a4j:commandLink>
+                                    </h:outputLabel>
+                                </rich:column>                               
+                                <f:facet name="footer" >                                    
+                                    <div align="center" style="width: 100%;">
+                                        <rich:dataScroller for="enquiryDataList" renderIfSinglePage="true" maxPages="10" fastStep="5"></rich:dataScroller>  
+                                    </div>                                    
+                                </f:facet>
+                            </rich:dataTable>
+                        </a4j:outputPanel>
+                    </div>
+                </h:form>
+            </ui:define>
+
+        </ui:composition>
+    </h:body>
+</html>

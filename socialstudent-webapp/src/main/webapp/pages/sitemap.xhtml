@@ -1,0 +1,91 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html">
+    <h:body>       
+        <ui:composition template="./layout/homeLayout.xhtml">
+            <ui:define name="content">
+                <div style="margin-top:30px;">
+                    <h:form>
+                        <h3 >Sitemap</h3>
+                        <div class="breadcrumbs" style="width:970px;"> <a href="/login">HOME</a> | SITEMAP</div>
+
+                        <div class="content">
+                            <ul id="sitemap">
+<!--                                <li style="width:100px;"><a href="/login">Home</a></li>-->
+                                    <li style="width:150px;"> <h:commandLink value="About Us" action="#{menuServiceBean.menuNavigate}">                                    
+                                        <f:param name="id" value="aboutus"/>                                   
+                                    </h:commandLink>                                                               
+                                    <ul id="sub-sitemap">
+                                        <li style="width:150px;">
+                                            <h:commandLink value="Philosophy" action="#{menuServiceBean.menuNavigate}">                                    
+                                                <f:param name="id" value="aboutus"/>                                   
+                                            </h:commandLink>
+                                        </li>
+                                        <li style="width:150px;"><a href="/founder">Founder &amp; Creator</a></li>                                                                                                                         
+                                    </ul>
+                                </li>
+                                <li style="text-align: left; width: 200px;"> <h:commandLink value="Training" action="#{menuServiceBean.menuNavigate}">                                    
+                                        <f:param name="id" value="trainingstudio"/>                                   
+                                    </h:commandLink>                                    
+                                    <ul id="sub-sitemap">
+                                        <li style="width:200px;"><h:commandLink value="PB Training Innovation" action="#{menuServiceBean.menuNavigate}">                                    
+                                                <f:param name="id" value="trainingstudio"/>                                   
+                                            </h:commandLink></li>
+                                        
+                                    </ul>
+                                </li>
+                                <li><h:commandLink value="Eating" action="#{menuServiceBean.menuNavigate}">                                    
+                                        <f:param name="id" value="pbalancediet"/>                                   
+                                    </h:commandLink>
+                                    <ul id="sub-sitemap">
+                                        <li><h:commandLink value="Eating" action="#{menuServiceBean.menuNavigate}">                                    
+                                                <f:param name="id" value="pbalancediet"/>                                   
+                                            </h:commandLink>
+                                        </li>
+                                        <li><h:commandLink value="PB Meal Plan" action="#{menuServiceBean.loginNavigate}">                                    
+                                                <f:param name="id" value="pbalancemealplan"/>                                   
+                                            </h:commandLink>
+                                        </li>   
+                                        <li>
+                                            <h:commandLink value="PB Recipes" action="#{menuServiceBean.loginNavigate}">                              
+                                                <f:param name="id" value="pbalanceRecipes"/>
+                                            </h:commandLink>
+                                        </li>
+                                    </ul>
+                                </li>                                
+                                <li style="width:100px;"><h:commandLink value="Videos" action="#{menuServiceBean.loginNavigate}">
+                                        <f:param name="id" value="viewVideos"/>                                   
+                                    </h:commandLink>                                                                             
+                                </li> 
+                                <li style="width:100px;"><h:commandLink value="Results" action="#{menuServiceBean.menuNavigate}">                                    
+                                        <f:param name="id" value="results"/>                                   
+                                    </h:commandLink>
+                                </li>
+                                <li style="width:100px;"><h:commandLink value="Schedule" action="#{menuServiceBean.menuNavigate}">
+                                        <f:param name="id" value="schedule"/>                                   
+                                    </h:commandLink> 
+                                </li>                               
+                                <li style="text-align: left;">
+                                    <h:commandLink value="Contact" action="#{menuServiceBean.menuNavigate}">                                    
+                                        <f:param name="id" value="contact"/>                                   
+                                    </h:commandLink>
+                                    <ul id="sub-sitemap">
+                                        <li> <h:commandLink value="Contact" action="#{menuServiceBean.menuNavigate}">                                    
+                                                <f:param name="id" value="contact"/>                                   
+                                            </h:commandLink></li>
+                                        <li style="width:150px;"><h:commandLink value="PB Weight Loss Contest" action="#{menuServiceBean.menuNavigate}">                                    
+                                                <f:param name="id" value="wlc"/>                                   
+                                            </h:commandLink></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                    </h:form>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

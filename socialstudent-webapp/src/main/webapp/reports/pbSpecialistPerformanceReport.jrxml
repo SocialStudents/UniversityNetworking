@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="pbSpecialistPerformanceReport" pageWidth="842" pageHeight="650" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="213623f0-1f26-475a-b6a9-e993c7c3d695">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="146"/>
+	<parameter name="imageLink" class="java.lang.String"/>
+	<parameter name="firstName" class="java.lang.String"/>
+	<parameter name="lastName" class="java.lang.String"/>
+	<parameter name="createdOn" class="java.util.Date"/>
+	<parameter name="totalUnits" class="java.lang.Integer"/>
+	<parameter name="sessions" class="java.lang.Integer"/>
+	<parameter name="count" class="java.lang.Integer"/>
+	<parameter name="newRegisteredFees" class="java.lang.Double"/>
+	<parameter name="renewalFees" class="java.lang.String"/>
+	<parameter name="commisionNew" class="java.lang.Integer"/>
+	<parameter name="commisionRenew" class="java.lang.Integer"/>
+	<parameter name="renewalCount" class="java.lang.Integer"/>
+	<parameter name="address" class="java.lang.String"/>
+	<parameter name="address2" class="java.lang.String"/>
+	<parameter name="memberAttended" class="java.lang.Integer"/>
+	<parameter name="memberCancelled" class="java.lang.Integer"/>
+	<parameter name="memberScheduled" class="java.lang.Integer"/>
+	<parameter name="memberSkipped" class="java.lang.Integer"/>
+	<parameter name="fromDate" class="java.util.Date"/>
+	<parameter name="toDate" class="java.util.Date"/>
+	<parameter name="description" class="java.lang.String"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="injuryList" class="net.sf.jasperreports.engine.JRDataSource"/>
+	<parameter name="measurementList" class="net.sf.jasperreports.engine.JRDataSource"/>
+	<parameter name="showMeasurement" class="java.lang.Boolean"/>
+	<parameter name="showInjury" class="java.lang.Boolean"/>
+	<parameter name="commissionNewAmount" class="java.lang.Double"/>
+	<parameter name="commissionRenewalAmount" class="java.lang.Double"/>
+	<field name="firstName" class="java.lang.String">
+		<fieldDescription><![CDATA[firstName]]></fieldDescription>
+	</field>
+	<field name="lastName" class="java.lang.String">
+		<fieldDescription><![CDATA[lastName]]></fieldDescription>
+	</field>
+	<field name="totalUnits" class="java.lang.Integer">
+		<fieldDescription><![CDATA[totalUnits]]></fieldDescription>
+	</field>
+	<field name="sessions" class="java.lang.Integer">
+		<fieldDescription><![CDATA[sessions]]></fieldDescription>
+	</field>
+	<field name="memberAttended" class="java.lang.Integer">
+		<fieldDescription><![CDATA[memberAttended]]></fieldDescription>
+	</field>
+	<group name="measurement Group">
+		<groupExpression><![CDATA[$F{firstName}]]></groupExpression>
+		<groupHeader>
+			<band height="50">
+				<printWhenExpression><![CDATA[$P{showMeasurement}.booleanValue()==true ? new Boolean(true)
+: new Boolean(false)]]></printWhenExpression>
+				<subreport>
+					<reportElement uuid="23314cca-df3b-4e2a-bb48-e290e729d4d1" x="2" y="0" width="800" height="50"/>
+					<parametersMapExpression><![CDATA[$P{REPORT_PARAMETERS_MAP}]]></parametersMapExpression>
+					<dataSourceExpression><![CDATA[$P{measurementList}]]></dataSourceExpression>
+					<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "/measurementReport1.jasper"]]></subreportExpression>
+				</subreport>
+			</band>
+		</groupHeader>
+	</group>
+	<group name="injuryGroup">
+		<groupExpression><![CDATA[$F{firstName}]]></groupExpression>
+		<groupHeader>
+			<band height="50">
+				<printWhenExpression><![CDATA[$P{showInjury}.booleanValue()==true ? new Boolean(true)
+: new Boolean(false)]]></printWhenExpression>
+				<subreport>
+					<reportElement uuid="3ae9eff8-e603-4f97-8bf2-7eaf47fe8ef0" x="2" y="0" width="800" height="50"/>
+					<parametersMapExpression><![CDATA[$P{REPORT_PARAMETERS_MAP}]]></parametersMapExpression>
+					<dataSourceExpression><![CDATA[$P{injuryList}]]></dataSourceExpression>
+					<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "/injuryReport.jasper"]]></subreportExpression>
+				</subreport>
+			</band>
+		</groupHeader>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="524" splitType="Stretch">
+			<image scaleImage="FillFrame">
+				<reportElement uuid="f1a76c25-2b68-43df-9d6e-d8d67e826e48" x="2" y="0" width="441" height="132"/>
+				<imageExpression><![CDATA[$P{imageLink}.toString()]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement uuid="371d2254-1e88-4f04-995b-953f5062e22a" x="2" y="116" width="555" height="35"/>
+				<textElement textAlignment="Left">
+					<font size="18"/>
+				</textElement>
+				<text><![CDATA[PB Specialist Performance Report]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="9bb86438-99ff-4ebb-8546-cf678a8e809a" x="10" y="172" width="130" height="20"/>
+				<textElement/>
+				<text><![CDATA[Name]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="2af6332d-7ddb-4834-b2d1-51c63e12f877" x="166" y="172" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$P{firstName}.concat( " " ).concat( $P{lastName} )]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="90583802-d7d9-4eed-a137-5ac7c81b1e5b" x="425" y="172" width="100" height="20"/>
+				<textElement/>
+				<text><![CDATA[Date of Joining]]></text>
+			</staticText>
+			<textField pattern="MM/dd/yyyy">
+				<reportElement uuid="9d0b93d1-bb96-4da2-9258-2c7284ae987f" x="555" y="172" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$P{createdOn}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="684925c1-de61-4cc0-be4e-4b15f8784d76" x="10" y="197" width="130" height="20"/>
+				<textElement/>
+				<text><![CDATA[Days attended]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="954708c7-41d1-422c-abcd-16f7b8dd4bc7" x="166" y="197" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$P{totalUnits}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="7c8080da-e93e-4aab-880e-4c5567299306" x="425" y="197" width="100" height="20"/>
+				<textElement/>
+				<text><![CDATA[Sessions conducted]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="97fa2731-38a9-46de-acb7-902b17c3700c" x="555" y="197" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$P{sessions}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="898a95f8-4740-4851-8d6c-183f1c0ee085" x="10" y="221" width="130" height="20"/>
+				<textElement/>
+				<text><![CDATA[New registered PBers]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="410c61da-45d3-4196-8502-69bf57fe7a0f" x="425" y="221" width="100" height="20"/>
+				<textElement/>
+				<text><![CDATA[No. of PBers by renewal]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="bc3140af-824e-4e2e-84fa-fc2befc36ef8" x="166" y="221" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$P{count}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="12d2e17e-8b63-4163-b7ce-30995a51b621" x="555" y="221" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$P{renewalCount}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="f349a365-caf8-4cd0-81c4-d28e323c08fe" x="10" y="247" width="130" height="20"/>
+				<textElement/>
+				<text><![CDATA[Amount collected from new registrations]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="ccf1c1af-2a58-4544-97c8-0c2c22426e15" x="166" y="247" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[( $P{newRegisteredFees} == null ? "0.0" : $P{newRegisteredFees} )]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="e5697374-f67f-4886-bbe4-03ca954ae2df" x="425" y="245" width="100" height="28"/>
+				<textElement/>
+				<text><![CDATA[Amount collected from renewals]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="1a132331-de42-435e-9e51-85f60da70fd5" x="555" y="247" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[( $P{renewalFees} == null ? "0.0" : $P{renewalFees} )]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="db770163-8621-4772-b306-00e44dfeb805" x="10" y="275" width="130" height="29"/>
+				<textElement/>
+				<text><![CDATA[Units earned from new registration]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="6b8d10bb-8867-4d24-a8a1-c2dfdd354754" x="425" y="275" width="100" height="29"/>
+				<textElement/>
+				<text><![CDATA[Units earned from renewal]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="adbe4082-0e58-41a3-9092-16e0bcc8eb11" x="10" y="363" width="779" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="4af048f8-8aae-4207-95fc-c14c47e12f15" x="11" y="343" width="100" height="20" forecolor="#D90F2D"/>
+				<textElement/>
+				<text><![CDATA[PBer Detail]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="21d3ac50-c747-4c5d-b938-9577eb72f85b" x="13" y="147" width="100" height="20" forecolor="#D90F2D"/>
+				<textElement/>
+				<text><![CDATA[PB Specialist Detail]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="49b1c0b1-2451-4b95-a0c0-4cb7bf0720e8" x="10" y="167" width="779" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="0ef25264-199e-4cc0-909e-d49e3f71203e" x="10" y="366" width="100" height="20"/>
+				<textElement/>
+				<text><![CDATA[Pber Name]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="d3e563ce-0194-49e0-9b1a-5d7400762749" x="140" y="366" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$P{address}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="cc75ee0e-9de1-41d4-b59c-b3128ca38dd1" x="425" y="366" width="100" height="20"/>
+				<textElement/>
+				<text><![CDATA[Goal]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="3cff1897-c20d-43cf-8efd-057d1130939b" x="555" y="366" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$P{address2}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="d9e28ae5-ecba-4b9e-a307-d94a96eebb21" x="10" y="397" width="100" height="20" forecolor="#D90F2D"/>
+				<textElement/>
+				<text><![CDATA[Session Detail]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="ad186ce1-8616-4900-ba89-21c2804084ea" x="11" y="413" width="779" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="1bb551b9-2cc6-4fa7-a499-e03bceabeaf7" x="10" y="414" width="100" height="14"/>
+				<textElement/>
+				<text><![CDATA[Attended Session]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="732ceba8-9471-41d3-b533-19f8e003a2b8" x="10" y="435" width="100" height="14"/>
+				<textElement/>
+				<text><![CDATA[Booked Session]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="faf636d1-10ab-4833-9f70-415aad02d445" x="425" y="414" width="100" height="14"/>
+				<textElement/>
+				<text><![CDATA[Cancelled Session]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="ef30afd8-b53c-4c48-98e3-5649535b2e7a" x="425" y="435" width="100" height="14"/>
+				<textElement/>
+				<text><![CDATA[Skipped Session]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="26d8c8cf-2df0-455a-84b1-2ca31ac45b47" x="140" y="414" width="100" height="14"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$P{memberAttended}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="32462292-0978-4659-82ca-308ab3f1d764" x="557" y="414" width="100" height="14"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$P{memberCancelled}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="011b6a01-bb0d-47e5-8324-210352f36b54" x="140" y="435" width="100" height="14"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$P{memberScheduled}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="b800143b-1430-4947-ad0d-3ce93417dfe7" x="557" y="435" width="100" height="14"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$P{memberSkipped}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="d9e28ae5-ecba-4b9e-a307-d94a96eebb21" x="9" y="456" width="113" height="20" forecolor="#D90F2D"/>
+				<textElement/>
+				<text><![CDATA[Travel/Vacation Detail]]></text>
+			</staticText>
+			<line>
+				<reportElement uuid="ad186ce1-8616-4900-ba89-21c2804084ea" x="10" y="471" width="779" height="1"/>
+			</line>
+			<staticText>
+				<reportElement uuid="60b4ab42-d2ed-4df3-a3d0-75a25e215a9b" x="10" y="481" width="100" height="14"/>
+				<textElement/>
+				<text><![CDATA[Travel Starts From]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="72d496ff-eb11-4309-b8be-c842d5a93ed2" x="240" y="481" width="26" height="14"/>
+				<textElement/>
+				<text><![CDATA[To]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="57b45e18-e4fa-4582-8560-4d85307520fd" x="9" y="501" width="100" height="21"/>
+				<textElement/>
+				<text><![CDATA[Description]]></text>
+			</staticText>
+			<textField pattern="MM/dd/yyyy">
+				<reportElement uuid="bc5fdd09-bdcf-4a69-919c-438702dc37b8" x="122" y="481" width="100" height="14"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[( $P{fromDate} == null ? "N/A" : $P{fromDate} )]]></textFieldExpression>
+			</textField>
+			<textField pattern="MM/dd/yyyy">
+				<reportElement uuid="a7272539-d1af-4864-8ccd-3ccb0303df68" x="280" y="481" width="100" height="14"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[( $P{toDate} == null ? "N/A" : $P{toDate} )]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="8f3f28b2-a424-472e-8864-9f0fb7b45acb" x="122" y="502" width="668" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[( $P{description} == null ? "N/A" : $P{description} )]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="cd1811cc-69a9-4969-86ac-15427bca7967" x="10" y="312" width="130" height="30"/>
+				<textElement/>
+				<text><![CDATA[Commission amount from new registration]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="09d4b017-227d-4479-9767-6a3fd8911211" x="425" y="312" width="100" height="51"/>
+				<textElement/>
+				<text><![CDATA[Commission amount from renewal]]></text>
+			</staticText>
+			<textField>
+				<reportElement uuid="7f36da65-fe5a-4742-bba1-c6412cc5dccc" x="166" y="312" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$P{commissionNewAmount}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="7996a01d-4e2f-4ea2-b67f-4995218daee6" x="555" y="312" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$P{commissionRenewalAmount}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="b93218eb-69de-4caa-aed2-d145eb9fc3ba" x="166" y="275" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$P{commisionNew}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="386a9799-72c0-4294-805a-396b7553a3ef" x="555" y="275" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$P{commisionRenew}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageFooter>
+		<band height="36">
+			<textField>
+				<reportElement uuid="b71e2488-6c73-4c03-a227-ff2aa10f137d" x="615" y="12" width="164" height="20"/>
+				<textElement textAlignment="Right">
+					<font fontName="SansSerif" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="MM/dd/yyyy">
+				<reportElement uuid="0ed3a430-3c0a-4965-bd08-30cada6e0358" x="122" y="13" width="67" height="20"/>
+				<textElement>
+					<font fontName="SansSerif" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new Date()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="2656aaab-2152-4531-bfeb-36059ee60a4d" x="6" y="13" width="107" height="20"/>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Generated on"]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

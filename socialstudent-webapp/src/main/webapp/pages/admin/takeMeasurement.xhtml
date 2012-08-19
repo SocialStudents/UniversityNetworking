@@ -1,0 +1,580 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+    <h:body>
+        <ui:composition template="../layout/adminLayout.xhtml">
+
+            <ui:define name="content">                
+                <h:form id="form" prependId="false">
+                    <script type="text/javascript">
+                        
+                        var preView = '#{systemResultSessionUtil.prevView}';
+                        if (preView != '') {
+                            if(document.getElementById("searchMember") != null) {
+                                document.getElementById("searchMember").setAttribute("class", "active");
+                            } else {
+                                location.href ="#{loginDataBean.lendingPage}";
+                            }                              
+                        } else {
+                            if(document.getElementById("takeMeasurement") != null) {
+                                document.getElementById("takeMeasurement").setAttribute("class", "active");
+                            } else {
+                                location.href ="#{loginDataBean.lendingPage}";
+                            }                              
+                        }
+                        
+                                   var data = [];
+                                      var noResult = []
+                            noResult.push({
+                                label:"No results found",
+                                value:""
+                            });
+                                       var globalUid = null;
+                                       
+                                   $(document).ready(function() {
+                                   
+                
+                function split( val ) {
+                        return val.split( /,\s*/ );
+                }
+                function extractLast( term ) {
+                        return split( term ).pop();
+                }   
+                function onSubmitId(){
+                    document.getElementById("uid").value=globalUid;
+                }
+                                   $("#list").autocomplete({
+                                           source: data,
+                                           select: function( event, ui ) {
+                                                if(ui.item.label != 'No results found'){
+                                               document.getElementById("list").value=ui.item.label;
+                                               document.getElementById("uid").value=ui.item.value;
+                                               globalUid = ui.item.value;
+                                               document.getElementById("go").click();
+                                                }
+
+                                                if(ui.item.label == 'No results found'){
+                                    document.getElementById("list").value="";
+                                }
+                                                           return false;
+                                                   },focus: function (event, ui) {
+                                   this.value = ui.item.label;
+                                   event.preventDefault(); // Prevent the default focus behavior.
+                                },source: function(req, responseFn) {
+                                    document.getElementById("uid").value="";
+                                    var re = $.ui.autocomplete.escapeRegex(req.term);
+                                    var matcher = new RegExp(re, "i" );
+                                    var a = $.grep( data, function(item,index){
+                                        return matcher.test(item.label);
+                                    });
+                                    if (!a.length) {
+                                        re = $.ui.autocomplete.escapeRegex("N");
+                                        matcher = new RegExp( "^" + re, "i" );
+                                        a = $.grep( noResult, function(item,index){
+                                            return matcher.test(item.label);
+                                        });
+                                    }
+                                    responseFn( a );
+                              }
+                                       });
+                
+                                   });
+
+                    </script>
+                    <h:inputHidden id="uid" value="#{systemResultViewUtil.id}"/>
+                    <div class="content">
+                        <h3>Take Measurements</h3>
+                        <hr class="red"/>
+                        <div style="float: right; display: inline;">                               
+                            <h:outputLink value="#{systemResultSessionUtil.prevView}" rendered="#{systemResultSessionUtil.prevView != null}">
+                                <img src="#{facesContext.externalContext.requestContextPath}/images/back-btn.png"/>                                
+                            </h:outputLink>
+                        </div>
+                        <h:outputLabel rendered="#{systemResultSessionUtil.prevView != null}">
+                            <br/>
+                        </h:outputLabel>
+                        <ui:include src="../common/message.xhtml" />  
+                        <h:outputLabel rendered="#{systemResultSessionUtil.prevView != null}">
+                            <br/>                        
+                        </h:outputLabel>
+                        <table width="100%" border="0" cellpadding="0" cellspacing="0" class="form-table" id="listTable">
+                            <tr>
+                                <th width="30%">
+                                    <h:outputLabel value="Take measurements for" rendered="#{systemResultSessionUtil.prevView == null}"></h:outputLabel>
+                                </th>
+                                <td width="70%">
+                                    <div id="search-box-bg">
+                                        <h:inputText id="list" styleClass="search-txt-box" rendered="#{systemResultSessionUtil.prevView == null}"/>
+                                    </div>
+                                </td>                                   
+                            </tr>
+                        </table>                                                           
+                        <a4j:commandButton id="go" value="Go" action="#{userServiceBean.retrieveMemberMeasurementInfo()}" style="display: none" render="memberinfo, measurementPannel, dataMessage" execute="uid" oncomplete="applyValue();"/>
+                        <a4j:outputPanel id="memberinfo">
+                            <div style="display :#{systemResultViewUtil.isMemberInfo  ? 'block' : 'none'}" class="userinfo">
+                                <table width="70%" border="0" cellspacing="0" style="padding-left: 0" cellpadding="0" class="form-table">
+                                    <tr>
+                                        <td colspan="2" style="font-weight: bold; text-align: left;">#{userDataBean.firstName} #{userDataBean.lastName}, #{userDataBean.gender == 'F' ? 'Female' : 'Male'}, #{userDataBean.age}</td>
+                                        <td>&#160;</td>
+                                        <td>&#160;</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Username : </th>
+                                        <td>
+                                            <h:outputLabel value="#{userDataBean.userId}" id="UserId">
+                                            </h:outputLabel>
+                                        </td>
+                                        <td>&#160;</td>
+                                        <td>&#160;</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Email : </th>
+                                        <td>
+                                            <h:outputLabel rendered="#{systemResultViewUtil.id != null}">
+                                                #{(userDataBean.email == null || userDataBean.email == '') ?  'N/A' : userDataBean.email}
+                                            </h:outputLabel>
+                                        </td>
+                                        <th>Contact : </th>
+                                        <td>
+                                            <h:outputLabel rendered="#{systemResultViewUtil.id != null}">
+                                                #{(userDataBean.phoneNo == null || userDataBean.phoneNo == '') ?  'N/A' : userDataBean.phoneNo}
+                                            </h:outputLabel>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </a4j:outputPanel>
+                        <label id="commonMsg" style="display: none;color: red" >
+                            Enter all required fields
+                        </label>
+                        <div id="errMsg" style="display: none">
+                            <rich:message for="bf" id="richBf" />
+                            <rich:message for="weight" id="richWeight" />
+                            <rich:message for="tapeArm" id="richTapeArm"/>
+                            <rich:message for="tapeWaist" id="richTapeWaist"/>
+                            <rich:message for="tapeHip" id="richTapeHip"/>
+                            <rich:message for="tapeThigh" id="richTapeThigh"/>
+                            <rich:message for="tapeCalf" id="richTapeCalf"/>
+                            <rich:message for="callipersBiceps" id="richCallipersBiceps"/>
+                            <rich:message for="callipersTriceps" id="richCallipersTriceps"/>
+                            <rich:message for="callipersHip" id="richCallipersHip"/>
+                            <rich:message for="callipersBack" id="richCallipersBack"/>
+                            <rich:message for="updatebf" id="richupdatebf"/>
+                            <rich:message for="updateweight" id="richupdateweight"/>
+                            <rich:message for="updatetapeArm" id="richupdatetapeArm"/>
+                            <rich:message for="updatetapeWaist" id="richupdatetapeWaist"/>
+                            <rich:message for="updatetapeHip" id="richupdatetapeHip"/>
+                            <rich:message for="updatetapeThigh" id="richupdatetapeThigh"/>
+                            <rich:message for="updatetapeCalf" id="richupdatetapeCalf"/>
+                            <rich:message for="updatecallipersBiceps" id="richupdatecallipersBiceps"/>
+                            <rich:message for="updatecallipersTriceps" id="richupdatecallipersTriceps"/>
+                            <rich:message for="updatecallipersHip" id="richupdatecallipersHip"/>
+                            <rich:message for="updatecallipersBack" id="richupdatecallipersBack"/>
+                        </div>
+
+                        <a4j:outputPanel id="measurementPannel">
+                            <script type="text/javascript">
+                            </script>
+                            <div id="health" style="display :#{systemResultViewUtil.isMemberInfo  ? 'block' : 'none'}">
+                                <div id="healthmsg" style="color: red"></div>
+                                <div align="right"><h:outputText value="(All fields are mandatory)"/></div>
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" >
+                                    <tr>
+                                        <th width="11%" class="header">Date</th>
+                                        <th width="6%" class="header">Wt.</th>
+                                        <th width="6%" class="header">BF%</th>
+                                        <th width="35%" colspan="5" class="header" style="text-align: center">Tape(inches)</th>
+                                        <th width="35%" colspan="5"  class="header" style="text-align: center">Calipers(mm)</th>
+                                        <th width="7%" class="header">Action</th>
+                                    </tr>
+                                    <tr> 
+                                        <th class="header" width="11%" >&#160;</th>
+                                        <th class="header" width="6%" >&#160;</th>
+                                        <th class="header" width="6%" >&#160;</th>
+                                        <th class="header" width="7%" >Arm</th>
+                                        <th class="header" width="7%" >Waist</th>
+                                        <th class="header" width="7%" >Hip</th>
+                                        <th class="header" width="7%">Thigh</th>
+                                        <th class="header" width="7%" >Calf</th>
+                                        <th class="header" width="7%">Bis</th>
+                                        <th class="header" width="7%" >Tris</th>
+                                        <th class="header" width="7%">Hip</th>
+                                        <th class="header" width="7%">Back</th>
+                                        <th class="header" width="7%">Total</th>
+                                        <th class="header" width="7%">&#160;</th>
+                                    </tr>
+                                    <tr>
+                                        <td width="11%"></td>
+                                        <td width="6%"></td>
+                                        <td width="6%"></td>
+                                        <td width="7%"></td>
+                                        <td width="7%"></td>
+                                        <td width="7%"></td>
+                                        <td width="7%"></td>
+                                        <td width="7%"></td>
+                                        <td width="7%"></td>
+                                        <td width="7%"></td>
+                                        <td width="7%"></td>
+                                        <td width="7%"></td>
+                                        <td width="7%"></td>
+                                        <td width="7%"></td>
+                                    </tr>
+                                    <tr>
+                                        <td>&#160;</td>                                        
+                                        <td> 
+                                            <h:inputText value="#{memberMeasurementDetailDataBean.weight}" id="weight" styleClass="extra-small" required="true" requiredMessage="Enter weight" maxlength="6"/>
+                                        </td>
+                                        <td align="right">
+                                            <h:inputText id="bf" value="#{memberMeasurementDetailDataBean.totalBf}" styleClass="extra-small" required="true" requiredMessage="Enter bf" maxlength="5"/>
+                                        </td>
+                                        <td>
+                                            <h:inputText value="#{memberMeasurementDetailDataBean.tapeArm}" id="tapeArm" styleClass="extra-small" required="true" requiredMessage="Enter arm measurements" maxlength="5">
+                                            </h:inputText>
+                                        </td>
+                                        <td>
+                                            <h:inputText value="#{memberMeasurementDetailDataBean.tapeWaist}" id="tapeWaist" styleClass="extra-small" required="true" requiredMessage="Enter waist measurements" maxlength="5"/>
+                                        </td>
+                                        <td>
+                                            <h:inputText maxlength="5" value="#{memberMeasurementDetailDataBean.tapeHip}" id="tapeHip" styleClass="extra-small" required="true" requiredMessage="Enter hip measurements"/>
+                                        </td>
+                                        <td>
+                                            <h:inputText maxlength="5" value="#{memberMeasurementDetailDataBean.tapeThigh}" id="tapeThigh" styleClass="extra-small" required="true" requiredMessage="Enter thigh measurements"/>
+                                        </td>
+                                        <td>
+                                            <h:inputText maxlength="5" value="#{memberMeasurementDetailDataBean.tapeCalf}" id="tapeCalf" styleClass="extra-small" required="true" requiredMessage="Enter calf measurements" />
+                                        </td>
+                                        <td>
+                                            <h:inputText maxlength="6" value="#{memberMeasurementDetailDataBean.callipersBiceps}" id="callipersBiceps" styleClass="extra-small" required="true" requiredMessage="Enter biceps measurements" 
+                                                         onblur="calculateTotal('callipersBiceps', 'callipersTriceps', 'callipersHip', 'callipersBack', 'total1')"/>
+                                        </td>
+                                        <td>
+                                            <h:inputText maxlength="6" value="#{memberMeasurementDetailDataBean.callipersTriceps}" id="callipersTriceps" styleClass="extra-small" required="true" requiredMessage="Enter triceps measurements"
+                                                         onblur="calculateTotal('callipersBiceps', 'callipersTriceps', 'callipersHip', 'callipersBack', 'total1')"/>
+                                        </td>
+                                        <td>
+                                            <h:inputText maxlength="6" value="#{memberMeasurementDetailDataBean.callipersHip}" id="callipersHip" styleClass="extra-small" required="true" requiredMessage="Enter hip measurements"
+                                                         onblur="calculateTotal('callipersBiceps', 'callipersTriceps', 'callipersHip', 'callipersBack', 'total1')"/>
+                                        </td>
+                                        <td>
+                                            <h:inputText maxlength="6" value="#{memberMeasurementDetailDataBean.callipersBack}" id="callipersBack" styleClass="extra-small" required="true" requiredMessage="Enter back measurements"
+                                                         onblur="calculateTotal('callipersBiceps', 'callipersTriceps', 'callipersHip', 'callipersBack', 'total1')"/>
+                                        </td>
+                                        <td>
+                                            <h:outputLabel id="total1" />
+                                        </td>
+                                        <td>
+                                            <a4j:commandLink title="Add Measurement" action="#{userServiceBean.saveMeasurement()}" render="dataMessage,measurementPannel" execute="uid,bf,weight,tapeArm,tapeWaist,tapeHip,tapeThigh,tapeCalf,callipersBiceps,callipersTriceps,callipersHip,callipersBack" oncomplete="testFunction();applyValue();if(#{userServiceBean.enrollSuccess}){clearData();}">
+                                                <img src="#{facesContext.externalContext.requestContextPath}/images/add-more-btn.jpg" alt="Add" />
+                                                <f:setPropertyActionListener value="true" target="#{userServiceBean.enrollSuccess}"/>
+                                            </a4j:commandLink>
+                                        </td>
+                                    </tr>      
+                                    <a4j:outputPanel id="updateMeasurement">
+                                        <a4j:outputPanel id="measurement" rendered="#{not empty systemResultViewUtil.memberMeasurementDetaildb}">
+
+                                            <tr>
+                                                <td width="11%"></td>
+                                                <td width="6%"></td>
+                                                <td width="6%"></td>
+                                                <td width="7%"></td>
+                                                <td width="7%"></td>
+                                                <td width="7%"></td>
+                                                <td width="7%"></td>
+                                                <td width="7%"></td>
+                                                <td width="7%"></td>
+                                                <td width="7%"></td>
+                                                <td width="7%"></td>
+                                                <td width="7%"></td>
+                                                <td width="7%"></td>
+                                                <td width="7%"></td>
+                                            </tr>
+                                            <tr>
+                                                <td><h:outputText value="#{systemResultViewUtil.memberMeasurementDetaildb.onDate}">
+                                                        <f:convertDateTime type="date" pattern="MM/dd/yy" timeZone="#{systemPropertyUtil.serverTimeZone}" /></h:outputText>
+                                                </td>                                        
+                                                <td>
+                                                    <h:inputText value="#{systemResultViewUtil.memberMeasurementDetaildb.weight}" id="updateweight" styleClass="extra-small" required="true" requiredMessage="Enter weight" maxlength="6"/>
+                                                </td>
+                                                <td>
+                                                    <h:inputText value="#{systemResultViewUtil.memberMeasurementDetaildb.totalBf}" id="updatebf" styleClass="extra-small" required="true" requiredMessage="Enter bf" maxlength="6"/>                                                    
+                                                </td>
+                                                <td>
+                                                    <h:inputText value="#{systemResultViewUtil.memberMeasurementDetaildb.tapeArm}" id="updatetapeArm" styleClass="extra-small" required="true" requiredMessage="Enter arm measurements" maxlength="5"/>
+                                                </td>
+                                                <td>
+                                                    <h:inputText value="#{systemResultViewUtil.memberMeasurementDetaildb.tapeWaist}" id="updatetapeWaist" styleClass="extra-small" required="true" requiredMessage="Enter waist measurements"/>
+                                                </td>
+                                                <td>
+                                                    <h:inputText maxlength="5" value="#{systemResultViewUtil.memberMeasurementDetaildb.tapeHip}" id="updatetapeHip" styleClass="extra-small" required="true" requiredMessage="Enter hip measurements"/>
+                                                </td>
+                                                <td>
+                                                    <h:inputText maxlength="5" value="#{systemResultViewUtil.memberMeasurementDetaildb.tapeThigh}" id="updatetapeThigh" styleClass="extra-small" required="true" requiredMessage="Enter thigh measurements"/>
+                                                </td>
+                                                <td>
+                                                    <h:inputText maxlength="5" value="#{systemResultViewUtil.memberMeasurementDetaildb.tapeCalf}" id="updatetapeCalf" styleClass="extra-small" required="true" requiredMessage="Enter calf measurements"/>
+                                                </td>
+                                                <td>
+                                                    <h:inputText maxlength="6" value="#{systemResultViewUtil.memberMeasurementDetaildb.callipersBiceps}" id="updatecallipersBiceps" styleClass="extra-small" required="true" requiredMessage="Enter biceps measurements"
+                                                                 onblur="calculateTotal('updatecallipersBiceps', 'updatecallipersTriceps', 'updatecallipersHip', 'updatecallipersBack', 'total')"/>
+                                                </td>
+                                                <td>
+                                                    <h:inputText maxlength="6" value="#{systemResultViewUtil.memberMeasurementDetaildb.callipersTriceps}" id="updatecallipersTriceps" styleClass="extra-small" required="true" requiredMessage="Enter triceps measurements"
+                                                                 onblur="calculateTotal('updatecallipersBiceps', 'updatecallipersTriceps', 'updatecallipersHip', 'updatecallipersBack', 'total')"/>
+                                                </td>
+                                                <td>
+                                                    <h:inputText maxlength="6" value="#{systemResultViewUtil.memberMeasurementDetaildb.callipersHip}" id="updatecallipersHip" styleClass="extra-small" required="true" requiredMessage="Enter hip measurements"
+                                                                 onblur="calculateTotal('updatecallipersBiceps', 'updatecallipersTriceps', 'updatecallipersHip', 'updatecallipersBack', 'total')"/>
+                                                </td>
+                                                <td>
+                                                    <h:inputText maxlength="6" value="#{systemResultViewUtil.memberMeasurementDetaildb.callipersBack}" id="updatecallipersBack" styleClass="extra-small" required="true" requiredMessage="Enter back measurements"
+                                                                 onblur="calculateTotal('updatecallipersBiceps', 'updatecallipersTriceps', 'updatecallipersHip', 'updatecallipersBack', 'total')"/>
+                                                </td>
+                                                <td>
+                                                    <h:outputText id="total" value="#{systemResultViewUtil.memberMeasurementDetaildb.total}">
+                                                        <f:convertNumber minIntegerDigits="1" minFractionDigits="2"/>
+                                                    </h:outputText>
+                                                </td>
+                                                <td>&#160;</td>
+                                            </tr>
+
+                                        </a4j:outputPanel>
+                                    </a4j:outputPanel>
+                                    <rich:dataTable id="measurementDetailDataList" value="#{systemResultViewUtil.measurementDetailList}" var="measurementData" style="border: none; width: 100%" rowKeyVar="rowId" styleClass="form-table">
+                                        <rich:column>                                        
+                                            <tr>
+                                                <td width="11%">
+                                                    <h:outputText value="#{measurementData.onDate}">
+                                                        <f:convertDateTime type="date" pattern="MM/dd/yy" />
+                                                    </h:outputText>
+                                                </td>
+                                                <td width="6%">
+                                                    <h:outputText value="#{measurementData.weight}">
+                                                        <f:convertNumber minIntegerDigits="1" minFractionDigits="2"/>
+                                                    </h:outputText></td>
+                                                <td width="6%"> 
+                                                    <h:outputText value="#{measurementData.totalBf}">
+                                                        <f:convertNumber minIntegerDigits="1" minFractionDigits="2"/>
+                                                    </h:outputText>
+                                                </td>
+                                                <td  width="7%" style="text-align: left">
+                                                    <h:outputText value="#{measurementData.tapeArm}">
+                                                        <f:convertNumber minIntegerDigits="1" minFractionDigits="2"/>
+                                                    </h:outputText>
+                                                </td>
+                                                <td width="7%" style="text-align: left">
+                                                    <h:outputText value="#{measurementData.tapeWaist}">
+                                                        <f:convertNumber minIntegerDigits="1" minFractionDigits="2"/>
+                                                    </h:outputText>
+                                                </td>
+                                                <td  width="7%" style="text-align: left">
+                                                    <h:outputText value="#{measurementData.tapeHip}">
+                                                        <f:convertNumber minIntegerDigits="1" minFractionDigits="2"/>
+                                                    </h:outputText> 
+                                                </td>
+                                                <td width="7%" style="text-align: left">
+                                                    <h:outputText value="#{measurementData.tapeThigh}">
+                                                        <f:convertNumber minIntegerDigits="1" minFractionDigits="2"/>
+                                                    </h:outputText> 
+                                                </td>
+                                                <td  style="text-align: left">
+                                                    <h:outputText value="#{measurementData.tapeCalf}">
+                                                        <f:convertNumber minIntegerDigits="1" minFractionDigits="2"/>
+                                                    </h:outputText> 
+                                                </td>
+                                                <td  width="7%" style="text-align: left">
+                                                    <h:outputText value="#{measurementData.callipersBiceps}">
+                                                        <f:convertNumber minIntegerDigits="1" minFractionDigits="2"/>
+                                                    </h:outputText>
+                                                </td>
+                                                <td  style="text-align: left">
+                                                    <h:outputText value="#{measurementData.callipersTriceps}">
+                                                        <f:convertNumber minIntegerDigits="1" minFractionDigits="2"/>
+                                                    </h:outputText>
+                                                </td>
+                                                <td  width="7%" style="text-align: left">
+                                                    <h:outputText value="#{measurementData.callipersHip}">
+                                                        <f:convertNumber minIntegerDigits="1" minFractionDigits="2"/>
+                                                    </h:outputText>
+                                                </td>
+                                                <td  width="7%" style="text-align: left">
+                                                    <h:outputText value="#{measurementData.callipersBack}">
+                                                        <f:convertNumber minIntegerDigits="1" minFractionDigits="2"/>
+                                                    </h:outputText>
+                                                </td>
+                                                <td  width="7%" style="text-align: left">
+                                                    <h:outputText id="total" value="#{measurementData.total}">
+                                                        <f:convertNumber minIntegerDigits="1" minFractionDigits="2"/>
+                                                    </h:outputText>
+                                                </td>
+                                                <td  width="7%" style="text-align: left">
+                                                    &#160;
+                                                </td>
+                                            </tr>
+
+                                        </rich:column>
+                                    </rich:dataTable>
+                                </table>
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" align="center">
+                                    <tr>
+                                        <td>
+                                            <hr class="red"/>
+                                            <div align="center">
+                                                <input class="standard-button" type="button" value="Submit" onclick="checkValue();"/>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <!--                                    <tr>
+                                                                            <td>
+                                                                                <h:outputLabel value="Next Measurement scheduled for " styleClass="medium" />
+
+                                                                                <h:outputText value="{memberMeasurementDetailDataBean.nextMeasurementDate}" styleClass="medium">
+                                                                                    <f:convertDateTime pattern="dd MMM yyyy" type="date" />
+                                                                                </h:outputText> 
+                                                                            </td>
+                                                                        </tr>-->
+                                </table>
+                            </div>
+                        </a4j:outputPanel>
+                    </div>
+                    <h:inputHidden value="#{userServiceBean.isNewAdded}" id="validation"/>
+                    <a4j:jsFunction name="withoutBean" action="#{userServiceBean.updateMeasurement()}" execute="updateMeasurement,validation" onbegin="loadWaitPanel('content');" 
+                                    oncomplete="stopWaitPanel('content');testFunction();applyValue();" render="dataMessage,measurementPannel">
+                        <a4j:param value="false" assignTo="#{userServiceBean.isNewAdded}"/>
+                    </a4j:jsFunction>
+                    <a4j:jsFunction name="withBean" action="#{userServiceBean.updateMeasurement()}" 
+                                    execute="updateMeasurement,validation,uid,bf,weight,tapeArm,tapeWaist,tapeHip,tapeThigh,tapeCalf,callipersBiceps,callipersTriceps,callipersHip,callipersBack" 
+                                    onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content');testFunction();applyValue();" render="dataMessage,measurementPannel">
+                        <a4j:param value="true" assignTo="#{userServiceBean.isNewAdded}"/>
+                    </a4j:jsFunction>
+
+                </h:form>
+                <ui:repeat value="#{userServiceBean.userList}" var="result">
+                    <script type="text/javascript">
+                        data.push({
+                        label:"#{result.label}",
+                         value:"#{result.value}"
+                        }
+                        );
+                        
+                        function setId() {
+                                document.getElementById("uid").value=globalUid;                                           
+                         }                                               
+                         
+                    //<![CDATA[
+                    function calculateTotal(biceps, triceps, hip, back, total) {
+                        var hip1 = document.getElementById(hip).value;
+                        var back = document.getElementById(back).value;
+                        var biceps = document.getElementById(biceps).value;
+                        var triceps = document.getElementById(triceps).value;
+                        
+                        if (hip1 != null && hip1 != '' && back != null && back != '' && biceps != null && biceps != '' && triceps != null && triceps != '') {
+                            var totalVal = parseFloat(hip1) + parseFloat(back) + parseFloat(biceps) + parseFloat(triceps);                  
+                            totalVal = roundNumber(totalVal,2);                            
+                            document.getElementById(total).innerHTML = totalVal;                           
+                        } else {
+                            document.getElementById(total).innerHTML = '';
+                        }
+                    }
+                    
+                    //]]>
+
+                         
+                    </script>
+                </ui:repeat>
+                <script type="text/javascript">
+                    
+                    function applyValue() {
+                     $("#bf").numeric({allow:"."});
+                     $("#weight").numeric({allow:"."});
+                     $("#tapeArm").numeric({allow:"."});
+                     $("#tapeWaist").numeric({allow:"."});
+                     $("#tapeHip").numeric({allow:"."});
+                     $("#tapeThigh").numeric({allow:"."});
+                     $("#tapeCalf").numeric({allow:"."});
+                     $("#callipersBiceps").numeric({allow:"."});
+                     $("#callipersTriceps").numeric({allow:"."});
+                     $("#callipersHip").numeric({allow:"."});
+                     $("#callipersBack").numeric({allow:"."});
+                     $("#updatebf").numeric({allow:"."});
+                     $("#updateweight").numeric({allow:"."});
+                     $("#updatetapeArm").numeric({allow:"."});
+                     $("#updatetapeWaist").numeric({allow:"."});
+                     $("#updatetapeHip").numeric({allow:"."});
+                     $("#updatetapeThigh").numeric({allow:"."});
+                     $("#updatetapeCalf").numeric({allow:"."});
+                     $("#updatecallipersBiceps").numeric({allow:"."});
+                     $("#updatecallipersTriceps").numeric({allow:"."});
+                     $("#updatecallipersHip").numeric({allow:"."});
+                     $("#updatecallipersBack").numeric({allow:"."});
+                    
+                     
+                    }
+                    
+                    function checkValue(){
+                      if(document.getElementById("bf").value=='' &amp;&amp;
+                         document.getElementById("weight").value=='' &amp;&amp;
+                         document.getElementById("tapeArm").value=='' &amp;&amp;
+                         document.getElementById("tapeWaist").value=='' &amp;&amp;
+                         document.getElementById("tapeHip").value=='' &amp;&amp;
+                         document.getElementById("tapeThigh").value=='' &amp;&amp;
+                         document.getElementById("tapeCalf").value=='' &amp;&amp;
+                         document.getElementById("callipersBiceps").value== '' &amp;&amp;
+                         document.getElementById("callipersTriceps").value == '' &amp;&amp;
+                         document.getElementById("callipersHip").value == '' &amp;&amp;
+                         document.getElementById("callipersBack").value == ''){
+                             withoutBean();
+                             
+//                            document.getElementById("validation").value = 'true';
+                         }else{
+                             withBean();
+                         }
+                    }
+                    
+                    var preView = '#{systemResultSessionUtil.prevView}';
+                    if (preView != '') {
+                        document.getElementById("uid").value = '#{systemResultSessionUtil.id}';
+                        document.getElementById("go").click();
+                        document.getElementById("searchMember").setAttribute("class", "active");
+                        document.getElementById("search-box-bg").style.display = "none";
+                        document.getElementById("listTable").style.display = "none";
+                    } else {
+                        document.getElementById("takeMeasurement").setAttribute("class", "active");                        
+                    }
+                    
+                    function testFunction(){
+                        $('#commonMsg').css("display","none");
+                        var child = document.getElementById('errMsg').childNodes;
+                        for(var i=0; i &lt; child.length ;i++){
+                            var msg = (child[i].childNodes)[0];
+                            if(msg != null){
+                                 $('#'+msg.id.split(":")[1]).css("border-color", "red");
+                                 $('#commonMsg').css("display","block");
+                            }
+                       }
+                    }
+                    
+                    function clearData(){
+                        document.getElementById("bf").value='';
+                        document.getElementById("weight").value='';
+                        document.getElementById("tapeArm").value='';
+                        document.getElementById("tapeWaist").value='';
+                        document.getElementById("tapeHip").value='';
+                        document.getElementById("tapeThigh").value='';
+                        document.getElementById("tapeCalf").value='';
+                        document.getElementById("callipersBiceps").value='';
+                        document.getElementById("callipersTriceps").value='';
+                        document.getElementById("callipersHip").value='';
+                        document.getElementById("callipersBack").value='';
+                        
+                    }
+                    
+                </script>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

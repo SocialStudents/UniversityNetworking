@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html">
+    <h:body>       
+        <ui:composition template="./layout/homeLayout.xhtml">
+            <ui:define name="content">
+                <div id="left">
+                    <ul id="subnav">
+                        <li class="active" >PB Training Innovation</li>                       
+                    </ul>
+                    <div class="contact-bg">
+                        <h4>Questions?</h4>
+                        <h5>Just call and talk to us:</h5>
+                        (510) 668-0701<br/>                        
+                        <br/>
+                        <a href="/contact">
+                            <div id="emailus">&#160;</div>
+                        </a>
+                        <!--<div style="text-align:right; margin-top:10px;">Find us on&#160;<a href="http://www.facebook.com/pages/PBalance/173520524747" target="_blank"><img src="#{facesContext.externalContext.requestContextPath}/images/facebook.png" alt="facebook" width="24" height="24" align="absmiddle" /></a>&#160;<a href="http://www.yelp.com/biz/perfect-balance-fremont#query:pbalance" target="_blank"><img src="#{facesContext.externalContext.requestContextPath}/images/yelp.png" alt="yelp" width="24" height="24" align="absmiddle" /></a> </div>-->
+
+                    </div>
+                </div>
+                <div id="right">
+                    <h3>PB Training Innovation</h3>
+                    <div class="breadcrumbs"> <a href="/login">HOME</a> | PB TRAINING INNOVATION</div>
+                    <div><img src="#{facesContext.externalContext.requestContextPath}/images/pbtraining.jpg"/></div>
+                    <div class="content">
+                        <h6>Training </h6>
+                        <p>
+                            Whether your goal is to lose weight, tone up, trim body fat or improve performance in your sport of choice, Perfect Balance’s well-rounded approach to working out has proven results over and over again.  Our members reach their goals, quickly increasing energy and stamina and improving body strength while dropping pounds and body fat.  For our more competitive minded individuals, we see overall performance improvements in power, cardiovascular endurance and even accuracy.</p>
+                        <br/>
+                            <h6>Innovation </h6>
+                            <p>
+                                At Perfect Balance, we don’t see working out as simply a long run or the clank of weights.  We think of working out as an art form much the same as we see dancing.  Just as a choreographer puts thought and knowledge and artistry into creating an invigorating palette of steps to delight the audience as well as the dancers, we carefully put the right moves in the right places in the right combination to create different and effective total body experiences that burn the maximum number of calories and strengthen the entire body.  It is never enough to only build a strong chest or create those washboard abs!  The entire body needs to be
+                                developed and nurtured into an integrated whole that is solid and conditioned from head to toe and lungs to hormones.  We don’t stop with just providing a great workout.  We strive to create a fun and entertaining environment that motivates and entertains all while maintaining safety and consistency.  Combined with our service, eye for detail, and healthy eating, our team of PB Specialists is fully equipped to help you achieve your individual goals and needs.
+                            </p>
+                    </div>
+                    <!--right div ends here -->
+                </div>
+                 <script type="text/javascript">
+                     document.getElementById("trainingstudio").setAttribute("class", "active")
+                </script>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

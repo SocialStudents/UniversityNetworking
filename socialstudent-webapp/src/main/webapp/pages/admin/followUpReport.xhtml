@@ -1,0 +1,157 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+
+    <ui:composition template="../layout/adminReportLayout.xhtml">
+        <ui:define name="content">
+            <div id="content">
+                <h:form prependId="false">
+                    <script type="text/javascript">
+                        if("#{userRightsDataBean.haveUserReportsRights}" == "false") {                          
+                            location.href ="#{loginDataBean.lendingPage}";
+                        } 
+                        $(document).ready(function() {
+                            sorting();
+                        } );
+                    </script>
+                    <f:event listener="#{userServiceBean.retrieveMemberFollowUpDetail()}" type="preRenderView"/>
+                    <a4j:jsFunction name="Previewdata" action="#{userServiceBean.retrieveMemberFollowUpDetail()}"/>
+                    <ui:include src="../common/message.xhtml" /> 
+                    <div id="search-panel" class="userinfo">
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" align="center">
+                            <tr>
+                                <th>Select Days</th>
+                                <td>
+                                    <h:selectOneMenu id="type" value="#{systemResultSessionUtil.days}">
+                                        <f:selectItem itemLabel="-- Select Type --" />
+                                        <f:selectItem itemLabel="7 days" itemValue="7" />
+                                        <f:selectItem itemLabel="14 days" itemValue="14" />
+                                        <f:selectItem itemLabel="21 days" itemValue="21" />
+                                        <a4j:ajax event="change" execute="@this" listener="#{userServiceBean.retrieveMemberFollowUpDetail()}" render="followUpPanel,dataMessage"
+                                                  onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content');">
+                                        </a4j:ajax>
+                                    </h:selectOneMenu>                               
+                                </td>
+                            </tr>
+                        </table>  
+                    </div>
+                    <div class="content">                           
+                        <a4j:outputPanel id="followUpPanel">
+                            <a4j:outputPanel id="downloadLink" >
+                                <h:commandLink action="#{reportToPdfServiceBean.followUpiReport()}" rendered="#{systemResultViewUtil.userDataBeanList !=null and not empty systemResultViewUtil.userDataBeanList}">
+                                    <h:graphicImage value="/images/download-pdf.jpg" style="border: none; float: right" title="Click to Download Report"/>
+                                    &nbsp;&nbsp;&nbsp;
+                                </h:commandLink>
+                                <br></br>
+                            </a4j:outputPanel>                      
+                            <rich:dataTable  id="reportDataList" rowKeyVar="rowId" var="report" value="#{systemResultViewUtil.userDataBeanList}" rendered="#{systemResultViewUtil.userDataBeanList != null and not empty systemResultViewUtil.userDataBeanList}" styleClass="meal-plan" style="width: 100%;line-height: 12px;" rowClass="#{rowId%2 == 0 ? 'alt-row1':'alt-row'}" >
+                                <f:facet name="header">
+                                    <rich:columnGroup>
+                                        <rich:column style="width: 16%" styleClass="header">
+                                            <h:outputText value="Name"/>
+                                        </rich:column>
+                                        <rich:column style="width: 17%"  styleClass="header">
+                                            <h:outputText value="Date of Registration" />
+                                        </rich:column>
+                                        <rich:column style="width: 15%"  styleClass="header">
+                                            <h:outputText value="Date of Renewal"/>
+                                        </rich:column>                                       
+                                        <rich:column style="width: 15%"  styleClass="header">
+                                            <h:outputText value="Date of Last Attended Session" />
+                                        </rich:column>
+                                        <rich:column style="width: 17%"  styleClass="header">
+                                            <h:outputText value="PB Specialist" />
+                                        </rich:column>
+                                        <rich:column style="width: 15%"  styleClass="header">
+                                            <h:outputText value="Outstanding Charges" />
+                                        </rich:column>
+                                    </rich:columnGroup>
+                                </f:facet>
+
+                                <rich:column style="vertical-align: top">
+
+                                    <h:commandLink title="Click here for detail" value="#{report.firstName} #{report.lastName}" action="#{userServiceBean.navigateToMembershipDueReportDetail()}" onclick="loadWaitPanel('content');">
+                                        <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeId}" value="#{report.id}"/>
+                                        <f:setPropertyActionListener target="#{systemResultSessionUtil.name}" value="#{report.firstName}"/>
+                                        <f:setPropertyActionListener target="#{systemResultSessionUtil.backFlag}" value="true"/>
+                                    </h:commandLink>
+                                    <h:outputText style="text-align: center" value="N/A" rendered="#{report.firstName == null and report.lastName == null}"/>
+                                    <h:outputLabel rendered="#{report.phoneNo != ''}" >
+                                        <br/><h:outputText value="#{report.phoneNo}" /><br/>
+                                    </h:outputLabel>                                    
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{report.createdOn}">
+                                        <f:convertDateTime type="date" pattern="MM/dd/yyyy"/>
+                                    </h:outputText>
+                                    <h:outputText value="N/A" rendered="#{report.createdOn == null}"/>
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{report.renewalDate}">
+                                        <f:convertDateTime type="date" pattern="MM/dd/yyyy"/>
+                                    </h:outputText>
+                                    <h:outputText value="N/A" rendered="#{report.renewalDate == null}"/>
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{report.lastsessionDate}">
+                                        <f:convertDateTime type="date" pattern="MM/dd/yyyy"/>
+                                    </h:outputText>
+                                    <h:outputText value="N/A" rendered="#{report.lastsessionDate == null}"/>
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{report.assignedPbSpecialist}" />
+                                    <h:outputText value="N/A" rendered="#{report.assignedPbSpecialist == null}"/>
+                                </rich:column>
+                                <rich:column style="vertical-align: top;text-align: right;">
+                                    <h:outputText value="#{report.outstandingCharges}" rendered="#{report.outstandingCharges != null}" >
+                                        <f:convertNumber minIntegerDigits="1" minFractionDigits="2"/>
+                                    </h:outputText>
+                                    <h:outputText value="0.00" rendered="#{report.outstandingCharges == null}"/>
+                                </rich:column>
+                            </rich:dataTable>
+                        </a4j:outputPanel>                                   
+                    </div>
+                </h:form>
+                <script type="text/javascript">
+            
+                    $(window).load(function() {
+                        jsf.ajax.addOnEvent(function (data) {
+                                       
+                            if (data.status === "success") {
+                                sorting();
+                            }
+                        })
+                    });
+                               
+                    function sorting(){
+                        $('#reportDataList').dataTable( {
+                            "aoColumns": [
+                                null,
+                                { "sType": "eu_date" },
+                                { "sType": "eu_date" },
+                                { "sType": "eu_date" },
+                                null,
+                                { "sType": "numeric-comma" }                                           
+                            ],
+                            "bJQueryUI": false,
+                            "sPaginationType": "full_numbers",
+                            "bRetrieve" : true,
+            
+                            "bFilter": true,
+                            "bInfo": false,
+                            "bAutoWidth": false 
+                        } );
+                    }
+                            
+                             
+                </script>
+            </div>
+        </ui:define>
+    </ui:composition>
+</html>
+

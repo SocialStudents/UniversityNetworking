@@ -1,0 +1,115 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:body>       
+        <ui:composition template="./layout/homeLayout.xhtml">
+            <ui:define name="content">
+                <h:form>
+                    <div id="left">
+                        <ul id="subnav">     
+                            <a href="/pbalancediet"><li>Eating</li></a> 
+                            <li class="active">PB Meal Plan</li>    
+                            <h:commandLink action="#{menuServiceBean.loginNavigate}">
+                                <li>PB Recipes</li>
+                                <f:param name="id" value="pbalanceRecipes"/>
+                            </h:commandLink>
+                        </ul>
+                        <div class="contact-bg">
+                            <h4>Questions?</h4>
+                            <h5>Just call and talk to us:</h5>
+                            (510) 668-0701<br/>
+                            <br/>
+                            <a href="/contact"><div id="emailus">&#160;</div></a>
+                        </div>
+                    </div>
+                    <div id="right">
+                        <h3>PB Meal Plan</h3>
+                        <div class="breadcrumbs">  <a href="/login">HOME</a> | <a href="/pbalancemealplan">PB MEAL PLAN</a> | 1200 CALORIES VEG </div>
+                        <div class="content"><!--content ends here -->
+                            <table width="100%" border="0" cellpadding="0" cellspacing="0" class="meal-plan">
+                                <tbody><tr class="alt-row">
+                                        <td colspan="6"><div><strong>1200 Calories Meal Plan </strong>
+                                                <div style="float:right;"><img src="#{facesContext.externalContext.requestContextPath}/images/veg.jpg" align="absmiddle" /></div>
+                                            </div></td>
+                                    </tr>
+                                    <tr>
+                                        <th width="7%">&nbsp;</th>
+                                        <th width="26%">Breakfast </th>
+                                        <th width="17%">Snack</th>
+                                        <th width="23%">Lunch
+                                        </th>
+                                        <th width="9%">Snack</th>
+                                        <th width="18%">Dinner</th>
+                                    </tr>
+                                    <tr>
+                                        <th valign="top">Day 1</th>
+                                        <td>Fruit and Nut Oatmeal 335 calories</td>
+                                        <td>1 Banana--120 calories</td>
+                                        <td>Black Bean Salad--287 calories for 1C serving</td>
+                                        <td>&nbsp;</td>
+                                        <td>Salad Pizza Primavera--453 calories per pizza</td>
+                                    </tr>
+                                    <tr class="alt-row">
+                                        <th valign="top">Day 2</th>
+                                        <td>Almond Oatmeal w/fruit--235 calories per serving</td>
+                                        <td>Pizza flavored popcorn</td>
+                                        <td>Tofu with Green Peas-373 Calories for 3/4C tofu mixture and 1/2C rice</td>
+                                        <td>&nbsp;</td>
+                                        <td>Peanut Buttery Noodles--382 calories per serving</td>
+                                    </tr>
+                                    <tr>
+                                        <th valign="top">Day 3</th>
+                                        <td>Continental Breakfast: whole wheat english muffin w/1 tbs organic peanut butter and 1 scrambled egg--413 calories per serving</td>
+                                        <td>1 Apple--80 calories</td>
+                                        <td>Vegetarian Shepherd’s Pie--391 calories for 13oz (1/4 of pie)</td>
+                                        <td>&nbsp;</td>
+                                        <td>Vegetables and Tofu--294 calories per serving</td>
+                                    </tr>
+                                    <tr class="alt-row">
+                                        <th valign="top">Day 4</th>
+                                        <td>Breakfast Sandwich on whole wheat sandwich thin--242 calories per serving</td>
+                                        <td>Slice whole wheat bread with 1/2 tbs organic peanut butter--150 calories</td>
+                                        <td>Homemade Black bean burger w/oven baked sweet potato fries--365 calories</td>
+                                        <td>&nbsp;</td>
+                                        <td>Vegetable Quinoa Stir-Fry--420 calories for 1/2 of recipe</td>
+                                    </tr>
+                                    <tr>
+                                        <th valign="top">Day 5</th>
+                                        <td>Vegetable Frittata with one slice Trader Joe's Whole Wheat Tuscan Panne--327 calories per 1/4 of fritatta (227 cal) and 1 slice bread (100 cal)</td>
+                                        <td>10-12 almonds--90 calories</td>
+                                        <td>Millet Patties w/steamed vegetables  of choice  &amp; 1/2 C brown rice--281 calories per 2 patties + 2 tbs aioli, brown rice 73 calories, steamed veg. 1C 60</td>
+                                        <td>&nbsp;</td>
+                                        <td>Noodle Casserole--317 calories per 1-1/3C serving</td>
+                                    </tr>
+                                    <tr class="alt-row">
+                                        <th valign="top">Day 6</th>
+                                        <td>Crock pot breakfast cereal--313 calories per 1 C serving</td>
+                                        <td>1 Orange--65 calories</td>
+                                        <td>Greens &amp; White Bean Panini--381 calories per sandwich</td>
+                                        <td>&nbsp;</td>
+                                        <td>Lentil-Quinoa Pilaf--481 calories per 2 C Arugula + 1 C pilaf</td>
+                                    </tr>
+                                    <tr>
+                                        <th valign="top">Day 7</th>
+                                        <td>Back to day 1</td>
+                                        <td>&nbsp;</td>
+                                        <td>&nbsp;</td>
+                                        <td>&nbsp;</td>
+                                        <td>&nbsp;</td>
+                                    </tr>
+                                </tbody>
+                            </table>                        
+                        </div>
+                        <!--right div ends here --> 
+                    </div>
+                    <script type="text/javascript">
+                        document.getElementById("pbalancediet").setAttribute("class", "active")
+                    </script>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

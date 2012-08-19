@@ -1,0 +1,147 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+    <h:body>       
+        <ui:composition template="./layout/homeLayout.xhtml">
+            <ui:define name="content">
+                <div id="left">
+                    <ul id="subnav">                                                                     
+                        <li class="active">Schedule</li>
+                    </ul>
+                    <div class="contact-bg">
+                        <h4>Questions?</h4>
+                        <h5>Just call and talk to us:</h5>
+                        (510) 668-0701<br/>                       
+                        <br/>
+                        <a href="/contact">
+                            <div id="emailus">&#160;</div>
+                        </a>                        
+                    </div>
+                </div>
+                <div id="right">
+                    <h3 >Schedule</h3>
+                    <div class="breadcrumbs">  <a href="/login">HOME</a> |  SCHEDULE</div>
+                    <div><img src="#{facesContext.externalContext.requestContextPath}/images/pbtraining.jpg"/></div>
+                    <div class="content">
+                        <h:form prependId="false">
+                            <ui:include src="common/message.xhtml" />
+                            <f:metadata>
+                                <f:event type="preRenderComponent" listener="#{schedulerServiceBean.generateShiftCalendar}"/>
+                            </f:metadata>
+                            <h:panelGroup id="mainPanel">
+                                <h:panelGroup rendered="#{systemResultViewUtil.shiftCalendarDataBeanList != null and systemResultViewUtil.shiftCalendarDataBeanList.size() gt 0}">
+                                    <br/>
+
+                                    <rich:dataTable id="calender" value="#{systemResultViewUtil.shiftCalendarDataBeanList}" var="shiftCalendar"  styleClass="meal-plan" style="width: 100%">
+                                        <f:facet name="header">
+                                            <rich:columnGroup>
+                                                <rich:column style="background-image: none;background-color:#fff ;border-top: 1px solid #fff;border-left: 1px solid #fff;width: 100px">
+                                                </rich:column>
+                                                <rich:column style="text-align: center" styleClass="header" width="13%">
+                                                    <h:outputText value="SUN"/>
+                                                </rich:column>
+                                                <rich:column style="text-align: center" styleClass="header" width="13%">
+                                                    <h:outputText value="MON"/>
+                                                </rich:column>
+                                                <rich:column style="text-align: center" styleClass="header" width="13%">
+                                                    <h:outputText value="TUE"/>
+                                                </rich:column>
+                                                <rich:column style="text-align: center" styleClass="header" width="13%">
+                                                    <h:outputText value="WED"/>
+                                                </rich:column>
+                                                <rich:column style="text-align: center" styleClass="header" width="13%">
+                                                    <h:outputText value="THU"/>
+                                                </rich:column>
+                                                <rich:column style="text-align: center" styleClass="header" width="13%">
+                                                    <h:outputText value="FRI"/>
+                                                </rich:column>
+                                                <rich:column style="text-align: center" styleClass="header" width="13%">
+                                                    <h:outputText value="SAT"/>
+                                                </rich:column>
+                                            </rich:columnGroup>
+                                        </f:facet>
+                                        <rich:column style="text-align: center; color: white; background-image:url('../images/table-header.jpg')" >
+                                                <h:outputText value="#{shiftCalendar.shiftDataBean.startHour}">
+                                                    <f:convertNumber minIntegerDigits="2" />
+                                                </h:outputText>
+                                                :
+                                                <h:outputText value="#{shiftCalendar.shiftDataBean.startMin}">
+                                                    <f:convertNumber minIntegerDigits="2"/>
+                                                </h:outputText>
+                                                -
+                                                <h:outputText value="#{shiftCalendar.shiftDataBean.endHour}">
+                                                    <f:convertNumber minIntegerDigits="2"/>
+                                                </h:outputText> :
+                                                <h:outputText value="#{shiftCalendar.shiftDataBean.endMin}">
+                                                    <f:convertNumber minIntegerDigits="2"/>
+                                                </h:outputText>
+                                        </rich:column>
+                                        <rich:column style="text-align: center">
+                                            <h:panelGroup rendered="#{shiftCalendar.sunSlot != null}">
+                                                <div  style="cursor: default">
+                                                    <img src="#{facesContext.externalContext.requestContextPath}/images/schedule-icon.jpg"/>
+                                                </div>
+                                            </h:panelGroup>
+                                        </rich:column>
+                                        <rich:column style="text-align: center">
+                                            <h:panelGroup rendered="#{shiftCalendar.monSlot != null}">
+                                                <div  style="cursor: default">
+                                                    <img src="#{facesContext.externalContext.requestContextPath}/images/schedule-icon.jpg"/>
+                                                </div>
+                                            </h:panelGroup>
+                                        </rich:column>
+                                        <rich:column style="text-align: center">
+                                            <h:panelGroup rendered="#{shiftCalendar.tueSlot != null}">
+                                                <div  style="cursor: default">
+                                                    <img src="#{facesContext.externalContext.requestContextPath}/images/schedule-icon.jpg"/>
+                                                </div>
+                                            </h:panelGroup>
+                                        </rich:column>
+                                        <rich:column style="text-align: center">
+                                            <h:panelGroup rendered="#{shiftCalendar.wedSlot != null}">
+                                                <div  style="cursor: default">
+                                                    <img src="#{facesContext.externalContext.requestContextPath}/images/schedule-icon.jpg"/>
+                                                </div>
+                                            </h:panelGroup>
+                                        </rich:column>
+                                        <rich:column style="text-align: center">
+                                            <h:panelGroup rendered="#{shiftCalendar.thuSlot != null}">
+                                                <div  style="cursor: default">
+                                                    <img src="#{facesContext.externalContext.requestContextPath}/images/schedule-icon.jpg"/>
+                                                </div>
+                                            </h:panelGroup>
+                                        </rich:column>
+                                        <rich:column style="text-align: center">
+                                            <h:panelGroup rendered="#{shiftCalendar.friSlot != null}">
+                                                <div  style="cursor: default">
+                                                    <img src="#{facesContext.externalContext.requestContextPath}/images/schedule-icon.jpg"/>
+                                                </div>
+                                            </h:panelGroup>
+                                        </rich:column>
+                                        <rich:column style="text-align: center">
+                                            <h:panelGroup rendered="#{shiftCalendar.satSlot != null}">
+                                                <div  style="cursor: default">
+                                                    <img src="#{facesContext.externalContext.requestContextPath}/images/schedule-icon.jpg"/>
+                                                </div>
+                                            </h:panelGroup>
+                                        </rich:column>
+                                    </rich:dataTable>
+                                </h:panelGroup>
+                            </h:panelGroup>
+                        </h:form>
+                    </div>
+                    <!--right div ends here --> 
+                </div>
+                <script type="text/javascript">
+                    document.getElementById("schedule").setAttribute("class", "active")
+                </script>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

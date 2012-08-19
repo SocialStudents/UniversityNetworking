@@ -1,0 +1,189 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+
+    <ui:composition template="../layout/adminReportLayout.xhtml">
+        <ui:define name="content">
+            <div id="content">                                                
+                <h:form prependId="false">
+                    <script type="text/javascript">
+                        if("#{userRightsDataBean.haveUserReportsRights}" == "false") {                          
+                            location.href ="#{loginDataBean.lendingPage}";
+                        } 
+                        $(document).ready(function() {
+                            sorting();
+                        } );
+                    </script>
+                    <ui:include src="../common/message.xhtml" /> 
+                    <div id="search-panel" class="userinfo">
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" id="selectionTable">            
+                            <tr>
+                                <th><h:outputText value="Total Active PBers"/></th>
+                                <td><h:outputText value="#{userServiceBean.totalStudioMemberCount}" /></td>
+                                <td>&#160;</td>
+                                <td>&#160;</td>
+                                <td width="20%">&#160;</td>
+                            </tr>
+                            <tr>
+                                <th><h:outputText value="Registration From"/></th>
+                                <td>
+                                    <h:inputText id="subscriptionFromDate" styleClass="medium" value="#{systemResultViewUtil.subscriptionFromDate}" required="true" requiredMessage="Enter from date">
+                                        <f:convertDateTime type="date" dateStyle="MM/dd/yyyy" pattern="MM/dd/yyyy"  timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                    </h:inputText>
+                                    <rich:message for="subscriptionFromDate" />
+                                </td>
+                                <th><h:outputText value="To"/></th>
+                                <td>
+                                    <h:inputText id="subscriptionToDate" styleClass="medium" value="#{systemResultViewUtil.subscriptionToDate}" required="true" requiredMessage="Enter To date">
+                                        <f:convertDateTime type="date" dateStyle="MM/dd/yyyy" pattern="MM/dd/yyyy"  timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                    </h:inputText>
+                                    <rich:message for="subscriptionToDate" />
+                                </td>
+                                <td>
+                                    <a4j:commandButton value="Search"  action="#{userServiceBean.retrieveMemberReportDetails()}" 
+                                                       onclick="loadWaitPanel('content');" oncomplete="stopWaitPanel('content');sorting();" 
+                                                       render="reportListPanel,registeredCount,dataMessage,downloadLink" styleClass="standard-button"/>
+                                </td>
+                            </tr>
+                        </table>
+                        <br/>
+                        <div id="count" align="right">
+                            <h:selectBooleanCheckbox id="showAllCheckBox" value="#{systemResultViewUtil.isShowInActiveData}" >
+                                <a4j:ajax listener="#{userServiceBean.retrieveMemberReportDetails()}" event="click" onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content');sorting()" execute="subscriptionFromDate,subscriptionToDate" render="reportListPanel,downloadLink,registeredCount,dataMessage"/>
+                            </h:selectBooleanCheckbox>
+                            <strong>Show All</strong> |                         
+                            <h:outputLabel id="registeredCount">
+                                <h:outputText value="Registered Count "/>
+                                <h:outputText value="#{userServiceBean.countOfData}"/>
+                            </h:outputLabel>
+                        </div>
+                    </div>                    
+                    <!--                    <h:commandButton value="Dowenload" action="{userServiceBean.memberiReport()}"/>-->
+                    <div class="content">
+                        <a4j:outputPanel id="downloadLink" >
+                            <h:commandLink action="#{reportToPdfServiceBean.memberiReport()}" rendered="#{systemResultViewUtil.userDataBeanList !=null and not empty systemResultViewUtil.userDataBeanList}">
+                                <h:graphicImage value="/images/download-pdf.jpg" style="border: none; float: right" title="Click to Download Report"/>
+                                &nbsp;&nbsp;&nbsp;
+                            </h:commandLink>
+                            <br></br>
+                        </a4j:outputPanel>
+                        <a4j:outputPanel id="reportListPanel">
+                            <!--                            <h:commandButton action="{userServiceBean.memberiReport()}" value="Download PDF"/>-->
+                            <rich:dataTable  id="reportDataList" rowKeyVar="rowId"  var="report" value="#{systemResultViewUtil.userDataBeanList}" styleClass="meal-plan" style="width: 100%;line-height: 12px;" rendered="#{systemResultViewUtil.userDataBeanList !=null and not empty systemResultViewUtil.userDataBeanList}" rowClass="#{rowId%2 == 0 ? 'alt-row1':'alt-row'}" >
+                                <f:facet name="header">
+                                    <rich:columnGroup>
+                                        <rich:column style="width: 20%" styleClass="header">
+                                            <h:outputText value="Name"/>
+                                        </rich:column>
+                                        <rich:column style="width: 14%"  styleClass="header">
+                                            <h:outputText value="Registered On" />
+                                        </rich:column>
+                                        <rich:column style="width: 12%"  styleClass="header">
+                                            <h:outputText value="Signed up By"/>
+                                        </rich:column>                                       
+                                        <rich:column style="width: 16%"  styleClass="header">
+                                            <h:outputText value="Membership &amp; Package" />
+                                        </rich:column>
+                                        <rich:column style="width: 10%"  styleClass="header">
+                                            <h:outputText value="Sessions Left" />
+                                        </rich:column>
+                                        <rich:column style="width: 8%"  styleClass="header">
+                                            <h:outputText value="Outstanding Charges" />
+                                        </rich:column>
+                                        <rich:column style="width: 6%"  styleClass="header">
+                                            <h:outputText value="Status" />
+                                        </rich:column>
+                                        <rich:column style="width: 14%"  styleClass="header">
+                                            <h:outputText value="Assigned PB Specialist" />
+                                        </rich:column>
+                                    </rich:columnGroup>
+                                </f:facet>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{report.firstName} #{report.lastName}"/><br/><br/>
+                                    <h:outputLabel rendered="#{report.phoneNo != ''}" >
+                                        <h:outputText value="#{report.phoneNo}" /><br/><br/>
+                                    </h:outputLabel>
+                                    <h:outputLabel rendered="#{report.email != ''}">
+                                        <h:outputText value="#{report.email}" /><br/><br/>                                  
+                                    </h:outputLabel>
+                                    <h:outputLabel  rendered="#{report.facebookPage != null}">
+                                        <h:outputText value="#{report.facebookPage}"/><br/><br/>
+                                    </h:outputLabel>
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{report.createdOn}">
+                                        <f:convertDateTime type="date" pattern="MM/dd/yyyy" timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                    </h:outputText>
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{report.registeredBy}"/>
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{report.subscriptionName == null ? 'N/A' : report.subscriptionName}"/>
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{report.remainingUnits} #{(report.totalUnits lt 0) ? 'days' : ''}" />
+                                </rich:column>
+                                <rich:column style="vertical-align: top;text-align: right" >
+                                    <h:outputText value="#{report.dues}"><f:convertNumber type="currency" currencySymbol="" /></h:outputText>
+                                </rich:column>
+                                <rich:column style="vertical-align: top;text-align: center">
+                                    <h:outputText value="#{report.isActive == null or !report.isActive ? 'InActive' : 'Active'}"/>
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{report.assignedPbSpecialist == null ? 'N/A' : report.assignedPbSpecialist}"/>
+                                </rich:column>
+                            </rich:dataTable>
+                        </a4j:outputPanel>
+                    </div>
+                </h:form>
+            </div>
+
+
+
+            <script type="text/javascript">
+
+                getDatePickerForRangeForFuture('subscriptionFromDate','subscriptionToDate');
+            
+                $(window).load(function() {
+                    jsf.ajax.addOnEvent(function (data) {
+                           
+                        if (data.status === "success") {
+                            sorting();
+                        }
+                    })
+                });
+                   
+                function sorting(){
+                    $('#reportDataList').dataTable( {
+                        "aoColumns": [
+                            null,
+                            { "sType": "eu_date" },
+                            null,
+                            null,
+                            { "sType": "numeric-comma" },
+                            { "sType": "numeric-comma" },
+                            null,
+                            null,
+                        ],
+                        "bJQueryUI": false,
+                        "sPaginationType": "full_numbers",
+                        "bRetrieve" : true,
+
+                        "bFilter": true,
+                        "bInfo": false,
+                        "bAutoWidth": false 
+                    } );
+                }
+                
+                 
+            </script>
+        </ui:define>
+    </ui:composition>
+</html>
+

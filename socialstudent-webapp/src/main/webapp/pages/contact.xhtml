@@ -1,0 +1,210 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+    <h:body>       
+        <ui:composition template="./layout/homeLayout.xhtml">
+            <ui:define name="content">
+                <script type="text/javascript">
+                    $(document).ready(
+                    function() {
+                        textboxHint("right");
+                    });
+                    
+                </script>
+                <div id="left">
+                    <ul id="subnav">
+                        <li class="active" >Contact</li>
+                        <a href="/wlc"><li >PB Weight Loss Contest</li></a>     
+                    </ul>
+                </div>
+                <div id="right"  style="margin-left:10px; width:730px;">
+                    <f:metadata>
+                        <f:event type="preRenderComponent" listener="#{userServiceBean.initContactus}" />
+                    </f:metadata>
+                    <h:form id="contactus" prependId="false">
+                        <h3 >Contact</h3>
+                        <div class="breadcrumbs"> <a href="/login">HOME</a>  |  CONTACT</div>
+                        <div class="content">
+                            <p>If you are interested in joining us, please fill out the form and send it to us. Someone will contact you via phone/email shortly.</p>
+
+                            <h:outputLabel rendered="#{messageDataBean.isSuccess and messageDataBean.message != null}" >
+                                <div class="succmsg"><ul><li>#{messageDataBean.message}</li></ul></div>
+                            </h:outputLabel>
+                            <h:outputLabel rendered="#{not messageDataBean.isSuccess and messageDataBean.message != null}">
+                                <div class="errmsg"><ul><li>#{messageDataBean.message}</li></ul></div>
+                            </h:outputLabel>
+
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table">
+                                <tr>
+                                    <th width="28%">Name<sup><font color="red">*</font></sup> </th>
+                                    <td width="72%">
+                                        <h:inputText value="#{contactusDataBean.name}" id="name" styleClass="large" required="true" requiredMessage="Enter name">
+                                            <f:ajax event="blur" render="nameMsg" />
+                                        </h:inputText>
+                                        &#160;<h:message style="color: red" for="name" id="nameMsg" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Email address<sup><font color="red">*</font></sup> </th>
+                                    <td>
+                                        <h:inputText id="email" value="#{contactusDataBean.email}" styleClass="large" required="true" requiredMessage="Enter email address">
+                                            <f:ajax event="blur" render="emailMsg" />
+                                        </h:inputText>
+                                        &#160;<h:message style="color: red" for="email" id="emailMsg" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Gender </th>
+                                    <td>
+                                        <h:selectOneRadio value="#{contactusDataBean.gender}">
+                                            <f:selectItem itemLabel="Male" itemValue="M" />
+                                            <f:selectItem itemLabel="Female" itemValue="F" />
+                                        </h:selectOneRadio>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th valign="top">Cell phone<sup><font color="red">*</font></sup> </th>
+                                    <td>
+                                        <h:inputText id="telephone" styleClass="large" value="#{contactusDataBean.phoneNumber}"
+                                                     required="true"
+                                                     requiredMessage="Enter cell phone"
+                                                     maxlength="12" onkeyup="formatContact(event, 'telephone');" onkeypress="var keycode; if (window.event) { keycode = window.event.keyCode;}else {return true;} if (keycode == 13) {return false;}else {return true;}" >
+                                            <f:ajax event="blur" render="phoneMsg" />
+                                        </h:inputText>
+                                        &#160;<h:message for="telephone" style="color: red" id="phoneMsg" />
+                                        <div style="text-align:left; color: grey;" >(for eg. 111-111-1111)</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th valign="top">Home phone</th>
+                                    <td >
+                                        <h:inputText styleClass="large" value="#{contactusDataBean.homePhone}" maxlength="12" id="hphone" onkeyup="formatContact(event, 'hphone');" onkeypress="var keycode; if (window.event) { keycode = window.event.keyCode;}else {return true;} if (keycode == 13) {return false;}else {return true;}">
+                                            <f:ajax event="blur" render="hphoneMsg" />
+                                        </h:inputText>                                  
+                                        <h:message for="hphone" style="color: red" id="hphoneMsg" />
+                                        <div style="text-align:left; color: grey;" >(for eg. 111-111-1111)</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Address<sup><font color="red">*</font></sup> </th>
+                                    <td>
+                                        <h:inputText id="address" value="#{contactusDataBean.address}" styleClass="large" required="true" requiredMessage="Enter street 1" title="Street 1">
+                                            <f:ajax event="blur" render="add1Msg" />
+                                        </h:inputText>
+                                        &#160;<h:message for="address" style="color: red" id="add1Msg" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th></th>
+                                    <td>
+                                        <h:inputText id="address1" value="#{contactusDataBean.address1}" styleClass="large"  title="Street 2"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th></th>
+                                    <td style="padding: 0px;" >
+                                        <table border="0" cellspacing="0" cellpadding="0" style="padding: 0px">  
+                                            <tr>
+                                                <td><h:inputText value="#{contactusDataBean.city}" styleClass="small" id="city" required="true" requiredMessage="Enter city" title="City">
+                                                        <f:ajax event="blur" render="cityMsg" />
+                                                    </h:inputText>
+                                                </td>
+                                                <td><h:selectOneMenu id="state" style="width: 90px" value="#{contactusDataBean.state}" required="true" requiredMessage="Select state ">
+                                                        <f:selectItems value="#{userServiceBean.stateList}" />
+                                                    </h:selectOneMenu></td>
+                                                <td><h:inputText value="#{contactusDataBean.zipCode}" styleClass="small" id="zipcode" required="true" requiredMessage="Enter zipcode" title="Zip Code" maxlength="10"
+                                                                 onkeyup="formatZipCode(event, 'zipcode');" >
+                                                        <f:ajax event="blur" render="zipMsg" />
+                                                    </h:inputText>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td><h:message for="city" id="cityMsg" style="color: red"/></td>
+                                                <td><h:message for="state" id="stateMsg" style="color: red"/></td>
+                                                <td><h:message for="zipcode" id="zipMsg" style="color: red"/></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th> Your goal </th>
+                                    <td>
+                                        <h:selectOneMenu value="#{contactusDataBean.goal}" style="width: 180px">
+                                            <f:selectItems value="#{userServiceBean.contactUsGoals}" />
+                                        </h:selectOneMenu>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>How did you hear about us ?</th>
+                                    <td>
+                                        <h:inputHidden value="#{contactusDataBean.source}" id="cntSrc" />
+                                        <h:selectOneMenu value="#{systemResultViewUtil.city}" style="width: 180px" id="contactSrc">
+                                            <f:selectItems value="#{userServiceBean.contactUsSource}" />
+                                            <a4j:ajax event="change" render="srcTxt" oncomplete="document.getElementById('cntSrc').value = document.getElementById('contactSrc').value;('#{systemResultViewUtil.city == 'FR' or systemResultViewUtil.city == 'NE' or systemResultViewUtil.city == 'PP'}' == 'true') ? document.getElementById('srcTxtTr').style.display = '' : document.getElementById('srcTxtTr').style.display = 'none'"/>
+                                        </h:selectOneMenu>
+                                        </td>
+                                </tr>
+                                <tr id="srcTxtTr" style="display: ('#{systemResultViewUtil.city == 'FR' or systemResultViewUtil.city == 'NE' or systemResultViewUtil.city == 'PP'}' == 'true') ? '' : 'none'">
+                                    <th></th>
+                                    <td>
+                                        <h:outputLabel id="srcTxt">
+                                            <h:inputText styleClass="small" style="width: 180px;" maxlength="50" value="#{contactusDataBean.otherSource}" rendered="#{systemResultViewUtil.city == 'FR' or systemResultViewUtil.city == 'NE' or systemResultViewUtil.city == 'PP'}" />
+                                        </h:outputLabel>
+                                    </td>
+                                </tr>
+                                <script type="text/javascript">
+                                    if ('#{systemResultViewUtil.city == 'FR' or systemResultViewUtil.city == 'NE' or systemResultViewUtil.city == 'PP'}' == 'true') {
+                                        document.getElementById('srcTxtTr').style.display = '';
+                                    } else {
+                                        document.getElementById('srcTxtTr').style.display = 'none';
+                                    }
+                                </script>
+                                <tr>
+                                    <th>Best time to contact you </th>
+                                    <td>
+                                        <h:selectOneMenu id="select3" style="width: 180px" value="#{contactusDataBean.contactTime}">
+                                            <f:selectItems value="#{userServiceBean.contactUsContactTime}" />
+                                        </h:selectOneMenu>
+
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th valign="top">Questions </th>
+                                    <td>
+                                        <h:inputTextarea id="query" value="#{contactusDataBean.query}" onfocus="counterForTextArea('query','queryCounter',200)" onkeyup="counterForTextArea('query','queryCounter',200)" />
+                                        <div style="text-align:left" ><i><h:outputText value="(You can type" style="color: grey;"/> &#160;<h:outputText id="queryCounter"  value="200" style="color: grey;"/> &#160;<h:outputText value="more characters)" style="color: grey;"/></i></div>
+                                    </td>
+                                </tr>                                
+                                <tr>
+                                    <th>&#160;</th>
+                                    <td>                                        
+                                        <h:commandButton styleClass="send" action="#{userServiceBean.createContactus}" onclick="clearBlurredData('right');loadWaitPanel('right');" >
+                                            <f:setPropertyActionListener target="#{contactusDataBean.followUp}" value="P"/>
+                                            <f:setPropertyActionListener target="#{contactusDataBean.isWlc}" value="false"/>
+                                            <f:setPropertyActionListener target="#{contactusDataBean.fromPage}" value="ContactUs"/>
+                                        </h:commandButton>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>&#160;</th>
+                                    <td>&#160;</td>
+                                </tr>
+                            </table>
+                            <!--content ends here -->
+                        </div>
+                        <!--right div ends here -->
+                        <script type="text/javascript">
+                            document.getElementById("contact").setAttribute("class", "active")
+                        </script>
+                    </h:form>
+
+                </div>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

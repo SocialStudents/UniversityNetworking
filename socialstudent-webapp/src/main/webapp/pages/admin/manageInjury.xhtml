@@ -1,0 +1,225 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+    <h:body>
+        <ui:composition template="../layout/adminLayout.xhtml">
+            <ui:define name="content">
+                <script type="text/javascript">
+                    if(document.getElementById("manageInjury") != null) {
+                        document.getElementById("manageInjury").setAttribute("class", "active");
+                    } else {
+                        location.href ="#{loginDataBean.lendingPage}";
+                    }                    
+                </script>
+                <h:form prependId="false">
+                    <f:event listener="#{injuryServiceBean.retrieveInjuries()}" type="preRenderComponent"/>
+                    <h3>Manage Medical Conditions</h3>
+                    <hr class="red"/>
+                    <div id="search-panel"> 
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tbody>
+                                <tr>
+                                    <td width="40%">                                               
+                                        <a4j:commandLink title="Create Medical Condition" oncomplete="#{rich:component('addInjury')}.show();" action="#{injuryServiceBean.clearData()}" render="manageInj"> 
+                                            <img src="#{facesContext.externalContext.requestContextPath}/images/new-button.jpg"/>
+                                        </a4j:commandLink> &#160;
+                                        <a4j:commandLink title="Upload Medical Conditions List" oncomplete="#{rich:component('uploadInjury')}.show();document.getElementById('stopBtn').style.display='none';" action="#{injuryServiceBean.clearData()}" render="uploadinj"> 
+                                            <img src="#{facesContext.externalContext.requestContextPath}/images/upload.jpg"/>
+                                        </a4j:commandLink> 
+                                    </td>
+                                    <td width="14%" style="vertical-align: middle;">
+                                        <h:selectBooleanCheckbox value="#{systemResultViewUtil.isShowInActiveData}" >
+                                            <a4j:ajax listener="#{injuryServiceBean.retrieveInjuries()}" render="injuryListPanel" />
+                                        </h:selectBooleanCheckbox>
+                                        <strong>Show All</strong></td>
+                                    <td width="34%"><div id="search-box-bg">
+                                            <h:inputText value="#{systemResultViewUtil.searchString}" id="searchString" maxlength="50" styleClass="search-txt-box" />                                                
+                                        </div></td>
+                                    <td width="12%" style="vertical-align: middle;"> &#160;                                               
+                                        <a4j:commandButton value="Search"  action="#{injuryServiceBean.retrieveInjuries()}" styleClass="standard-button"  onclick="loadWaitPanel('content');" oncomplete="stopWaitPanel('content');" render="injuryListPanel, dataMessage"  title="Search Medical Condition" status="status" />                                                 
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                    </div>                   
+                    <div class="content">
+                        <a4j:outputPanel id="injuryListPanel">         
+                            <ui:include src="../common/message.xhtml" /> 
+
+                            <rich:dataTable  id="injuryDataList" rowKeyVar="rowId" rows="10" rendered="#{systemResultViewUtil.injuryDataBeanList!=null and not empty systemResultViewUtil.injuryDataBeanList}"
+                                             var="injury" value="#{systemResultViewUtil.injuryDataBeanList}" styleClass="meal-plan" style="width: 100%" rowClass="#{rowId%2 == 0 ? 'alt-row1':'alt-row'}" >
+                                <f:facet name="header">
+                                    <rich:columnGroup>
+                                        <rich:column style="width: 20%" styleClass="header">
+                                            <h:outputText value="Code"/>
+                                        </rich:column>
+                                        <rich:column style="width: 36%" styleClass="header">
+                                            <h:outputText value="Affected Area"/>
+                                        </rich:column>                                        
+                                        <rich:column style="width: 13%"  styleClass="header">
+                                            <h:outputText value="Created On" />
+                                        </rich:column>
+                                        <rich:column style="width: 7%; text-align: center;"  styleClass="header">
+                                            <h:outputText value="Status" />
+                                        </rich:column>
+                                    </rich:columnGroup>
+                                </f:facet>                              
+                                <rich:column style="vertical-align: top">
+                                    <a4j:commandLink title="Click here to Edit" value="#{injury.uniqueCode}" onclick="loadWaitPanel('content');" oncomplete="#{rich:component('addInjury')}.show();" render="manageInj">                                        
+                                        <f:setPropertyActionListener target="#{injuryServiceBean.injuryDataBean}" value="#{injury}"/>
+                                        <f:setPropertyActionListener target="#{injuryServiceBean.operationChar}" value="U"/>
+                                    </a4j:commandLink>                                    
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{injury.name}"></h:outputText>                                    
+                                </rich:column>                                
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{injury.createdOn}">
+                                        <f:convertDateTime type="date" pattern="MM/dd/yyyy" timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                    </h:outputText>                                    
+                                </rich:column>
+                                <rich:column style="text-align: center;vertical-align: top">                                    
+                                    <h:outputLabel id="statusPanel">
+                                        <a4j:commandLink title="#{injury.isActive ? 'Click here to Deactivate':'Click here to Activate'}" onclick="loadWaitPanel('content');" action="#{injuryServiceBean.updateInjury()}" rendered="#{injury.isActive != null}" render="injuryListPanel" oncomplete="stopWaitPanel('content');">
+                                            <h:graphicImage value="#{injury.isActive ?'/images/activate.png' :'/images/deactivate.png'}" style="border: none;" />
+                                            <f:setPropertyActionListener target="#{injuryDataBean.uniqueCode}" value="#{injury.uniqueCode}"/>
+                                            <f:setPropertyActionListener target="#{injuryDataBean.isActive}" value="#{not injury.isActive}"/>
+                                            <f:setPropertyActionListener target="#{injuryDataBean.name}" value="#{injury.name}"/>
+                                        </a4j:commandLink>
+                                    </h:outputLabel>
+                                </rich:column>                               
+                                <f:facet name="footer" >                                    
+                                    <div align="center" style="width: 100%;">
+                                        <rich:dataScroller for="injuryDataList" renderIfSinglePage="true" maxPages="10" fastStep="5"></rich:dataScroller>  
+                                    </div>                                    
+                                </f:facet>
+                            </rich:dataTable>
+                            <a4j:jsFunction name="clearData" action="#{injuryServiceBean.retrieveInjuries()}" render="injuryListPanel"/>
+                        </a4j:outputPanel>
+                    </div>
+                </h:form>
+                <rich:popupPanel id="addInjury" minHeight="220" width="400" autosized="true">
+                    <h:form prependId="false">
+                        <a4j:outputPanel id="manageInj">
+
+                            <h6>#{injuryServiceBean.operationChar == 'C' ? 'Add' : 'Update'} Medical Condition
+                                <h:outputLink value="manageInjury" style="float: right" onclick="#{rich:component('addInjury')}.hide();">
+                                    <img src="#{facesContext.externalContext.requestContextPath}/images/close-btn.jpg" alt="close" title="Close" align="texttop"/>
+                                </h:outputLink></h6><hr class="red"/>
+                            <a4j:outputPanel id="innerDataM">
+                                <h:outputLabel rendered="#{not messageDataBean.isSuccess and messageDataBean.message != null}">
+                                    <div class="ui-widget">
+                                        <div class="ui-state-error ui-corner-all" style="padding:0px 5px; margin-bottom:10px; font-weight:bold; line-height:16px; "> 
+                                            <p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span> 
+                                                #{messageDataBean.message}</p><div class="clearing"></div>
+                                        </div>                
+                                    </div>
+                                </h:outputLabel>
+                            </a4j:outputPanel>
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" >
+                                <tr>
+                                    <td width="30%"></td>
+                                    <td width="55%"></td>
+                                    <td width="15%"></td>
+                                </tr> 
+                                <tr>
+                                    <th>Affected area<sup><font color="red">*</font></sup></th>
+                                    <td colspan="2">
+                                        <h:inputText id="iName" value="#{injuryServiceBean.injuryDataBean.name}"  styleClass="medium" maxlength="100" required="true" requiredMessage="Enter affected area">
+                                            <f:ajax event="blur" render="iNameMsg" />
+                                        </h:inputText>
+                                        <rich:message for="iName" id="iNameMsg"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        Code<sup><font color="red" style="display: #{injuryServiceBean.operationChar == 'C' ? '' : 'none'}">&#160;*</font></sup>
+                                    </th>
+                                    <td colspan="2">
+                                        <h:inputText id="iCode" value="#{injuryServiceBean.injuryDataBean.uniqueCode}" style="display: #{injuryServiceBean.operationChar == 'C' ? 'inline-block' : 'none'}" maxlength="10"  styleClass="medium"
+                                                     required="true" requiredMessage="Enter code">
+                                            <f:ajax event="blur" render="iCodeMsg" />
+                                        </h:inputText>
+                                        <span style="display: #{injuryServiceBean.operationChar == 'U' ? 'table-cell' : 'none'}">
+                                            <h:outputLabel value="#{injuryServiceBean.injuryDataBean.uniqueCode}" />
+                                            <h:inputHidden value="#{injuryServiceBean.injuryDataBean.uniqueCode}" rendered="#{injuryServiceBean.operationChar == 'U'}"/>
+                                        </span>
+                                        <rich:message for="iCode" id="iCodeMsg"/>
+                                    </td> 
+                                </tr>
+                            </table>
+                            <h:inputHidden value="#{injuryServiceBean.injuryDataBean.isActive}"/>
+                            <hr class="red"/>
+                            <div align="center" style="width: 100%;">
+                                <a4j:commandButton value="Submit" action="#{injuryServiceBean.createInjury()}" styleClass="standard-button" render="injuryListPanel, dataMessage, innerDataM" style="display: #{injuryServiceBean.operationChar == 'C'?'table-cell' :'none'}" oncomplete="if(#{messageDataBean.isSuccess != null and messageDataBean.isSuccess}) {#{rich:component('addInjury')}.hide();};" />
+                                <a4j:commandButton value="Submit" action="#{injuryServiceBean.updateInjury()}" styleClass="standard-button" render="injuryListPanel, dataMessage, innerDataM" style="display: #{injuryServiceBean.operationChar == 'U'?'table-cell' :'none'}" oncomplete="if(#{messageDataBean.isSuccess != null and messageDataBean.isSuccess}) {#{rich:component('addInjury')}.hide();};"/>&#160;
+                            </div>
+                        </a4j:outputPanel>
+                    </h:form>
+                </rich:popupPanel>
+                <rich:popupPanel id="uploadInjury" minHeight="150" minWidth="450" autosized="true">
+                    <h:form prependId="false">
+                        <a4j:outputPanel id="uploadinj">
+                            <h6>Upload Medical Conditions List
+                                <h:outputLink value="manageInjury" style="float: right" onclick="#{rich:component('uploadInjury')}.hide();">
+                                    <img src="#{facesContext.externalContext.requestContextPath}/images/close-btn.jpg" alt="close" title="Close" align="texttop"/>
+                                </h:outputLink>
+                            </h6>
+                            <hr class="red"/>
+                            <a4j:outputPanel id="innerDataMsg">
+                                <h:outputLabel rendered="#{not messageDataBean.isSuccess and messageDataBean.message != null}">
+                                    <div class="ui-widget">
+                                        <div class="ui-state-error ui-corner-all" style="padding:0px 5px; margin-bottom:10px; font-weight:bold; line-height:16px; "> 
+                                            <p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span> 
+                                                #{messageDataBean.message}</p><div class="clearing"></div>
+                                        </div>                
+                                    </div>
+                                </h:outputLabel>
+                            </a4j:outputPanel>
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" >
+                                <tr>
+                                    <th style="vertical-align: top;" width="25%">Upload File</th>
+                                    <td>
+                                        <h:inputHidden id="doc" value="#{injuryDataBean.name}" required="true" requiredMessage="Upload file" />
+                                        <a4j:commandButton id="stopBtn" styleClass="stopBtn" value="Stop" immediate="true"
+                                                           render="docComp" oncomplete="document.getElementById('stopBtn').style.display='none'" />
+                                        <rich:fileUpload fileUploadListener="#{fileUploadListener.pdfUploadListener}" 
+                                                         addLabel="Upload Excel Sheet" acceptedTypes="xls,xlsx,mp4"
+                                                         style="height: 80px; width: 300px"
+                                                         onuploadcomplete="document.getElementById('doc').value='done';document.getElementById('stopBtn').style.display='none'"
+                                                         id="docComp"
+                                                         onfilesubmit="document.getElementById('stopBtn').style.display=''">
+                                        </rich:fileUpload>
+                                        <div style="font-size:11px; width: 300px" align="right">
+                                            Maximum Upload File-Size is
+                                            <h:outputText style="font-size: 11px; text-align:right " value="#{initParam['org.richfaces.fileUpload.maxRequestSize']/(1024*1024)}">
+                                                <f:convertNumber  maxFractionDigits="0" />
+                                            </h:outputText> MB
+                                            <br/>
+                                            Allowed types are XLS and XLSX only
+                                        </div>
+                                        <rich:message for="doc" />
+                                    </td>                                   
+                                </tr>                              
+                            </table>                           
+                            <hr class="red"/>
+                            <div align="center" style="width: 100%;">
+                                <a4j:commandButton value="Submit" action="#{injuryServiceBean.createInjuryFromExcelData()}" styleClass="standard-button" 
+                                                   render="#{messageDataBean.isSuccess != null and messageDataBean.isSuccess ? 'injuryListPanel, dataMessage' : 'innerDataMsg'}"
+                                                   oncomplete="if(#{messageDataBean.isSuccess != null and messageDataBean.isSuccess}) {#{rich:component('uploadInjury')}.hide();};" />                                
+                            </div>
+                        </a4j:outputPanel>
+                    </h:form>
+                </rich:popupPanel>
+                <script type="text/javascript">         
+                    document.getElementById('stopBtn').style.display='none';                    
+                </script>
+            </ui:define>
+
+        </ui:composition>
+    </h:body>
+</html>

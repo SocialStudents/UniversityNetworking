@@ -1,0 +1,181 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+    <h:body>   
+        <ui:composition template="./layout/homeLayout.xhtml">
+            <ui:define name="content">
+                <f:event type="preRenderView" listener="#{videoServiceBean.retrieveLatestVideo()}"/>
+                <h:form>
+                    <div class="flash-banner" id="flashContentDiv">
+                        <script type="text/javascript">
+                            AC_FL_RunContent( 'codebase','http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,28,0','width','970','height','445','title','pbalance','src','pbalance-slide-show_v6','quality','high','pluginspage','http://www.adobe.com/shockwave/download/download.cgi?P1_Prod_Version=ShockwaveFlash','wmode','transparent','movie','#{facesContext.externalContext.requestContextPath}/images/pbalance-slide-show_v6' ); //end AC code
+                        </script>
+                        <script src="#{facesContext.externalContext.requestContextPath}/scripts/jquery/jquery.jwplayer.min.js" type="text/javascript"></script>
+                        <noscript>
+                            <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,28,0" width="970" height="415" title="pbalance">
+                                <param name="movie" value="pbalance-slide-show_v6.swf" />
+                                <param name="quality" value="high" />
+                                <param name="wmode" value="transparent" />
+                                <embed src="#{facesContext.externalContext.requestContextPath}/images/pbalance-slide-show_v6.swf" width="970" height="445" quality="high" pluginspage="http://www.adobe.com/shockwave/download/download.cgi?P1_Prod_Version=ShockwaveFlash" type="application/x-shockwave-flash" wmode="transparent"></embed>
+                            </object>
+                        </noscript>                    
+                    </div>
+                    <div class="flash-banner" id="flashDiv" style="display:none;">
+                        <img src="#{facesContext.externalContext.requestContextPath}/images/alternate-image-flash.jpg" />
+                    </div>    
+                    <hr style="margin-bottom:15px;"/>
+                    <!--                    Latest Video Code-->
+                    <h:outputLabel rendered="#{videoDataBean.id==0}">
+                        <a class="youtube" href="#" rel="xcw8OwcFENo" title="Welcome to the perfect balance guidance videos">  <div class="video-box">
+                                <div class="inner-video">
+                                    <div class="inner-videobg">                               
+                                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                            <tr>
+                                                <td colspan="2"><h2>Latest Video</h2></td>
+                                            </tr>
+                                            <tr>
+                                                <td width="46%"><img src="#{facesContext.externalContext.requestContextPath}/images/warmup-video.png" alt="introduction-video" width="127" height="110" /></td>
+                                                <td width="54%" valign="top">
+                                                    <p>Check out this video where Michael shows a good workout plan for the Chest.</p>  </td>
+                                            </tr>
+                                        </table>
+                                    </div>	
+                                </div>           
+                            </div>
+                        </a>
+                    </h:outputLabel>
+                    <h:outputLabel rendered="#{videoDataBean.id!=0}">
+                        <a href="#" rel="xcw8OwcFENo" title="Welcome to the perfect balance guidance videos" onclick="#{rich:component('playVideo')}.show();">  <div class="video-box">
+                                <div class="inner-video">
+                                    <div class="inner-videobg">                               
+                                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                            <tr>
+                                                <td colspan="2"><h2>Latest Video</h2></td>
+                                            </tr>
+                                            <tr>
+                                                <td width="46%" style="background-image:url(#{facesContext.externalContext.requestContextPath}/images/video-background.png); background-repeat:no-repeat; height:120px;">
+                                                    <div style="width:100px; height:90px;  margin-left:11px; margin-top:-10px;">
+                                                        <a4j:mediaOutput id="u7_img" style="float: left;border:none; width:100px; height:90px" value="#{videoDataBean.imagePath}" element="img" createContent="#{systemResultSessionUtil.drawImage}" mimeType="image/jpg"  styleClass="u7"/>
+                                                    </div>
+                                                </td>
+                                                <!--                                                <td width="46%"></td>-->
+                                                <td width="54%" valign="top" style="padding-left: 10px;">
+                                                    <p>#{videoDataBean.description}</p>  </td>
+                                            </tr>
+                                        </table>
+                                    </div>	
+                                </div>           
+                            </div>
+                        </a>
+                    </h:outputLabel>
+
+                    <h:commandLink action="#{menuServiceBean.menuNavigate}">     
+                        <f:param name="id" value="wlc"/>   
+                        <div class="video-box">
+                            <div class="inner-video">
+                                <div class="inner-videobg">
+                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                        <tr>
+                                            <td colspan="2"><h2>PB Weight Loss Contest</h2></td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" style="text-align:justify;"><h6 style="text-align:center; font-weight:600; margin-bottom:0px;">WIN $2000</h6>
+                                                Perfect Balance invites you to a weight loss challenge unlike any you’ve ever seen! Open to all... </td>                                   </tr>
+
+                                        <tr>
+                                            <td colspan="2" style="text-align:center; padding-top:5px;">                                             
+                                                <div id="joinnow-btn" style="margin:0 auto;" />                                                                                                                                                                                                                     
+                                            </td>
+                                        </tr>
+                                    </table>                                
+                                </div>	
+                            </div>
+                        </div>
+                    </h:commandLink> 
+                    <div class="video-box01"  >
+                        <div class="inner-video01" >
+                            <div class="inner-videobg01" >
+                                <table width="100%" border="0" cellpadding="0" cellspacing="0" class="form-table">
+                                    <tr>
+                                        <td colspan="2" style="padding:0px;"><h2>Weight Loss Calculator</h2></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Your starting Weight</th>
+                                        <td  valign="top">
+                                            <input tabindex="1" type="text" maxlength="6" name="textSWeight" id="textSWeight" class="small" onkeyup="if(isEnter(event)){calculatewlc();}" />              </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Your current Weight</th>
+                                        <td valign="top"><input tabindex="2"  type="text" maxlength="6" name="textCWeight" id="textCWeight" class="small" onkeyup="if(isEnter(event)){calculatewlc();}" /></td>
+                                    </tr>
+                                    <tr>
+                                        <th>Total weight lost</th>
+                                        <td valign="bottom"><label id="labelWLost" name="labelWLost" style="font-weight: bold;">0 %</label></td>
+                                    </tr>
+                                    <tr>
+                                        <th>&#160;</th>
+                                        <td valign="top">
+                                            <a tabindex="3" onkeyup="if(isEnter(event)){calculatewlc();}" onclick="calculatewlc();return false;"><div id="calculate">&#160;</div></a>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>	
+                        </div>
+                    </div>
+                </h:form>               
+                <script type="text/javascript">
+                    if(swfobject.hasFlashPlayerVersion("1")) {
+                        document.getElementById('flashContentDiv').style.display='block';
+                        document.getElementById('flashDiv').style.display='none';
+                    }
+                    else {
+                        document.getElementById('flashDiv').style.display='block';
+                        document.getElementById('flashContentDiv').style.display='none';
+
+                    }
+                    jQuery("#textSWeight").numeric({allow:"."});
+                    jQuery("#textCWeight").numeric({allow:"."});                                      
+                    document.getElementById("aboutus").setAttribute("class", "");      
+                    document.getElementById("trainingstudio").setAttribute("class", "");      
+                    document.getElementById("pbalancediet").setAttribute("class", "");      
+                    document.getElementById("videos").setAttribute("class", "");      
+                    document.getElementById("schedule").setAttribute("class", "");      
+                    document.getElementById("contact").setAttribute("class", "");
+                    document.getElementById("pbstudio").setAttribute("class", "");   
+                    document.getElementById("results").setAttribute("class", "");   
+                </script>
+
+                <!--                Code for video Play-->
+                <rich:popupPanel id="playVideo" onbeforeshow="showPlayer();" minHeight="450" minWidth="587">
+                    <div class="login-header">
+                        <h:outputText value="#{videoDataBean.title}" style="color: white"/>
+                        <h:link onclick="#{rich:component('playVideo')}.hide();" style="float: right" >
+                            <img src="#{facesContext.externalContext.requestContextPath}/images/close-btn.jpg" alt="close" title="Close" align="texttop"/>
+                        </h:link>
+                    </div>
+                    <div id="video"/>
+                    <script>
+                        function showPlayer()
+                        {
+                            $('#video').jwPlayer({
+                                file: "#{facesContext.externalContext.requestContextPath}/videos/#{videoDataBean.path}",
+                                swf: '#{facesContext.externalContext.requestContextPath}/videos/player.swf',
+                                height: 400,
+                                width: 580
+                            });
+
+                        }
+                        //                        $('input[title!=""]').hint();
+                        
+                    </script>
+                </rich:popupPanel>
+            </ui:define>
+        </ui:composition>
+    </h:body>       
+</html>
+

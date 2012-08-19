@@ -1,0 +1,92 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      >
+    <h:body>       
+        <ui:composition template="./layout/homeLayout.xhtml">
+            <ui:define name="content">
+                <f:metadata>
+                    <f:event type="preRenderComponent" listener="#{userServiceBean.allPublishedTestimonial()}" />
+                </f:metadata>
+                <div  id="flashContentDiv">
+                    <link href="#{facesContext.externalContext.requestContextPath}/css/imageSlider.css" rel="stylesheet" type="text/css" />
+                    <script src="#{facesContext.externalContext.requestContextPath}/scripts/jquery/slider.js" type="text/javascript"></script>
+                    <h3>Results</h3>
+                    <div class="breadcrumbs"> <a href="/login">HOME</a> | RESULTS </div>
+                    <h:form prependId="false" >
+
+                        <div class="infiniteCarousel" style="background-image: url(#{facesContext.externalContext.requestContextPath}/images/testimonials-full-size.jpg);height:555px; width:970px;background-repeat: no-repeat">
+
+                            <div class="wrap" style="width:930px; margin: 0px auto;">
+
+
+                                <ul id="mycarousel" class="jcarousel-skin-tango" >
+                                    <ui:repeat value="#{userServiceBean.publishTestimonialDetailDataBeanList}" var="testimonial">
+                                        <li >
+
+                                            <table cellpadding="0" cellspacing="0" border="0">
+                                                <tr>
+                                                    <td>
+                                                        <div style="background:white; border: 1px solid #ccc; padding:5px;">
+                                                            <table border="0" cellpadding="0" cellspacing="0">
+                                                                <tr>
+                                                                    <td valign="top" style="height:355px; width: 245px;">
+                                                                        <a4j:mediaOutput style="height:355px; width: 245px;" element="img" createContent="#{systemResultSessionUtil.drawImage}"
+                                                                                         value="#{systemPropertyUtil.filePath.concat(testimonial.imagePathOld)}" rendered="#{testimonial.imagePathOld != null}" mimeType="image/jpg"/>
+                                                                    </td>
+                                                                    <td valign="top" style="height:355px; width: 245px;">
+                                                                        <a4j:mediaOutput style="height:355px; width: 245px;" element="img" createContent="#{systemResultSessionUtil.drawImage}"
+                                                                                         value="#{systemPropertyUtil.filePath.concat(testimonial.imagePathNew)}" rendered="#{testimonial.imagePathNew != null}" mimeType="image/jpg"/>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td style="width: 245px;">
+                                                                        <center>BEFORE</center>
+                                                                    </td>
+
+                                                                    <td style="width: 245px;">
+                                                                        <center>AFTER</center>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </div>
+                                                    </td>
+
+                                                    <td valign="middle">
+                                                        <div style="padding:10px; width: 312px;vertical-align: middle;line-height: 22px; font-family: georgia; font-smooth: always;font-size:20px;border:none;text-align: center; color: #7d7d7d;"><span style="font-family: arial;font-size: 24px;">"</span>#{testimonial.message.substring(0,testimonial.message.length() > 650 ? 650 : testimonial.message.length())}<span style="font-family: arial;font-size: 24px; ">"</span></div>
+                                                        <div style="text-align: right; color:#cc0000; font-size: 18px; font-smooth: always; font-style: italic; font-family:Lucida Sans Unicode; padding-right:25px;">#{testimonial.userName}</div>
+                                                    </td>
+                                                </tr>
+
+                                            </table>
+
+
+
+                                        </li>
+
+                                    </ui:repeat>
+
+                                </ul>
+                            </div>
+
+                        </div>
+
+                    </h:form>
+                </div>          
+                <script type="text/javascript">         
+                    document.getElementById("results").setAttribute("class", "active")
+
+                     jQuery(document).ready(function () {
+                        jQuery('#mycarousel').jcarousel({
+                            wrap: 'circular'
+                        });
+                    });
+                </script>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

@@ -1,0 +1,150 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+
+    <ui:composition template="../layout/adminReportLayout.xhtml">
+        <ui:define name="content">
+            <script type="text/javascript">
+                if("#{userRightsDataBean.haveUserReportsRights}" == "false") {                          
+                    location.href ="#{loginDataBean.lendingPage}";
+                } 
+                
+                $(document).ready(function() {
+                    sorting();
+                       
+                });
+            </script>
+            <f:metadata>
+                <f:event listener="#{userServiceBean.retrieveCurrentSubscriptionDataBeanforReport()}" type="preRenderView"/>
+            </f:metadata>
+            <div class="content">
+                <h:form prependId="false">
+                    <table class="form-table" border="0" id="selectionTable">
+                        <tr>
+                            <td width="95%">    
+                                <h:outputLabel>
+                                    <font color="#C11B1D" style="font-size: 15px;font-weight: bold;">Past subscription and payment history - #{systemResultSessionUtil.name}</font>
+                                </h:outputLabel>
+                            </td>
+                            <td width="5%">
+                                <a4j:commandLink style="color: blue; font-style: italic; text-decoration: underline;" onbegin="redirectPage();">
+                                    <img src="#{facesContext.externalContext.requestContextPath}/images/back-btn.png"/>
+                                </a4j:commandLink>
+                                <h:inputHidden id="prevView" value="#{systemResultSessionUtil.prevView}"/>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div id="SearchPanel">
+                        <table class="form-table" border="0" id="selectionTable" width="100%">
+                            <tr>
+                                <th width="20%">Session Attended</th>
+                                <td width="36%"><h:outputText value="#{memberSubscriptionDetailDataBean.unitsUsed}" /></td>
+                                <td width="39%" style="text-align: right">
+                                    <a4j:commandLink style="color: blue; font-style: italic; text-decoration: underline;" title="Go for measurement detail" action="#{userServiceBean.navigateToMembershipMeasurementDetail()}">
+                                        <font color="#C11B1D" style="font-size: 15px;font-weight: bold;">Measurement Detail</font>
+                                    </a4j:commandLink> &#160;
+                                    <h:commandLink action="#{reportToPdfServiceBean.membershipDueDetailiReport()}" rendered="#{systemResultViewUtil.memberSubscriptionDetailDataBeanList !=null and not empty systemResultViewUtil.memberSubscriptionDetailDataBeanList}">
+                                        <h:graphicImage value="/images/download-pdf.jpg" style="border: none; float: right" title="Click to Download Report"/>
+                                        &#160;&#160;&#160;
+                                        <f:setPropertyActionListener target="#{systemResultViewUtil.sequenceValue}" value="#{memberSubscriptionDetailDataBean.unitsUsed}"/>
+                                    </h:commandLink>
+                                </td>
+                            </tr>    
+                        </table>
+                    </div>
+                    <rich:dataTable  id="reportDataList" rowKeyVar="rowId" var="subs" value="#{systemResultViewUtil.memberSubscriptionDetailDataBeanList}" styleClass="meal-plan" style="width: 100%" rendered="#{systemResultViewUtil.memberSubscriptionDetailDataBeanList !=null and not empty systemResultViewUtil.memberSubscriptionDetailDataBeanList}" rowClass="#{rowId%2 == 0 ? 'alt-row1':'alt-row'}" >
+                        <f:facet name="header">
+                            <rich:columnGroup>
+                                <rich:column style="width: 40%" styleClass="header">
+                                    <h:outputText value="Package"/>
+                                </rich:column>
+                                <rich:column style="width: 20%"  styleClass="header">
+                                    <h:outputText value="Payment method" />
+                                </rich:column>
+                                <rich:column style="width: 40%"  styleClass="header">
+                                    <h:outputText value="Payment details" />
+                                </rich:column>
+
+                            </rich:columnGroup>
+                        </f:facet>
+
+                        <rich:column style="vertical-align: top">
+                            <h:outputText value="#{subs.programName}" />
+                        </rich:column>
+                        <rich:column style="vertical-align: top">
+                            <h:outputText value="#{systemResultViewUtil.paidBy}" />
+                        </rich:column>
+                        <rich:column style="vertical-align: top">
+                            <h:outputLabel rendered="#{subs.fees != null}" >
+                                <h:outputText value="Amount - #{subs.fees}" >
+                                    <f:convertNumber minIntegerDigits="1" minFractionDigits="2"/>
+                                </h:outputText><br></br>
+                            </h:outputLabel>
+                            <h:outputLabel rendered="#{subs.chequeNumber != null}" >
+                                <h:outputText value="Check No. #{subs.chequeNumber}" /><br></br>
+                            </h:outputLabel>
+                            <h:outputLabel rendered="#{subs.status != null}" >
+                                <h:outputText value="Check Status - "/>
+                                <h:outputLabel rendered="#{subs.status eq 'P'}">
+                                    <h:outputText value="Pending" /><br/>
+                                </h:outputLabel>
+                                <h:outputLabel rendered="#{subs.status eq 'R'}">
+                                    <h:outputText value="Realized" /><br/>
+                                </h:outputLabel>
+                                <h:outputLabel rendered="#{subs.status eq 'B'}">
+                                    <h:outputText value="Bounced" /><br/>
+                                </h:outputLabel>
+                            </h:outputLabel>
+                            <h:outputLabel rendered="#{subs.transactionDate != null}" >
+                                <h:outputText value="Transaction Date - "/>
+                                <h:outputText value="#{subs.transactionDate}" >
+                                    <f:convertDateTime type="date" pattern="MM/dd/yyyy"/>
+                                </h:outputText><br></br>
+                            </h:outputLabel>
+                            <h:outputLabel rendered="#{subs.transactionNumber != null}" >
+                                <h:outputText value="Transaction Id - #{subs.transactionNumber}" /><br></br>
+                            </h:outputLabel>
+
+                        </rich:column>
+                    </rich:dataTable>
+                    <a4j:jsFunction name="redirectFollowUp" action="#{userServiceBean.navigateToFollowUpReport()}"/>
+                    <a4j:jsFunction name="redirectMembershipDue" action="#{userServiceBean.navigateToMembershipDueReport()}"/>
+                </h:form>
+            </div>
+            <script type="text/javascript">
+                function redirectPage(){
+                    if('#{systemResultSessionUtil.backFlag}'=='true'){
+                        redirectFollowUp();
+                    }else{
+                        redirectMembershipDue();
+                    }
+                }
+                function sorting(){
+                    $('#reportDataList').dataTable( {
+                        "aoColumns": [
+                            null,
+                            null,
+                            null,
+                        ],
+                        "bJQueryUI": false,
+                        "sPaginationType": "full_numbers",
+                        "bRetrieve" : true,
+
+                        "bFilter": true,
+                        "bInfo": false,
+                        "bAutoWidth": true 
+                    } );
+                }
+                
+                document.getElementById("membershipDueReport").setAttribute("class", "active");
+            </script>
+        </ui:define>
+    </ui:composition>
+</html>
+

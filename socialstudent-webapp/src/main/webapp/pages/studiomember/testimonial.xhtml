@@ -1,0 +1,111 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+    <h:body>
+        <ui:composition template="../layout/studioMemberLayout.xhtml">
+            <ui:define name="content">
+                <h:form prependId="false">
+                    <f:metadata>
+                        <f:event listener="#{userServiceBean.loadTestimonials()}" type="preRenderView"/>
+                    </f:metadata>
+                    <h3>Testimonials</h3>
+                    <hr class="red"/>
+
+                    <div id="search-panel"> 
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tbody>
+                                <tr>
+                                    <td width="39%">
+                                        <h:commandLink action="#{userServiceBean.navigateToCreateTestimonial()}" title="Create Testimonial">
+                                            <img src="#{facesContext.externalContext.requestContextPath}/images/new-button.jpg" alt="Create Testimonial"/>
+                                        </h:commandLink>
+                                    </td>
+                                    <td width="14%" style="vertical-align: middle;">
+                                        <h:selectBooleanCheckbox value="#{systemResultViewUtil.isShowInActiveData}" >
+                                            <a4j:ajax listener="#{userServiceBean.loadTestimonials()}" render="recipeListPanel,dataMessage"/>
+                                        </h:selectBooleanCheckbox>
+                                        <strong>Show All</strong></td>
+                                    <td width="35%"><div id="search-box-bg">
+                                            <h:inputText value="#{systemResultViewUtil.searchString}" id="searchString" maxlength="50" styleClass="search-txt-box"/>
+                                        </div></td>
+                                    <td width="12%" style="vertical-align: middle;"> &#160;
+                                        <a4j:commandButton value="Search"  action="#{userServiceBean.loadTestimonials()}" onclick="loadWaitPanel('content');" oncomplete="stopWaitPanel('content');" render="recipeListPanel,recipeDataList, dataMessage" styleClass="standard-button"  title="Search Testimonial" status="status" />
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                    </div>
+
+                    <div class="content" align="justify">
+                        <ui:include src="../common/message.xhtml" /> 
+                        <a4j:outputPanel id="recipeListPanel">
+                            <rich:dataTable  id="recipeDataList" rowKeyVar="rowId" rows="10" var="testimonial" value="#{systemResultViewUtil.memberTestimonialDetailDataBeanList}" styleClass="meal-plan" style="width: 100%" rendered="#{systemResultViewUtil.memberTestimonialDetailDataBeanList !=null and not empty systemResultViewUtil.memberTestimonialDetailDataBeanList}" rowClass="#{rowId%2 == 0 ? 'alt-row1':'alt-row'}" >
+                                <f:facet name="header">
+                                    <rich:columnGroup>
+                                        <rich:column style="width: 15%" styleClass="header">
+                                            <h:outputText value="Written On"/>
+                                        </rich:column>
+                                        <rich:column style="width: 45%"  styleClass="header">
+                                            <h:outputText value="Testimonial" />
+                                        </rich:column>
+                                        <rich:column style="width: 15%"  styleClass="header">
+                                            <h:outputText value="Current Status"/>
+                                        </rich:column>                                       
+                                        <rich:column style="width: 10%; text-align: center;"  styleClass="header">
+                                            <h:outputText value="Status" />
+                                        </rich:column>
+                                    </rich:columnGroup>
+                                </f:facet>
+                                <rich:column style="vertical-align: top">
+                                    <h:commandLink title="Click here to view Testimonial detail" action="#{userServiceBean.navigateToUpdateTestimonial()}" onclick="loadWaitPanel('content');">
+                                        <h:outputText value="#{testimonial.lastModifiedOn}">
+                                            <f:convertDateTime type="date" pattern="MM/dd/yyyy" timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                        </h:outputText>
+                                        <f:setPropertyActionListener target="#{systemResultSessionUtil.id}" value="#{testimonial.id}"/>
+                                    </h:commandLink>
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{testimonial.message}"/>
+                                </rich:column> 
+                                <rich:column style="vertical-align: top">
+                                    <a4j:commandLink action="#{userServiceBean.loadTestimonials()}" render="recipeListPanel" title="Click here to view according to status"
+                                                     onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content');">
+                                        <h:outputText value="Pending" rendered="#{testimonial.status eq 'P'}" />
+                                        <h:outputText value="Published" rendered="#{testimonial.status eq 'PU'}"/>
+                                        <h:outputText value="Rejected" rendered="#{testimonial.status eq 'RJ'}"/>
+                                        <h:outputText value="UnPublished" rendered="#{testimonial.status eq 'UP'}"/>
+                                        <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="#{testimonial.status}"/>                                        
+                                    </a4j:commandLink>
+                                </rich:column>
+                                <rich:column style="text-align: center;vertical-align: top">
+                                    <h:outputLabel id="statusPanel">
+                                        <a4j:commandLink title="#{testimonial.isActive ? 'Click here to Deactivate':'Click here to Activate'}" onclick="loadWaitPanel('content');" action="#{userServiceBean.deActiveTestimonial()}" rendered="#{testimonial.isActive != null }" render="recipeListPanel,dataMessage" oncomplete="stopWaitPanel('content');">
+                                            <h:graphicImage value="#{testimonial.isActive ?'/images/activate.png' :'/images/deactivate.png'}" style="border: none;" />
+                                            <f:setPropertyActionListener target="#{memberTestimonialDetailDataBean.id}" value="#{testimonial.id}"/>
+                                            <f:setPropertyActionListener target="#{memberTestimonialDetailDataBean.isActive}" value="#{not testimonial.isActive}"/>
+                                        </a4j:commandLink>
+                                    </h:outputLabel>
+                                </rich:column>
+                                <f:facet name="footer" >
+                                    <div align="center" style="width: 100%;">
+                                        <rich:dataScroller for="recipeDataList" renderIfSinglePage="true" maxPages="10" fastStep="5"></rich:dataScroller>
+                                    </div>
+                                </f:facet>
+                            </rich:dataTable>
+                        </a4j:outputPanel>
+                    </div>
+
+                </h:form>
+                <script type="text/javascript">
+                    document.getElementById("testimonial").setAttribute("class", "active")
+                </script>
+
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

@@ -1,0 +1,583 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j">
+    <h:body>
+
+        <ui:composition template="layout/homeLayout.xhtml">
+            <ui:define name="content">
+                <f:metadata>
+                    <f:event type="preRenderComponent" listener="#{mealPlanServiceBean.retreiveMealPlan()}" />
+                </f:metadata>
+                <h:form prependId="false">
+                    <div id="left">
+                        <ul id="subnav">
+                            <a href="/pbalancediet"><li>Eating</li></a> 
+                            <h:commandLink action="#{menuServiceBean.loginNavigate}">
+                                <li  class="active">PB Meal Plan</li>
+                                <f:param name="id" value="pbalancemealplan"/>
+                            </h:commandLink>
+                            <h:commandLink action="#{menuServiceBean.loginNavigate}">
+                                <li>PB Recipes</li>
+                                <f:param name="id" value="pbalanceRecipes"/>
+                            </h:commandLink>
+                        </ul>
+                        <div class="contact-bg">
+                            <h4>Questions?</h4>
+                            <h5>Just call and talk to us:</h5>
+                            (510) 668-0701<br/>
+                            <br/>
+                            <a href="/contact"><div id="emailus">&#160;</div></a>
+                        </div>
+                    </div>
+                    <a4j:outputPanel id="mealPlan">
+                        <div id="right">
+                            <h3>PB Meal Plan</h3>
+                            <div class="breadcrumbs"> <a href="/login">HOME</a> | <a href="/pbalancemealplan">PB MEAL PLAN</a> | <h:outputLabel value="#{mealPlanDataBean.name}"/>
+                            </div>
+                            <div class="content">
+                                <table width="100%" border="0" cellpadding="0" cellspacing="0" class="meal-plan">
+                                    <tbody><tr class="alt-row">
+                                            <td colspan="6"><div><strong><h:outputLabel value="#{mealPlanDataBean.name}"/> 
+                                                    </strong>
+                                                    <div style="float:right;"><h:graphicImage value="#{systemResultSessionUtil.mealPlanCategory eq 'V' ?'/images/veg.jpg' :'/images/non-veg.jpg'}" style="border: none; float: right" /></div>
+                                                </div></td>
+                                        </tr>
+                                        <tr>
+                                            <th width="7%">&nbsp;</th>
+                                            <th width="19%">Breakfast </th>
+                                            <th width="19%">Snack</th>
+                                            <th width="19%">Lunch</th>
+                                            <th width="18%">Snack</th>
+                                            <th width="18%">Dinner</th>
+                                        </tr>
+                                        <tr>
+                                            <th valign="top">Day 1</th>
+                                            <td valign="top">
+                                                <ui:repeat id="breakfastday1"  value="#{mealPlanDataBean.day1BreakfastList}" var="recipe" rendered="#{mealPlanDataBean.day1BreakfastList != null}">
+                                                    <li style="list-style-type: none;">
+                                                        <h:commandLink rendered="#{recipe.value != null}" title="Click here to view Recipe detail" value="#{recipe.label}" action="#{mealPlanServiceBean.navigateToViewRecipe()}" onclick="loadWaitPanel('content');" style="color: blue; text-decoration: underline">
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeId}" value="#{recipe.value}"/>
+                                                        </h:commandLink>
+                                                        <h:outputLabel rendered="#{recipe.value == null}" value="#{recipe.label}" />
+                                                        <h:commandLink rendered="#{userRightsDataBean.haveManageMealPlanRights and recipe.value == null and recipe.label != ''}" action="#{mealPlanServiceBean.navigateToCreateRecipe()}" >
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeName}" value="#{recipe.label}"/>
+                                                            <sup><img src="#{facesContext.externalContext.requestContextPath}/images/add-icon.png" width="12px" height="12px" alt="add" title="Add New Recipe" align="texttop"/></sup>
+                                                        </h:commandLink>
+                                                    </li>                                                    
+                                                </ui:repeat>  
+                                            </td>
+                                            <td valign="top">
+                                                <ui:repeat id="snack1day1"  value="#{mealPlanDataBean.day1Snack1List}" var="recipe">
+                                                    <li style="list-style-type: none;">
+                                                        <h:commandLink rendered="#{recipe.value != null}" title="Click here to view Recipe detail" value="#{recipe.label}" action="#{mealPlanServiceBean.navigateToViewRecipe()}" onclick="loadWaitPanel('content');" style="color: blue; text-decoration: underline">
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeId}" value="#{recipe.value}"/>
+                                                        </h:commandLink>
+                                                        <h:outputLabel rendered="#{recipe.value == null}" value="#{recipe.label}"/>
+                                                        <h:commandLink rendered="#{userRightsDataBean.haveManageMealPlanRights and recipe.value == null and recipe.label != ''}" action="#{mealPlanServiceBean.navigateToCreateRecipe()}" >
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeName}" value="#{recipe.label}"/>
+                                                            <sup><img src="#{facesContext.externalContext.requestContextPath}/images/add-icon.png" width="12px" height="12px" alt="add" title="Add New Recipe" align="texttop"/></sup>
+                                                        </h:commandLink>    
+                                                    </li>                                                    
+                                                </ui:repeat>
+                                            </td>
+                                            <td valign="top">
+                                                <ui:repeat id="lunchday1"  value="#{mealPlanDataBean.day1LunchList}" var="recipe">
+                                                    <li style="list-style-type: none;">
+                                                        <h:commandLink rendered="#{recipe.value != null}" title="Click here to view Recipe detail" value="#{recipe.label}" action="#{mealPlanServiceBean.navigateToViewRecipe()}" onclick="loadWaitPanel('content');" style="color: blue; text-decoration: underline">
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeId}" value="#{recipe.value}"/>
+                                                        </h:commandLink>
+                                                        <h:outputLabel rendered="#{recipe.value == null}" value="#{recipe.label}" />
+                                                        <h:commandLink rendered="#{userRightsDataBean.haveManageMealPlanRights and recipe.value == null and recipe.label != ''}" action="#{mealPlanServiceBean.navigateToCreateRecipe()}" >
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeName}" value="#{recipe.label}"/>
+                                                            <sup><img src="#{facesContext.externalContext.requestContextPath}/images/add-icon.png" width="12px" height="12px" alt="add" title="Add New Recipe" align="texttop"/></sup>
+                                                        </h:commandLink> 
+                                                    </li>                                                    
+                                                </ui:repeat>
+                                            </td>
+                                            <td valign="top">
+                                                <ui:repeat id="snack2day1"  value="#{mealPlanDataBean.day1Snack2List}" var="recipe">
+                                                    <li style="list-style-type: none;">
+                                                        <h:commandLink rendered="#{recipe.value != null}" title="Click here to view Recipe detail" value="#{recipe.label}" action="#{mealPlanServiceBean.navigateToViewRecipe()}" onclick="loadWaitPanel('content');" style="color: blue; text-decoration: underline">
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeId}" value="#{recipe.value}"/>
+                                                        </h:commandLink>
+                                                        <h:outputLabel rendered="#{recipe.value == null}" value="#{recipe.label}" />
+                                                        <h:commandLink rendered="#{userRightsDataBean.haveManageMealPlanRights and recipe.value == null and recipe.label != ''}" action="#{mealPlanServiceBean.navigateToCreateRecipe()}" >
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeName}" value="#{recipe.label}"/>
+                                                            <sup><img src="#{facesContext.externalContext.requestContextPath}/images/add-icon.png" width="12px" height="12px" alt="add" title="Add New Recipe" align="texttop"/></sup>
+                                                        </h:commandLink> 
+                                                    </li>                                                    
+                                                </ui:repeat>
+                                            </td>
+                                            <td valign="top">
+                                                <ui:repeat id="dinnerday1"  value="#{mealPlanDataBean.day1DinnerList}" var="recipe">
+                                                    <li style="list-style-type: none;">
+                                                        <h:commandLink rendered="#{recipe.value != null}" title="Click here to view Recipe detail" value="#{recipe.label}" action="#{mealPlanServiceBean.navigateToViewRecipe()}" onclick="loadWaitPanel('content');" style="color: blue; text-decoration: underline">
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeId}" value="#{recipe.value}"/>
+                                                        </h:commandLink>
+                                                        <h:outputLabel rendered="#{recipe.value == null}" value="#{recipe.label}" />
+                                                        <h:commandLink rendered="#{userRightsDataBean.haveManageMealPlanRights and recipe.value == null and recipe.label != ''}" action="#{mealPlanServiceBean.navigateToCreateRecipe()}" >
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeName}" value="#{recipe.label}"/>
+                                                            <sup><img src="#{facesContext.externalContext.requestContextPath}/images/add-icon.png" width="12px" height="12px" alt="add" title="Add New Recipe" align="texttop"/></sup>
+                                                        </h:commandLink> 
+                                                    </li>                                                    
+                                                </ui:repeat>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th valign="top">Day 2</th>
+                                            <td valign="top">
+                                                <ui:repeat id="breakfastday2"  value="#{mealPlanDataBean.day2BreakfastList}" var="recipe">
+                                                    <li style="list-style-type: none;">
+                                                        <h:commandLink rendered="#{recipe.value != null}" title="Click here to view Recipe detail" value="#{recipe.label}" action="#{mealPlanServiceBean.navigateToViewRecipe()}" onclick="loadWaitPanel('content');" style="color: blue; text-decoration: underline">
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeId}" value="#{recipe.value}"/>
+                                                        </h:commandLink>
+                                                        <h:outputLabel rendered="#{recipe.value == null}" value="#{recipe.label}" />
+                                                        <h:commandLink rendered="#{userRightsDataBean.haveManageMealPlanRights and recipe.value == null and recipe.label != ''}" action="#{mealPlanServiceBean.navigateToCreateRecipe()}" >
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeName}" value="#{recipe.label}"/>
+                                                            <sup><img src="#{facesContext.externalContext.requestContextPath}/images/add-icon.png" width="12px" height="12px" alt="add" title="Add New Recipe" align="texttop"/></sup>
+                                                        </h:commandLink>
+                                                    </li>                                                    
+                                                </ui:repeat>  
+                                            </td>
+                                            <td valign="top">
+                                                <ui:repeat id="snack1day2"  value="#{mealPlanDataBean.day2Snack1List}" var="recipe">
+                                                    <li style="list-style-type: none;">
+                                                        <h:commandLink rendered="#{recipe.value != null}" title="Click here to view Recipe detail" value="#{recipe.label}" action="#{mealPlanServiceBean.navigateToViewRecipe()}" onclick="loadWaitPanel('content');" style="color: blue; text-decoration: underline">
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeId}" value="#{recipe.value}"/>
+                                                        </h:commandLink>
+                                                        <h:outputLabel rendered="#{recipe.value == null}" value="#{recipe.label}"/>
+                                                        <h:commandLink rendered="#{userRightsDataBean.haveManageMealPlanRights and recipe.value == null and recipe.label != ''}" action="#{mealPlanServiceBean.navigateToCreateRecipe()}" >
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeName}" value="#{recipe.label}"/>
+                                                            <sup><img src="#{facesContext.externalContext.requestContextPath}/images/add-icon.png" width="12px" height="12px" alt="add" title="Add New Recipe" align="texttop"/></sup>
+                                                        </h:commandLink>
+                                                    </li>                                                    
+                                                </ui:repeat>
+                                            </td>
+                                            <td valign="top">
+                                                <ui:repeat id="lunchday2"  value="#{mealPlanDataBean.day2LunchList}" var="recipe">
+                                                    <li style="list-style-type: none;">
+                                                        <h:commandLink rendered="#{recipe.value != null}" title="Click here to view Recipe detail" value="#{recipe.label}" action="#{mealPlanServiceBean.navigateToViewRecipe()}" onclick="loadWaitPanel('content');" style="color: blue; text-decoration: underline">
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeId}" value="#{recipe.value}"/>
+                                                        </h:commandLink>
+                                                        <h:outputLabel rendered="#{recipe.value == null}" value="#{recipe.label}" />
+                                                        <h:commandLink rendered="#{userRightsDataBean.haveManageMealPlanRights and recipe.value == null and recipe.label != ''}" action="#{mealPlanServiceBean.navigateToCreateRecipe()}" >
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeName}" value="#{recipe.label}"/>
+                                                            <sup><img src="#{facesContext.externalContext.requestContextPath}/images/add-icon.png" width="12px" height="12px" alt="add" title="Add New Recipe" align="texttop"/></sup>
+                                                        </h:commandLink>
+                                                    </li>                                                    
+                                                </ui:repeat>
+                                            </td>
+                                            <td valign="top">
+                                                <ui:repeat id="snack2day2"  value="#{mealPlanDataBean.day2Snack2List}" var="recipe">
+                                                    <li style="list-style-type: none;">
+                                                        <h:commandLink rendered="#{recipe.value != null}" title="Click here to view Recipe detail" value="#{recipe.label}" action="#{mealPlanServiceBean.navigateToViewRecipe()}" onclick="loadWaitPanel('content');" style="color: blue; text-decoration: underline">
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeId}" value="#{recipe.value}"/>
+                                                        </h:commandLink>
+                                                        <h:outputLabel rendered="#{recipe.value == null}" value="#{recipe.label}" />
+                                                        <h:commandLink rendered="#{userRightsDataBean.haveManageMealPlanRights and recipe.value == null and recipe.label != ''}" action="#{mealPlanServiceBean.navigateToCreateRecipe()}" >
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeName}" value="#{recipe.label}"/>
+                                                            <sup><img src="#{facesContext.externalContext.requestContextPath}/images/add-icon.png" width="12px" height="12px" alt="add" title="Add New Recipe" align="texttop"/></sup>
+                                                        </h:commandLink>
+                                                    </li>                                                    
+                                                </ui:repeat>
+                                            </td>
+                                            <td valign="top">
+                                                <ui:repeat id="dinnerday2"  value="#{mealPlanDataBean.day2DinnerList}" var="recipe">
+                                                    <li style="list-style-type: none;">
+                                                        <h:commandLink rendered="#{recipe.value != null}" title="Click here to view Recipe detail" value="#{recipe.label}" action="#{mealPlanServiceBean.navigateToViewRecipe()}" onclick="loadWaitPanel('content');" style="color: blue; text-decoration: underline">
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeId}" value="#{recipe.value}"/>
+                                                        </h:commandLink>
+                                                        <h:outputLabel rendered="#{recipe.value == null}" value="#{recipe.label}" />
+                                                        <h:commandLink rendered="#{userRightsDataBean.haveManageMealPlanRights and recipe.value == null and recipe.label != ''}" action="#{mealPlanServiceBean.navigateToCreateRecipe()}" >
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeName}" value="#{recipe.label}"/>
+                                                            <sup><img src="#{facesContext.externalContext.requestContextPath}/images/add-icon.png" width="12px" height="12px" alt="add" title="Add New Recipe" align="texttop"/></sup>
+                                                        </h:commandLink>
+                                                    </li>                                                    
+                                                </ui:repeat>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th valign="top">Day 3</th>
+                                            <td valign="top">
+                                                <ui:repeat id="breakfastday3"  value="#{mealPlanDataBean.day3BreakfastList}" var="recipe">
+                                                    <li style="list-style-type: none;">
+                                                        <h:commandLink rendered="#{recipe.value != null}" title="Click here to view Recipe detail" value="#{recipe.label}" action="#{mealPlanServiceBean.navigateToViewRecipe()}" onclick="loadWaitPanel('content');" style="color: blue; text-decoration: underline">
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeId}" value="#{recipe.value}"/>
+                                                        </h:commandLink>
+                                                        <h:outputLabel rendered="#{recipe.value == null}" value="#{recipe.label}" />
+                                                        <h:commandLink rendered="#{userRightsDataBean.haveManageMealPlanRights and recipe.value == null and recipe.label != ''}" action="#{mealPlanServiceBean.navigateToCreateRecipe()}" >
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeName}" value="#{recipe.label}"/>
+                                                            <sup><img src="#{facesContext.externalContext.requestContextPath}/images/add-icon.png" width="12px" height="12px" alt="add" title="Add New Recipe" align="texttop"/></sup>
+                                                        </h:commandLink>
+                                                    </li>                                                    
+                                                </ui:repeat>  
+                                            </td>
+                                            <td valign="top">
+                                                <ui:repeat id="snack1day3"  value="#{mealPlanDataBean.day3Snack1List}" var="recipe">
+                                                    <li style="list-style-type: none;">
+                                                        <h:commandLink rendered="#{recipe.value != null}" title="Click here to view Recipe detail" value="#{recipe.label}" action="#{mealPlanServiceBean.navigateToViewRecipe()}" onclick="loadWaitPanel('content');" style="color: blue; text-decoration: underline">
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeId}" value="#{recipe.value}"/>
+                                                        </h:commandLink>
+                                                        <h:outputLabel rendered="#{recipe.value == null}" value="#{recipe.label}" />
+                                                        <h:commandLink rendered="#{userRightsDataBean.haveManageMealPlanRights and recipe.value == null and recipe.label != ''}" action="#{mealPlanServiceBean.navigateToCreateRecipe()}" >
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeName}" value="#{recipe.label}"/>
+                                                            <sup><img src="#{facesContext.externalContext.requestContextPath}/images/add-icon.png" width="12px" height="12px" alt="add" title="Add New Recipe" align="texttop"/></sup>
+                                                        </h:commandLink>
+                                                    </li>                                                    
+                                                </ui:repeat>
+                                            </td>
+                                            <td valign="top">
+                                                <ui:repeat id="lunchday3"  value="#{mealPlanDataBean.day3LunchList}" var="recipe">
+                                                    <li style="list-style-type: none;">
+                                                        <h:commandLink rendered="#{recipe.value != null}" title="Click here to view Recipe detail" value="#{recipe.label}" action="#{mealPlanServiceBean.navigateToViewRecipe()}" onclick="loadWaitPanel('content');" style="color: blue; text-decoration: underline">
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeId}" value="#{recipe.value}"/>
+                                                        </h:commandLink>
+                                                        <h:outputLabel rendered="#{recipe.value == null}" value="#{recipe.label}" />
+                                                        <h:commandLink rendered="#{userRightsDataBean.haveManageMealPlanRights and recipe.value == null and recipe.label != ''}" action="#{mealPlanServiceBean.navigateToCreateRecipe()}" >
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeName}" value="#{recipe.label}"/>
+                                                            <sup><img src="#{facesContext.externalContext.requestContextPath}/images/add-icon.png" width="12px" height="12px" alt="add" title="Add New Recipe" align="texttop"/></sup>
+                                                        </h:commandLink>
+                                                    </li>                                                    
+                                                </ui:repeat>
+                                            </td>
+                                            <td valign="top">
+                                                <ui:repeat id="snack2day3"  value="#{mealPlanDataBean.day3Snack2List}" var="recipe">
+                                                    <li style="list-style-type: none;">
+                                                        <h:commandLink rendered="#{recipe.value != null}" title="Click here to view Recipe detail" value="#{recipe.label}" action="#{mealPlanServiceBean.navigateToViewRecipe()}" onclick="loadWaitPanel('content');" style="color: blue; text-decoration: underline">
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeId}" value="#{recipe.value}"/>
+                                                        </h:commandLink>
+                                                        <h:outputLabel rendered="#{recipe.value == null}" value="#{recipe.label}" />
+                                                        <h:commandLink rendered="#{userRightsDataBean.haveManageMealPlanRights and recipe.value == null and recipe.label != ''}" action="#{mealPlanServiceBean.navigateToCreateRecipe()}" >
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeName}" value="#{recipe.label}"/>
+                                                            <sup><img src="#{facesContext.externalContext.requestContextPath}/images/add-icon.png" width="12px" height="12px" alt="add" title="Add New Recipe" align="texttop"/></sup>
+                                                        </h:commandLink>
+                                                    </li>                                                    
+                                                </ui:repeat>
+                                            </td>
+                                            <td valign="top">
+                                                <ui:repeat id="dinnerday3"  value="#{mealPlanDataBean.day3DinnerList}" var="recipe">
+                                                    <li style="list-style-type: none;">
+                                                        <h:commandLink rendered="#{recipe.value != null}" title="Click here to view Recipe detail" value="#{recipe.label}" action="#{mealPlanServiceBean.navigateToViewRecipe()}" onclick="loadWaitPanel('content');" style="color: blue; text-decoration: underline">
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeId}" value="#{recipe.value}"/>
+                                                        </h:commandLink>
+                                                        <h:outputLabel rendered="#{recipe.value == null}" value="#{recipe.label}" />
+                                                        <h:commandLink rendered="#{userRightsDataBean.haveManageMealPlanRights and recipe.value == null and recipe.label != ''}" action="#{mealPlanServiceBean.navigateToCreateRecipe()}" >
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeName}" value="#{recipe.label}"/>
+                                                            <sup><img src="#{facesContext.externalContext.requestContextPath}/images/add-icon.png" width="12px" height="12px" alt="add" title="Add New Recipe" align="texttop"/></sup>
+                                                        </h:commandLink>
+                                                    </li>                                                    
+                                                </ui:repeat>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th valign="top">Day 4</th>
+                                            <td valign="top">
+                                                <ui:repeat id="breakfastday4"  value="#{mealPlanDataBean.day4BreakfastList}" var="recipe">
+                                                    <li style="list-style-type: none;">
+                                                        <h:commandLink rendered="#{recipe.value != null}" title="Click here to view Recipe detail" value="#{recipe.label}" action="#{mealPlanServiceBean.navigateToViewRecipe()}" onclick="loadWaitPanel('content');" style="color: blue; text-decoration: underline">
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeId}" value="#{recipe.value}"/>
+                                                        </h:commandLink>
+                                                        <h:outputLabel rendered="#{recipe.value == null}" value="#{recipe.label}" />
+                                                        <h:commandLink rendered="#{userRightsDataBean.haveManageMealPlanRights and recipe.value == null and recipe.label != ''}" action="#{mealPlanServiceBean.navigateToCreateRecipe()}" >
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeName}" value="#{recipe.label}"/>
+                                                            <sup><img src="#{facesContext.externalContext.requestContextPath}/images/add-icon.png" width="12px" height="12px" alt="add" title="Add New Recipe" align="texttop"/></sup>
+                                                        </h:commandLink>
+                                                    </li>                                                    
+                                                </ui:repeat>  
+                                            </td>
+                                            <td valign="top">
+                                                <ui:repeat id="snack1day4"  value="#{mealPlanDataBean.day4Snack1List}" var="recipe">
+                                                    <li style="list-style-type: none;">
+                                                        <h:commandLink rendered="#{recipe.value != null}" title="Click here to view Recipe detail" value="#{recipe.label}" action="#{mealPlanServiceBean.navigateToViewRecipe()}" onclick="loadWaitPanel('content');" style="color: blue; text-decoration: underline">
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeId}" value="#{recipe.value}"/>
+                                                        </h:commandLink>
+                                                        <h:outputLabel rendered="#{recipe.value == null}" value="#{recipe.label}" />
+                                                        <h:commandLink rendered="#{userRightsDataBean.haveManageMealPlanRights and recipe.value == null and recipe.label != ''}" action="#{mealPlanServiceBean.navigateToCreateRecipe()}" >
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeName}" value="#{recipe.label}"/>
+                                                            <sup><img src="#{facesContext.externalContext.requestContextPath}/images/add-icon.png" width="12px" height="12px" alt="add" title="Add New Recipe" align="texttop"/></sup>
+                                                        </h:commandLink>
+                                                    </li>                                                    
+                                                </ui:repeat>
+                                            </td>
+                                            <td valign="top">
+                                                <ui:repeat id="lunchday4"  value="#{mealPlanDataBean.day4LunchList}" var="recipe">
+                                                    <li style="list-style-type: none;">
+                                                        <h:commandLink rendered="#{recipe.value != null}" title="Click here to view Recipe detail" value="#{recipe.label}" action="#{mealPlanServiceBean.navigateToViewRecipe()}" onclick="loadWaitPanel('content');" style="color: blue; text-decoration: underline">
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeId}" value="#{recipe.value}"/>
+                                                        </h:commandLink>
+                                                        <h:outputLabel rendered="#{recipe.value == null}" value="#{recipe.label}" />
+                                                        <h:commandLink rendered="#{userRightsDataBean.haveManageMealPlanRights and recipe.value == null and recipe.label != ''}" action="#{mealPlanServiceBean.navigateToCreateRecipe()}" >
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeName}" value="#{recipe.label}"/>
+                                                            <sup><img src="#{facesContext.externalContext.requestContextPath}/images/add-icon.png" width="12px" height="12px" alt="add" title="Add New Recipe" align="texttop"/></sup>
+                                                        </h:commandLink>
+                                                    </li>                                                    
+                                                </ui:repeat>
+                                            </td>
+                                            <td valign="top">
+                                                <ui:repeat id="snack2day4"  value="#{mealPlanDataBean.day4Snack2List}" var="recipe">
+                                                    <li style="list-style-type: none;">
+                                                        <h:commandLink rendered="#{recipe.value != null}" title="Click here to view Recipe detail" value="#{recipe.label}" action="#{mealPlanServiceBean.navigateToViewRecipe()}" onclick="loadWaitPanel('content');" style="color: blue; text-decoration: underline">
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeId}" value="#{recipe.value}"/>
+                                                        </h:commandLink>
+                                                        <h:outputLabel rendered="#{recipe.value == null}" value="#{recipe.label}" />
+                                                        <h:commandLink rendered="#{userRightsDataBean.haveManageMealPlanRights and recipe.value == null and recipe.label != ''}" action="#{mealPlanServiceBean.navigateToCreateRecipe()}" >
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeName}" value="#{recipe.label}"/>
+                                                            <sup><img src="#{facesContext.externalContext.requestContextPath}/images/add-icon.png" width="12px" height="12px" alt="add" title="Add New Recipe" align="texttop"/></sup>
+                                                        </h:commandLink>
+                                                    </li>                                                    
+                                                </ui:repeat>
+                                            </td>
+                                            <td valign="top">
+                                                <ui:repeat id="dinnerday4"  value="#{mealPlanDataBean.day4DinnerList}" var="recipe">
+                                                    <li style="list-style-type: none;">
+                                                        <h:commandLink rendered="#{recipe.value != null}" title="Click here to view Recipe detail" value="#{recipe.label}" action="#{mealPlanServiceBean.navigateToViewRecipe()}" onclick="loadWaitPanel('content');" style="color: blue; text-decoration: underline">
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeId}" value="#{recipe.value}"/>
+                                                        </h:commandLink>
+                                                        <h:outputLabel rendered="#{recipe.value == null}" value="#{recipe.label}" />
+                                                        <h:commandLink rendered="#{userRightsDataBean.haveManageMealPlanRights and recipe.value == null and recipe.label != ''}" action="#{mealPlanServiceBean.navigateToCreateRecipe()}" >
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeName}" value="#{recipe.label}"/>
+                                                            <sup><img src="#{facesContext.externalContext.requestContextPath}/images/add-icon.png" width="12px" height="12px" alt="add" title="Add New Recipe" align="texttop"/></sup>
+                                                        </h:commandLink>
+                                                    </li>                                                    
+                                                </ui:repeat>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th valign="top">Day 5</th>
+                                            <td valign="top">
+                                                <ui:repeat id="breakfastday5"  value="#{mealPlanDataBean.day5BreakfastList}" var="recipe">
+                                                    <li style="list-style-type: none;">
+                                                        <h:commandLink rendered="#{recipe.value != null}" title="Click here to view Recipe detail" value="#{recipe.label}" action="#{mealPlanServiceBean.navigateToViewRecipe()}" onclick="loadWaitPanel('content');" style="color: blue; text-decoration: underline">
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeId}" value="#{recipe.value}"/>
+                                                        </h:commandLink>
+                                                        <h:outputLabel rendered="#{recipe.value == null}" value="#{recipe.label}" />
+                                                        <h:commandLink rendered="#{userRightsDataBean.haveManageMealPlanRights and recipe.value == null and recipe.label != ''}" action="#{mealPlanServiceBean.navigateToCreateRecipe()}" >
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeName}" value="#{recipe.label}"/>
+                                                            <sup><img src="#{facesContext.externalContext.requestContextPath}/images/add-icon.png" width="12px" height="12px" alt="add" title="Add New Recipe" align="texttop"/></sup>
+                                                        </h:commandLink>
+                                                    </li>                                                    
+                                                </ui:repeat>  
+                                            </td>
+                                            <td valign="top">
+                                                <ui:repeat id="snack1day5"  value="#{mealPlanDataBean.day5Snack1List}" var="recipe">
+                                                    <li style="list-style-type: none;">
+                                                        <h:commandLink rendered="#{recipe.value != null}" title="Click here to view Recipe detail" value="#{recipe.label}" action="#{mealPlanServiceBean.navigateToViewRecipe()}" onclick="loadWaitPanel('content');" style="color: blue; text-decoration: underline">
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeId}" value="#{recipe.value}"/>
+                                                        </h:commandLink>
+                                                        <h:outputLabel rendered="#{recipe.value == null}" value="#{recipe.label}" />
+                                                        <h:commandLink rendered="#{userRightsDataBean.haveManageMealPlanRights and recipe.value == null and recipe.label != ''}" action="#{mealPlanServiceBean.navigateToCreateRecipe()}" >
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeName}" value="#{recipe.label}"/>
+                                                            <sup><img src="#{facesContext.externalContext.requestContextPath}/images/add-icon.png" width="12px" height="12px" alt="add" title="Add New Recipe" align="texttop"/></sup>
+                                                        </h:commandLink>
+                                                    </li>                                                    
+                                                </ui:repeat>
+                                            </td>
+                                            <td valign="top">
+                                                <ui:repeat id="lunchday5"  value="#{mealPlanDataBean.day5LunchList}" var="recipe">
+                                                    <li style="list-style-type: none;">
+                                                        <h:commandLink rendered="#{recipe.value != null}" title="Click here to view Recipe detail" value="#{recipe.label}" action="#{mealPlanServiceBean.navigateToViewRecipe()}" onclick="loadWaitPanel('content');" style="color: blue; text-decoration: underline">
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeId}" value="#{recipe.value}"/>
+                                                        </h:commandLink>
+                                                        <h:outputLabel rendered="#{recipe.value == null}" value="#{recipe.label}" />
+                                                        <h:commandLink rendered="#{userRightsDataBean.haveManageMealPlanRights and recipe.value == null and recipe.label != ''}" action="#{mealPlanServiceBean.navigateToCreateRecipe()}" >
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeName}" value="#{recipe.label}"/>
+                                                            <sup><img src="#{facesContext.externalContext.requestContextPath}/images/add-icon.png" width="12px" height="12px" alt="add" title="Add New Recipe" align="texttop"/></sup>
+                                                        </h:commandLink>
+                                                    </li>                                                    
+                                                </ui:repeat>
+                                            </td>
+                                            <td valign="top">
+                                                <ui:repeat id="snack2day5"  value="#{mealPlanDataBean.day5Snack2List}" var="recipe">
+                                                    <li style="list-style-type: none;">
+                                                        <h:commandLink rendered="#{recipe.value != null}" title="Click here to view Recipe detail" value="#{recipe.label}" action="#{mealPlanServiceBean.navigateToViewRecipe()}" onclick="loadWaitPanel('content');" style="color: blue; text-decoration: underline">
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeId}" value="#{recipe.value}"/>
+                                                        </h:commandLink>
+                                                        <h:outputLabel rendered="#{recipe.value == null}" value="#{recipe.label}" />
+                                                        <h:commandLink rendered="#{userRightsDataBean.haveManageMealPlanRights and recipe.value == null and recipe.label != ''}" action="#{mealPlanServiceBean.navigateToCreateRecipe()}" >
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeName}" value="#{recipe.label}"/>
+                                                            <sup><img src="#{facesContext.externalContext.requestContextPath}/images/add-icon.png" width="12px" height="12px" alt="add" title="Add New Recipe" align="texttop"/></sup>
+                                                        </h:commandLink>
+                                                    </li>                                                    
+                                                </ui:repeat>
+                                            </td>
+                                            <td valign="top">
+
+                                                <ui:repeat id="dinnerday5"  value="#{mealPlanDataBean.day5DinnerList}" var="recipe" rendered="#{mealPlanDataBean.day5DinnerList.size() ge 0}">
+                                                    <li style="list-style-type: none;">                                                        
+                                                        <h:commandLink rendered="#{recipe.value != null}" title="Click here to view Recipe detail" value="#{recipe.label}" action="#{mealPlanServiceBean.navigateToViewRecipe()}" onclick="loadWaitPanel('content');" style="color: blue; text-decoration: underline">
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeId}" value="#{recipe.value}"/>
+                                                        </h:commandLink>
+                                                        <h:outputLabel rendered="#{recipe.value == null}" value="#{recipe.label}" />
+                                                        <h:commandLink rendered="#{userRightsDataBean.haveManageMealPlanRights and recipe.value == null and recipe.label != ''}" action="#{mealPlanServiceBean.navigateToCreateRecipe()}" >
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeName}" value="#{recipe.label}"/>
+                                                            <sup><img src="#{facesContext.externalContext.requestContextPath}/images/add-icon.png" width="12px" height="12px" alt="add" title="Add New Recipe" align="texttop"/></sup>
+                                                        </h:commandLink>
+                                                    </li>
+                                                </ui:repeat>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th valign="top">Day 6</th>
+                                            <td valign="top">
+                                                <ui:repeat id="breakfastday6"  value="#{mealPlanDataBean.day6BreakfastList}" var="recipe">
+                                                    <li style="list-style-type: none;">
+                                                        <h:commandLink rendered="#{recipe.value != null}" title="Click here to view Recipe detail" value="#{recipe.label}" action="#{mealPlanServiceBean.navigateToViewRecipe()}" onclick="loadWaitPanel('content');" style="color: blue; text-decoration: underline">
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeId}" value="#{recipe.value}"/>
+                                                        </h:commandLink>
+                                                        <h:outputLabel rendered="#{recipe.value == null}" value="#{recipe.label}" />
+                                                        <h:commandLink rendered="#{userRightsDataBean.haveManageMealPlanRights and recipe.value == null and recipe.label != ''}" action="#{mealPlanServiceBean.navigateToCreateRecipe()}" >
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeName}" value="#{recipe.label}"/>
+                                                            <sup><img src="#{facesContext.externalContext.requestContextPath}/images/add-icon.png" width="12px" height="12px" alt="add" title="Add New Recipe" align="texttop"/></sup>
+                                                        </h:commandLink>
+                                                    </li>                                                    
+                                                </ui:repeat>  
+                                            </td>
+                                            <td valign="top">
+                                                <ui:repeat id="snack1day6"  value="#{mealPlanDataBean.day6Snack1List}" var="recipe">
+                                                    <li style="list-style-type: none;">
+                                                        <h:commandLink rendered="#{recipe.value != null}" title="Click here to view Recipe detail" value="#{recipe.label}" action="#{mealPlanServiceBean.navigateToViewRecipe()}" onclick="loadWaitPanel('content');" style="color: blue; text-decoration: underline">
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeId}" value="#{recipe.value}"/>
+                                                        </h:commandLink>
+                                                        <h:outputLabel rendered="#{recipe.value == null}" value="#{recipe.label}" />
+                                                        <h:commandLink rendered="#{userRightsDataBean.haveManageMealPlanRights and recipe.value == null and recipe.label != ''}" action="#{mealPlanServiceBean.navigateToCreateRecipe()}" >
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeName}" value="#{recipe.label}"/>
+                                                            <sup><img src="#{facesContext.externalContext.requestContextPath}/images/add-icon.png" width="12px" height="12px" alt="add" title="Add New Recipe" align="texttop"/></sup>
+                                                        </h:commandLink>
+                                                    </li>                                                    
+                                                </ui:repeat>
+                                            </td>
+                                            <td valign="top">
+                                                <ui:repeat id="lunchday6"  value="#{mealPlanDataBean.day6LunchList}" var="recipe">
+                                                    <li style="list-style-type: none;">
+                                                        <h:commandLink rendered="#{recipe.value != null}" title="Click here to view Recipe detail" value="#{recipe.label}" action="#{mealPlanServiceBean.navigateToViewRecipe()}" onclick="loadWaitPanel('content');" style="color: blue; text-decoration: underline">
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeId}" value="#{recipe.value}"/>
+                                                        </h:commandLink>
+                                                        <h:outputLabel rendered="#{recipe.value == null}" value="#{recipe.label}" />
+                                                        <h:commandLink rendered="#{userRightsDataBean.haveManageMealPlanRights and recipe.value == null and recipe.label != ''}" action="#{mealPlanServiceBean.navigateToCreateRecipe()}" >
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeName}" value="#{recipe.label}"/>
+                                                            <sup><img src="#{facesContext.externalContext.requestContextPath}/images/add-icon.png" width="12px" height="12px" alt="add" title="Add New Recipe" align="texttop"/></sup>
+                                                        </h:commandLink>
+                                                    </li>                                                    
+                                                </ui:repeat>
+                                            </td>
+                                            <td valign="top">
+                                                <ui:repeat id="snack2day6"  value="#{mealPlanDataBean.day6Snack2List}" var="recipe">
+                                                    <li style="list-style-type: none;">
+                                                        <h:commandLink rendered="#{recipe.value != null}" title="Click here to view Recipe detail" value="#{recipe.label}" action="#{mealPlanServiceBean.navigateToViewRecipe()}" onclick="loadWaitPanel('content');" style="color: blue; text-decoration: underline">
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeId}" value="#{recipe.value}"/>
+                                                        </h:commandLink>
+                                                        <h:outputLabel rendered="#{recipe.value == null}" value="#{recipe.label}" />
+                                                        <h:commandLink rendered="#{userRightsDataBean.haveManageMealPlanRights and recipe.value == null and recipe.label != ''}" action="#{mealPlanServiceBean.navigateToCreateRecipe()}" >
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeName}" value="#{recipe.label}"/>
+                                                            <sup><img src="#{facesContext.externalContext.requestContextPath}/images/add-icon.png" width="12px" height="12px" alt="add" title="Add New Recipe" align="texttop"/></sup>
+                                                        </h:commandLink>
+                                                    </li>                                                    
+                                                </ui:repeat>
+                                            </td>
+                                            <td valign="top">
+                                                <ui:repeat id="dinnerday6"  value="#{mealPlanDataBean.day6DinnerList}" var="recipe">
+                                                    <li style="list-style-type: none;">
+                                                        <h:commandLink rendered="#{recipe.value != null}" title="Click here to view Recipe detail" value="#{recipe.label}" action="#{mealPlanServiceBean.navigateToViewRecipe()}" onclick="loadWaitPanel('content');" style="color: blue; text-decoration: underline">
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeId}" value="#{recipe.value}"/>
+                                                        </h:commandLink>
+                                                        <h:outputLabel rendered="#{recipe.value == null}" value="#{recipe.label}" />
+                                                        <h:commandLink rendered="#{userRightsDataBean.haveManageMealPlanRights and recipe.value == null and recipe.label != ''}" action="#{mealPlanServiceBean.navigateToCreateRecipe()}" >
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeName}" value="#{recipe.label}"/>
+                                                            <sup><img src="#{facesContext.externalContext.requestContextPath}/images/add-icon.png" width="12px" height="12px" alt="add" title="Add New Recipe" align="texttop"/></sup>
+                                                        </h:commandLink>
+                                                    </li>                                                    
+                                                </ui:repeat>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th valign="top">Day 7</th>
+                                            <td valign="top">
+                                                <ui:repeat id="breakfastday7"  value="#{mealPlanDataBean.day7BreakfastList}" var="recipe">
+                                                    <li style="list-style-type: none;">
+                                                        <h:commandLink rendered="#{recipe.value != null}" title="Click here to view Recipe detail" value="#{recipe.label}" action="#{mealPlanServiceBean.navigateToViewRecipe()}" onclick="loadWaitPanel('content');" style="color: blue; text-decoration: underline">
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeId}" value="#{recipe.value}"/>
+                                                        </h:commandLink>
+                                                        <h:outputLabel rendered="#{recipe.value == null}" value="#{recipe.label}" />
+                                                        <h:commandLink rendered="#{userRightsDataBean.haveManageMealPlanRights and recipe.value == null and recipe.label != ''}" action="#{mealPlanServiceBean.navigateToCreateRecipe()}" >
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeName}" value="#{recipe.label}"/>
+                                                            <sup><img src="#{facesContext.externalContext.requestContextPath}/images/add-icon.png" width="12px" height="12px" alt="add" title="Add New Recipe" align="texttop"/></sup>
+                                                        </h:commandLink>
+                                                    </li>                                                    
+                                                </ui:repeat>  
+                                            </td>
+                                            <td valign="top">
+                                                <ui:repeat id="snack1day7"  value="#{mealPlanDataBean.day7Snack1List}" var="recipe">
+                                                    <li style="list-style-type: none;">
+                                                        <h:commandLink rendered="#{recipe.value != null}" title="Click here to view Recipe detail" value="#{recipe.label}"  action="#{mealPlanServiceBean.navigateToViewRecipe()}" onclick="loadWaitPanel('content');" style="color: blue; text-decoration: underline">
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeId}" value="#{recipe.value}"/>
+                                                        </h:commandLink>
+                                                        <h:outputLabel rendered="#{recipe.value == null}" value="#{recipe.label}" />
+                                                        <h:commandLink rendered="#{userRightsDataBean.haveManageMealPlanRights and recipe.value == null and recipe.label != ''}" action="#{mealPlanServiceBean.navigateToCreateRecipe()}" >
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeName}" value="#{recipe.label}"/>
+                                                            <sup><img src="#{facesContext.externalContext.requestContextPath}/images/add-icon.png" width="12px" height="12px" alt="add" title="Add New Recipe" align="texttop"/></sup>
+                                                        </h:commandLink>
+                                                    </li>                                                    
+                                                </ui:repeat>
+                                            </td>
+                                            <td valign="top">
+                                                <ui:repeat id="lunchday7"  value="#{mealPlanDataBean.day7LunchList}" var="recipe">
+                                                    <li style="list-style-type: none;">
+                                                        <h:commandLink rendered="#{recipe.value != null}" title="Click here to view Recipe detail" value="#{recipe.label}" action="#{mealPlanServiceBean.navigateToViewRecipe()}" onclick="loadWaitPanel('content');" style="color: blue; text-decoration: underline">
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeId}" value="#{recipe.value}"/>
+                                                        </h:commandLink>
+                                                        <h:outputLabel rendered="#{recipe.value == null}" value="#{recipe.label}" />
+                                                        <h:commandLink rendered="#{userRightsDataBean.haveManageMealPlanRights and recipe.value == null and recipe.label != ''}" action="#{mealPlanServiceBean.navigateToCreateRecipe()}" >
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeName}" value="#{recipe.label}"/>
+                                                            <sup><img src="#{facesContext.externalContext.requestContextPath}/images/add-icon.png" width="12px" height="12px" alt="add" title="Add New Recipe" align="texttop"/></sup>
+                                                        </h:commandLink>
+                                                    </li>                                                    
+                                                </ui:repeat>
+                                            </td>
+                                            <td valign="top">
+                                                <ui:repeat id="snack2day7"  value="#{mealPlanDataBean.day7Snack2List}" var="recipe">
+                                                    <li style="list-style-type: none;">
+                                                        <h:commandLink rendered="#{recipe.value != null}" title="Click here to view Recipe detail" value="#{recipe.label}" action="#{mealPlanServiceBean.navigateToViewRecipe()}" onclick="loadWaitPanel('content');" style="color: blue; text-decoration: underline">
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeId}" value="#{recipe.value}"/>
+                                                        </h:commandLink>
+                                                        <h:outputLabel rendered="#{recipe.value == null}" value="#{recipe.label}" />
+                                                        <h:commandLink rendered="#{userRightsDataBean.haveManageMealPlanRights and recipe.value == null and recipe.label != ''}" action="#{mealPlanServiceBean.navigateToCreateRecipe()}" >
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeName}" value="#{recipe.label}"/>
+                                                            <sup><img src="#{facesContext.externalContext.requestContextPath}/images/add-icon.png" width="12px" height="12px" alt="add" title="Add New Recipe" align="texttop"/></sup>
+                                                        </h:commandLink>
+                                                    </li>                                                    
+                                                </ui:repeat>
+                                            </td>
+                                            <td valign="top">
+                                                <ui:repeat id="dinnerday7"  value="#{mealPlanDataBean.day7DinnerList}" var="recipe">
+                                                    <li style="list-style-type: none;">
+                                                        <h:commandLink rendered="#{recipe.value != null}" title="Click here to view Recipe detail" value="#{recipe.label}" action="#{mealPlanServiceBean.navigateToViewRecipe()}" onclick="loadWaitPanel('content');" style="color: blue; text-decoration: underline">
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeId}" value="#{recipe.value}"/>
+                                                        </h:commandLink>
+                                                        <h:outputLabel rendered="#{recipe.value == null}" value="#{recipe.label}" />
+                                                        <h:commandLink rendered="#{userRightsDataBean.haveManageMealPlanRights and recipe.value == null and recipe.label != ''}" action="#{mealPlanServiceBean.navigateToCreateRecipe()}" >
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeName}" value="#{recipe.label}"/>
+                                                            <sup><img src="#{facesContext.externalContext.requestContextPath}/images/add-icon.png" width="12px" height="12px" alt="add" title="Add New Recipe" align="texttop"/></sup>
+                                                        </h:commandLink>
+                                                    </li>                                                    
+                                                </ui:repeat>
+                                            </td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </a4j:outputPanel>
+                    <script type="text/javascript">
+                        document.getElementById("pbalancediet").setAttribute("class", "active")
+                    </script>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

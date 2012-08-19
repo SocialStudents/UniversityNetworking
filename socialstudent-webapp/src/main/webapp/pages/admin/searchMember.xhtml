@@ -1,0 +1,268 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <body>
+
+        <ui:composition template="./../layout/adminLayout.xhtml">
+
+            <ui:define name="content">
+                <script type="text/javascript">
+                   if(document.getElementById("searchMember") != null) {
+                       document.getElementById("searchMember").setAttribute("class", "active");
+                   } else {
+                       location.href ="#{loginDataBean.lendingPage}";
+                   }                    
+                </script>
+                <h:form prependId="false">
+                    <f:metadata>
+                        <f:event type="preRenderView" listener="#{userServiceBean.searchMembers()}"/>
+                    </f:metadata>
+                    <c:set target="#{flash}" property="redirect" value="true" />
+                    <h3>Manage PBers</h3>
+                    <hr class="red"/>
+                    <div id="search-panel">
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tbody>
+                                <tr>
+                                    <td width="39%">
+                                        <h:commandLink action="#{userServiceBean.navigateToEnrollMember()}" title="Create Member" immediate="true" rendered="#{userRightsDataBean.haveEnrollMemberRights}">
+                                            <img src="#{facesContext.externalContext.requestContextPath}/images/new-button.jpg" alt="Create PBer"/>
+                                        </h:commandLink>
+                                    </td>
+                                    <td width="14%" style="vertical-align: middle;">
+                                        <h:selectBooleanCheckbox value="#{systemResultViewUtil.isShowInActiveData}" >
+                                            <a4j:ajax listener="#{userServiceBean.searchMembers()}" render="memberDataListPanel,dataMessage" onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content');" />
+                                        </h:selectBooleanCheckbox>
+                                        <strong>Show All</strong></td>
+                                    <td width="35%"><div id="search-box-bg">
+                                            <h:inputText value="#{systemResultViewUtil.searchString}" id="searchString" maxlength="50" styleClass="search-txt-box"/>
+                                        </div></td>
+                                    <td width="12%" style="vertical-align: middle;"> &#160;
+                                        <a4j:commandButton value="Search" action="#{userServiceBean.searchMembers()}" onclick="loadWaitPanel('content');" oncomplete="stopWaitPanel('content');" render="memberDataListPanel,dataMessage" styleClass="standard-button" title="Search PBer" />
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                    </div>
+                    <div id="content" class="content">
+                        <ui:include src="../common/message.xhtml" />                    
+                        <a4j:outputPanel id="memberDataListPanel">                        
+                            <rich:dataTable  id="memberDataList" rowKeyVar="rowId" rows="10" rendered="#{systemResultViewUtil.searchUserList!=null and not empty systemResultViewUtil.searchUserList}"
+                                             var="member" value="#{systemResultViewUtil.searchUserList}" styleClass="meal-plan" style="width: 100%" rowClass="#{rowId%2 == 0 ? 'alt-row1':'alt-row'}" >
+                                <f:facet name="header">
+                                    <rich:columnGroup>
+                                        <rich:column style="width: 25%" styleClass="header">
+                                            <h:outputText value="Name"/>
+                                        </rich:column>
+                                        <rich:column style="width: 25%" styleClass="header">
+                                            <h:outputText value="Subscription"/>
+                                        </rich:column>                                        
+                                        <rich:column style="width: 15%"  styleClass="header">
+                                            <h:outputText value="Subscribed on"/>
+                                        </rich:column>
+                                        <rich:column style="width: 12%"  styleClass="header">
+                                            <h:outputText value="Expires on"/>
+                                        </rich:column>
+                                        <rich:column style="width: 16%"  styleClass="header">
+                                            <h:outputText value="Referred by" />
+                                        </rich:column>
+                                        <rich:column style="width: 7%; text-align: center;"  styleClass="header">
+                                            <h:outputText value="Status" />
+                                        </rich:column>
+                                    </rich:columnGroup>
+                                </f:facet>                              
+                                <rich:column style="vertical-align: top">
+                                    <h:commandLink title="Click here to Edit" value="#{member.firstName} #{member.lastName}" action="#{userServiceBean.navigateToUpdateMember()}" onclick="loadWaitPanel('content');" style="float: left">
+                                        <f:setPropertyActionListener target="#{systemResultSessionUtil.id}" value="#{member.id}"/>
+                                    </h:commandLink>&#160;
+                                    
+                                    <a4j:commandLink title="Add Subscription" action="#{userServiceBean.navigateToUpdateMember()}" onclick="loadWaitPanel('content');" style="float: right"
+                                                     rendered="#{userRightsDataBean.haveAddSubscriptionsRights}">
+                                        &nbsp;<img src="#{facesContext.externalContext.requestContextPath}/images/dollar.png" alt="Add Subscription" />
+                                        <f:setPropertyActionListener target="#{systemResultSessionUtil.id}" value="#{member.id}"/>
+                                        <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeName}" value="account" />
+                                        <f:setPropertyActionListener target="#{systemResultSessionUtil.selectedDay}" value="addSubs"/>                                        
+                                    </a4j:commandLink>                                    
+                                    <a href="#" style="float: left;margin-left: 10px">
+                                        <img src="#{facesContext.externalContext.requestContextPath}/images/pending-icon.png" alt="Pay Now" onclick="redirectToPaypal('#{member.subscriptionName}', '#{member.subscriptionAmount}', '#{member.subscriptionId}');" style="display: #{member.subscriptionStatus != null and member.subscriptionStatus == 'P'? 'block' : 'none'}"/>
+                                    </a>
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                    <a4j:commandLink value="#{member.subscriptionName}"
+                                                     rendered="#{member.subscriptionName != null and member.subscriptionName != ''}"
+                                                     title="Click here to view all PBers for #{member.subscriptionName == null or member.subscriptionName == '' ? 'N/A' : member.subscriptionName}"
+                                                     render="memberDataListPanel"
+                                                     onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content');">
+                                        <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="#{member.subscriptionName}"/>                                        
+                                    </a4j:commandLink>
+                                    <h:outputLabel value="N/A" rendered="#{member.subscriptionName == null or member.subscriptionName == ''}" />
+                                </rich:column>                                
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{member.subscribedDate}" rendered="#{member.subscribedDate != null and member.subscribedDate != ''}">
+                                        <f:convertDateTime type="date" pattern="MM/dd/yyyy" timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                    </h:outputText>
+                                    <h:outputText value="N/A" rendered="#{member.subscribedDate == null or member.subscribedDate == ''}" />
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{member.expiryDate}" rendered="#{member.expiryDate != null and member.expiryDate != ''}">
+                                        <f:convertDateTime type="date" pattern="MM/dd/yyyy" timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                    </h:outputText>                                    
+                                    <h:outputText value="N/A" rendered="#{member.expiryDate == null or member.expiryDate == ''}" />
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{member.referredBy == null or member.referredBy == '' ? 'N/A' : member.referredBy}"></h:outputText>                                    
+                                </rich:column>                                
+                                <rich:column style="text-align: center;vertical-align: top">                                    
+                                    <h:outputLabel id="remainingunits" value="#{member.remainingUnits}" style="display: none" />
+                                    <h:outputLabel id="expirydate" value="#{member.expiryDate}" style="display: none" />
+                                    <h:outputLabel id="statusPanel">
+                                        <a4j:commandLink title="Click here to Deactivate" action="#{userServiceBean.deactivateStudioMember()}"
+                                                         rendered="#{member.isActive != null and member.isActive}"
+                                                         render="memberDataListPanel,dataMessage"
+                                                         onbegin="loadWaitPanel('content');"
+                                                         oncomplete="stopWaitPanel('content');"
+                                                         onclick="return checkRemainingUnits('#{rowId}', '#{member.id}');">
+                                            <h:graphicImage value="/images/activate.png" style="border: none;" />
+                                            <f:setPropertyActionListener target="#{systemResultViewUtil.id}" value="#{member.id}"/>
+                                        </a4j:commandLink>
+                                        <a4j:commandLink title="Click here to Activate" action="#{userServiceBean.navigateToUpdateMember()}" rendered="#{member.isActive != null and !member.isActive}" render="memberDataListPanel,dataMessage" onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content');">
+                                            <h:graphicImage value="/images/deactivate.png" style="border: none;" />
+                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.id}" value="#{member.id}"/>
+                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.userStatus}" value="#{member.isActive}"/>
+                                        </a4j:commandLink>
+                                    </h:outputLabel>
+                                </rich:column>                               
+                                <f:facet name="footer" >                                    
+                                    <div align="center" style="width: 100%;">
+                                        <rich:dataScroller id="scroller" for="memberDataList" renderIfSinglePage="true" maxPages="10" fastStep="5"></rich:dataScroller>  
+                                    </div>                                    
+                                </f:facet>
+                            </rich:dataTable>
+                        </a4j:outputPanel>
+                    </div>
+                </h:form>
+                <rich:popupPanel id="paypalReturn" minWidth="500" minHeight="300" autosized="true" show="#{userServiceBean.transactionStatus == 'complete'}">
+                    <h:form prependId="false">
+                        <h6>Paypal Notification
+                        </h6>
+                        <hr class="red"/>
+                        <table class="form-table" cellpadding="0" cellspacing="0" border="0" width="100%">
+                            <tr>
+                                <td>
+                                    <p align="justify">
+                                        Your transaction verification is in progress, your payment will be confirmed within a day.
+                                        For further details contact <b>#{systemPropertyUtil.adminContact}</b>
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: center">
+                                    <hr class="red"/>
+
+                                    <input type="button" value="OK" onclick="#{rich:component('paypalReturn')}.hide();" styleClass="standard-button" />
+
+                                </td>
+                            </tr>
+                        </table>
+                    </h:form>
+                </rich:popupPanel>
+
+                <rich:popupPanel id="removeMemberPanel" minWidth="500" minHeight="300" autosized="true">
+                    <div id="remMemDiv">
+                        <h:form prependId="false">
+                            <h6>Confirmation
+                                <a4j:commandLink immediate="true" style="float: right" oncomplete="#{rich:component('removeMemberPanel')}.hide();">
+                                    <img src="#{facesContext.externalContext.requestContextPath}/images/close-btn.jpg" alt="close" title="Close" align="texttop"/>
+                                </a4j:commandLink>
+                            </h6>
+                            <hr class="red"/>
+                            <table class="form-table" cellpadding="0" cellspacing="0" border="0" width="100%">
+                                <tr>
+                                    <td>
+                                        Are you sure you want to deactivate this PBer?
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="text-align: center">
+                                        <hr class="red"/>
+                                        <h:inputHidden id="memberId" value="#{systemResultViewUtil.id}" />
+                                        <a4j:commandButton value="Yes" action="#{userServiceBean.deactivateStudioMember()}" onclick="loadWaitPanel('remMemDiv');" oncomplete="stopWaitPanel('remMemDiv'); #{rich:component('removeMemberPanel')}.hide();" styleClass="standard-button" render="memberDataListPanel,dataMessage" >
+                                        </a4j:commandButton>        
+                                        &#160;&#160;&#160;
+                                        <a4j:commandButton value="No" onclick="loadWaitPanel('remMemDiv');" oncomplete="stopWaitPanel('remMemDiv');#{rich:component('removeMemberPanel')}.hide();" styleClass="standard-button" render="dataMessage" >
+                                        </a4j:commandButton>                                        
+                                    </td>
+                                </tr>
+                            </table>
+                        </h:form>
+                    </div>
+                </rich:popupPanel>
+                <div style="display: none">
+                    <form name="_xclick" action="#{systemPropertyUtil.paypalActionUrl}" method="post">
+                        <input type="hidden" name="cmd" value="_xclick"/>
+                        <input type="hidden" name="business" value="#{systemPropertyUtil.businessName}"/>
+                        <input type="hidden" name="currency_code" value="USD"/>
+                        <input type="hidden" name="item_name" value="" id="itemName"/>
+                        <input type="image" src="#{systemPropertyUtil.paypalPixelImageUrl}" border="0" name="submit" alt="Make payments with PayPal - it's fast, free and secure!" id="pay"/>
+                        <input type="hidden" name="notify_url" value="#{systemPropertyUtil.websiteUrl}/paypalNotification"/>
+                        <input type="hidden" name="rm" value="2"/>
+                        <input type="hidden" name="amount" value="" id="amountVal"/>
+                        <input type="hidden" name="custom" value="" id="custom"/>
+                        <input type="hidden" name="cancel_return" value="#{systemPropertyUtil.websiteUrl}/searchMember"/>
+                        <input type="hidden" name="return" value="#{systemPropertyUtil.websiteUrl}/searchMember?transactionStatus=complete"/>
+                    </form>
+                </div>
+
+                <script type="text/javascript">
+                    onsucessRedirectToPaypal();
+                    function onsucessRedirectToPaypal(){
+                        var transactionStatus = '#{userServiceBean.enrollSuccess}';
+                        if(transactionStatus == 'true') {
+                            redirectToPaypal('#{flash.pendingPaymentDetail.programName}', '#{flash.pendingPaymentDetail.fees}', '#{flash.pendingPaymentDetail.id}');
+                        }
+                    }
+                    
+                    function redirectToPaypal(subscriptionName, amount, subscriptionId) {
+                        document.getElementById('itemName').value = subscriptionName;
+                        document.getElementById('amountVal').value = amount;
+                        document.getElementById('custom').value = subscriptionId;
+                        loadWaitPanel('main-loadWaitPanelwrapper');
+                        document.getElementById('pay').click();
+                        
+                    }
+                    
+                    function checkRemainingUnits(rowId, userId) {
+                        var remSessions = document.getElementById("memberDataList:"+rowId+":remainingunits").innerHTML;
+                        var expiryDate = document.getElementById("memberDataList:"+rowId+":expirydate").innerHTML;
+//                        alert(userId);
+//                        alert(remSessions);
+//                        alert(expiryDate);
+//                        alert(expiryDate == "");
+//                        alert(!(expiryDate.length > 1));
+                        if (expiryDate == "" || expiryDate == null || !(expiryDate.length > 1)) {
+//                            alert("exp date blank");
+                            if (remSessions == '' || remSessions == null || !(remSessions > 0)) {
+//                                alert("session blank");
+                                return true;
+                            }
+                        }
+//                        alert("out of if");
+                                document.getElementById('memberId').value=userId;
+//                        alert(document.getElementById('memberId').value);
+                    #{rich:component('removeMemberPanel')}.show();
+                                return false;
+                            }
+                                        
+                </script>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="1.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd">
+  <persistence-unit name="com.argusoft.telemed_telemed-model_jar_1.0-SNAPSHOTPU" transaction-type="RESOURCE_LOCAL">
+    <provider>org.hibernate.ejb.HibernatePersistence</provider>
+    <class/>
+    <class>com.techdhoom.socialstudent.model.Student</class>
+    <class>com.techdhoom.socialstudent.model.StudentContact</class>
+    <class>com.techdhoom.socialstudent.model.Usermain</class>
+    <class>com.techdhoom.socialstudent.model.Feeds</class>
+    <class>com.techdhoom.socialstudent.model.Feedlike</class>
+    <class>com.techdhoom.socialstudent.model.Feedunlike</class>
+    <class>com.techdhoom.socialstudent.model.Feedcomment</class>
+    <properties>
+      <property name="hibernate.connection.username" value="postgres"/>
+      <property name="hibernate.connection.driver_class" value="org.postgresql.Driver"/>
+      <property name="hibernate.connection.password" value="tapan"/>
+      <property name="hibernate.connection.url" value="jdbc:postgresql://localhost:5432/universitynetworking"/>
+      <property name="hibernate.cache.provider_class" value="org.hibernate.cache.NoCacheProvider"/>
+      <property name="hibernate.hbm2ddl.auto" value="update"/>
+    </properties>
+  </persistence-unit>
+</persistence>

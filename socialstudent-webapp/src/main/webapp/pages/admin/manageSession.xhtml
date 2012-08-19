@@ -1,0 +1,460 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+
+    <body>
+        <ui:composition template="./../layout/adminLayout.xhtml">
+            <ui:define name="content">
+                <script type="text/javascript">
+                   if(document.getElementById("manageSession") != null) {
+                       document.getElementById("manageSession").setAttribute("class", "active");
+                   } else {
+                       location.href ="#{loginDataBean.lendingPage}";
+                   }
+                </script>
+                <h3>Book Sessions</h3>
+                <hr class="red"/>
+                <div id="content">                    
+                    <script type="text/javascript">
+
+                        var memberList = [];
+                        var noResult = []
+                            noResult.push({
+                                label:"No results found",
+                                value:""
+                            });
+                        function changeWeek(){
+                            var e = document.getElementById("weeks");
+                            var index = e.selectedIndex;
+                            if(index &gt; 7){
+                                $("#next").css("display","none");
+                            }else{
+                                $("#next").css("display","block");
+                            }
+
+                            if(index &lt; 2){
+                                $("#previous").css("display","none");
+                            }else{
+                                $("#previous").css("display","block");
+                            }
+
+                        }
+
+                        function nextWeek(){
+                            var e = document.getElementById("weeks");
+                            var index = e.selectedIndex + 1;
+                            $("#previous").css("display","block");
+                            if((index) == 7 ){
+                                $("#next").css("display","none");
+                            }else{
+                                $("#next").css("display","block");
+                            }
+
+                            if(index != 8){
+                                e.options[index].selected = true;
+                                return true;
+                            }else{
+                                return false;
+                            }
+                        }
+
+                        function previousWeek(){
+                            var e = document.getElementById("weeks");
+                            var index = e.selectedIndex - 1;
+                            $("#next").css("display","block");
+                            if((index) == 0 ){
+                                $("#previous").css("display","none");
+                            }else{
+                                $("#previous").css("display","block");
+                            }
+
+                            if(index != -1){
+                                e.options[index].selected = true;
+                                return true;
+                            }else{
+                                return false;
+                            }
+                        }
+                        $(document).ready(function() {
+                            $("#member").autocomplete({
+                                source: memberList,
+                                select: function( event, ui ) {
+
+                                if(ui.item.label != 'No results found'){
+                                document.getElementById("member").value=ui.item.label;
+                                document.getElementById("uid").value=ui.item.value;
+                                globalUid = ui.item.value;
+                                document.getElementById("go").click();
+                                }
+
+                                if(ui.item.label == 'No results found'){
+                                    document.getElementById("member").value="";
+                                }
+                                return false;   
+                                },focus: function (event, ui) {
+                                   this.value = ui.item.label;
+                                   event.preventDefault(); // Prevent the default focus behavior.
+                                },source: function(req, responseFn) {
+                                    document.getElementById("uid").value="";
+                                    var re = $.ui.autocomplete.escapeRegex(req.term);
+                                    var matcher = new RegExp(re, "i" );
+                                    var a = $.grep( memberList, function(item,index){
+                                        return matcher.test(item.label);
+                                    });
+                                    if (!a.length) {
+                                        re = $.ui.autocomplete.escapeRegex("N");
+                                        matcher = new RegExp( "^" + re, "i" );
+                                        a = $.grep( noResult, function(item,index){
+                                            return matcher.test(item.label);
+                                        });
+                                    }
+                                    responseFn( a );
+                              }
+                            });
+                            changeWeek();
+                        });
+                    </script>
+                    <h:form prependId="false">
+                        <ui:include src="../common/message.xhtml" />
+                        <h:inputHidden id="uid" value="#{systemResultViewUtil.id}" required="true" requiredMessage="Select PBer"/>
+                        <ui:repeat value="#{userServiceBean.userList}" var="members">
+                            <script type="text/javascript">
+                                    memberList.push({
+                                        label:"#{members.label}",
+                                        value:"#{members.value}"
+                                    });
+                            </script>
+                        </ui:repeat>
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table">
+                            <tr>
+                                <th width="30%">
+                                    PBer
+                                </th>
+                                <td width="70%">
+                                    <div id="search-box-bg">
+                                        <h:inputText id="member" styleClass="search-txt-box" />
+                                    </div>&#160;&#160;<rich:message for="uid"/>                                    
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+                                    Select Week
+                                </th>
+                                <td>
+                                    <h:selectOneMenu value="#{systemResultViewUtil.selectedWeek}" id="weeks" onchange="changeWeek()" style="width: 260px">
+                                        <f:convertDateTime pattern="dd/MM/yyyy"/>
+                                        <f:selectItem itemLabel=" ------- Select Week -------" />
+                                        <f:selectItems value="#{schedulerServiceBean.weekList}"/>
+                                        <a4j:ajax event="change" listener="#{schedulerServiceBean.generateBookCalendar}" render="calenderPanel,dataMessage" onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content')"  execute="weeks,uid"/>
+                                    </h:selectOneMenu>
+                                    <div id="disableMsg" style="color: red;display: none">
+                                        &nbsp;
+                                        You have no session
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>
+
+                                </th>
+                                <td>
+                                </td>
+                            </tr>
+                        </table>
+                        <a4j:commandButton id="go" value="Go" action="#{schedulerServiceBean.retrieveMemberAndSessionLeft}" style="display: none" render="weeks,memberinfo,calenderPanel,dataMessage" execute="uid" onbegin="loadWaitPanel('content');" oncomplete="$('#weeks').val(0);stopWaitPanel('content')"/>
+                        <div style="min-height: 100px;">
+                            <a4j:outputPanel id="memberinfo">
+                                <div class="userinfo" style="display :#{systemResultViewUtil.isMemberInfo  ? 'block' : 'none'}">
+                                    <table width="85%" border="0" cellspacing="0" cellpadding="0" class="form-table" >
+                                        <tr>
+                                            <td width="50%" colspan="2" style="font-weight: bold;">#{userDataBean.firstName} #{userDataBean.lastName}, #{userDataBean.gender == 'F' ? 'Female' : 'Male'}, #{userDataBean.age}</td>
+                                            <th>&#160;</th>
+                                            <td>&#160;</td>
+                                        </tr>
+                                        <tr>
+                                            <th width="25%">Username : </th>
+                                            <td width="25%">
+                                                <h:outputLabel value="#{userDataBean.userId}" id="UserId">
+                                                </h:outputLabel>
+                                            </td>
+                                            <th>&#160;</th>
+                                            <td>&#160;</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Email address : </th>
+                                            <td>
+                                                <h:outputLabel value="#{userDataBean.email}" id="email">
+                                                </h:outputLabel>
+                                            </td>
+                                            <th>Contact : </th>
+                                            <td>
+                                                <h:outputLabel  id="contact">
+                                                    #{userDataBean.phoneNo == null or empty userDataBean.phoneNo ? 'N/A' : userDataBean.phoneNo}
+                                                </h:outputLabel>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>
+                                                Session Left : 
+                                            </th>
+                                            <td colspan="2">
+                                                <h:outputLabel value="#{systemResultViewUtil.sessionLeft}" id="sessionLeft"/>
+                                                &nbsp;
+                                                <a4j:outputPanel id="sessionBook">
+                                                    <h:outputLabel value="(#{systemResultViewUtil.sessionBook} session booked)" rendered="#{systemResultViewUtil.sessionBook > 0}" />
+                                                </a4j:outputPanel>
+                                                <script>
+                                                    if("#{systemResultViewUtil.sessionLeft}" >= 0){
+                                                        $('#weeks').removeAttr('disabled');
+                                                        $('#disableMsg').css('display','none');
+                                                    }else{
+                                                         if("#{systemResultViewUtil.id}" != ""){
+                                                            $('#disableMsg').css('display','inline');
+                                                         }
+                                                         $('#weeks').attr('disabled', '');
+                                                    }
+                                                </script>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </a4j:outputPanel>
+                        </div>
+                        <h:panelGroup id="calenderPanel">
+                            <div style="display:#{schedulerServiceBean.calendarLabel != null ? 'block' : 'none'};padding: 0" class="calendarHeader">
+                                <table width="100%">
+                                    <tr>
+                                        <td style="width: 15%;text-align: left">
+                                            <a4j:commandButton value="" id="previous" execute="weeks" action="#{schedulerServiceBean.generateBookCalendar}"  render="calenderPanel" onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content')" onclick="previousWeek()" image="#{facesContext.externalContext.requestContextPath}/images/left-arrow.png"/>
+                                        </td>
+                                        <td align="center" style="width: 70%;text-align: center">
+                                            <label id="calLabel" style="color: white">#{schedulerServiceBean.calendarLabel}</label>
+                                        </td>
+                                        <td style="width: 15%;text-align: right;">
+                                            <a4j:commandButton value="" id="next" execute="weeks" action="#{schedulerServiceBean.generateBookCalendar}"  render="calenderPanel" onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content')" onclick="nextWeek()" image="#{facesContext.externalContext.requestContextPath}/images/right-arrow.png" style="margin-left: 65%"/>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <div class="clearing"></div>
+                            </div>
+                            <script>changeWeek();</script>
+                            <rich:dataTable id="calender" value="#{systemResultViewUtil.bookCalendarDataBeanList}" var="bookCalendar" rendered="#{systemResultViewUtil.id != null and systemResultViewUtil.bookCalendarDataBeanList != null and systemResultViewUtil.bookCalendarDataBeanList.size() > 0}"  styleClass="meal-plan" style="width: 100%" >
+                                <f:facet name="header">
+                                    <rich:columnGroup>
+                                        <rich:column width="30%">
+
+                                        </rich:column>
+                                        <rich:column styleClass="header" width="10%">
+                                            <h:outputText value="SUN"/>
+                                        </rich:column>
+                                        <rich:column styleClass="header" width="10%">
+                                            <h:outputText value="MON"/>
+                                        </rich:column>
+                                        <rich:column styleClass="header" width="10%">
+                                            <h:outputText value="TUE"/>
+                                        </rich:column>
+                                        <rich:column styleClass="header" width="10%">
+                                            <h:outputText value="WED"/>
+                                        </rich:column>
+                                        <rich:column styleClass="header" width="10%">
+                                            <h:outputText value="THU"/>
+                                        </rich:column>
+                                        <rich:column styleClass="header" width="10%">
+                                            <h:outputText value="FRI"/>
+                                        </rich:column>
+                                        <rich:column styleClass="header" width="10%">
+                                            <h:outputText value="SAT"/>
+                                        </rich:column>
+                                    </rich:columnGroup>
+                                </f:facet>
+                                <rich:column style="height: 56px;width: 106px;">
+                                    <h:panelGroup>
+                                        <h:outputText value="#{bookCalendar.shiftDataBean.startHour}">
+                                            <f:convertNumber minIntegerDigits="2"/>
+                                        </h:outputText>
+                                        :
+                                        <h:outputText value="#{bookCalendar.shiftDataBean.startMin}">
+                                            <f:convertNumber minIntegerDigits="2"/>
+                                        </h:outputText>
+                                        -
+                                        <h:outputText value="#{bookCalendar.shiftDataBean.endHour}">
+                                            <f:convertNumber minIntegerDigits="2"/>
+                                        </h:outputText> :
+                                        <h:outputText value="#{bookCalendar.shiftDataBean.endMin}">
+                                            <f:convertNumber minIntegerDigits="2"/>
+                                        </h:outputText>
+                                    </h:panelGroup>
+                                </rich:column>
+                                <rich:column style="height: 56px;width: 66px;text-align: center;background-color: #{systemResultViewUtil.blockDays[0] ? '#CCCCCC' : 'transparent'}">
+                                    <a4j:outputPanel style="display: #{bookCalendar.bookSlotDataBeanList[0] != null? 'block': 'none'}" >
+                                        <a4j:commandButton style="cursor:#{systemResultViewUtil.blockDays[0] ?  'default' : 'pointer' };border: none;width: 66px;height: 56px;background-image:url(#{facesContext.externalContext.requestContextPath}/images/u19_original.png)" action="#{schedulerServiceBean.bookSession}" rendered="#{bookCalendar.bookSlotDataBeanList[0].slotStatus == 1}" render="calenderPanel,dataMessage,sessionLeft,sessionBook"  value="#{bookCalendar.bookSlotDataBeanList[0].noOfBook}" onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content')" disabled="#{systemResultViewUtil.blockDays[0]}" title="#{systemResultViewUtil.blockDays[0] ?  '' : 'Click here to book'}">
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedDate}" value="#{bookCalendar.bookSlotDataBeanList[0].bookDate}"/>
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedSlot}" value="#{bookCalendar.bookSlotDataBeanList[0].slotId}"/>
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedUser}" value="#{systemResultViewUtil.id}"/>
+                                        </a4j:commandButton>
+                                        <h:panelGroup rendered="#{bookCalendar.bookSlotDataBeanList[0].slotStatus == 0}" >
+                                            <div style="border: none;width: 66px;height: 56px; vertical-align:middle;text-align: center;background-image: url(#{facesContext.externalContext.requestContextPath.concat('/images/u116_full.png')});background-repeat: no-repeat" title="Session is full"/>
+                                        </h:panelGroup>
+                                        <h:panelGroup rendered="#{bookCalendar.bookSlotDataBeanList[0].slotStatus == -1}">
+                                            <div style="border: none;width: 66px;height: 56px; vertical-align:middle;text-align: center;background-image: url(#{facesContext.externalContext.requestContextPath.concat('/images/u138_disabled.png')});background-repeat: no-repeat" title="Session not available">
+                                                <span style="display:#{bookCalendar.bookSlotDataBeanList[0].slotStatus == 0 ? 'block' : 'none'};padding-top: 20px">#{bookCalendar.bookSlotDataBeanList[0].noOfBook}</span>
+                                            </div>
+                                        </h:panelGroup>
+                                        <a4j:commandButton style="cursor: pointer;border: none;width: 66px;height: 56px;background-image:url(#{facesContext.externalContext.requestContextPath}/images/booked.png)" action="#{schedulerServiceBean.cancelSession}" rendered="#{bookCalendar.bookSlotDataBeanList[0].slotStatus == 2}" render="calenderPanel,dataMessage,sessionLeft,sessionBook"  onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content')" title="click here to cancel" value="&nbsp;">
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedDate}" value="#{bookCalendar.bookSlotDataBeanList[0].bookDate}"/>
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedSlot}" value="#{bookCalendar.bookSlotDataBeanList[0].slotId}"/>
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedUser}" value="#{systemResultViewUtil.id}"/>
+                                        </a4j:commandButton>
+                                    </a4j:outputPanel>
+                                </rich:column>
+                                <rich:column style="height: 56px;width: 66px;text-align: center;background-color: #{systemResultViewUtil.blockDays[1] ? '#CCCCCC' : 'transparent'}">
+                                    <a4j:outputPanel style="display: #{bookCalendar.bookSlotDataBeanList[1] != null? 'block': 'none'}">
+                                        <a4j:commandButton style="cursor: #{systemResultViewUtil.blockDays[1] ?  'default' : 'pointer' };border: none;width: 66px;height: 56px;background-image:url(#{facesContext.externalContext.requestContextPath}/images/u19_original.png)" action="#{schedulerServiceBean.bookSession}" rendered="#{bookCalendar.bookSlotDataBeanList[1].slotStatus == 1}" render="calenderPanel,dataMessage,sessionLeft,sessionBook"  value="#{bookCalendar.bookSlotDataBeanList[1].noOfBook}" onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content')" disabled="#{systemResultViewUtil.blockDays[1]}" title="#{systemResultViewUtil.blockDays[1] ?  '' : 'Click here to book'}">
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedDate}" value="#{bookCalendar.bookSlotDataBeanList[1].bookDate}"/>
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedSlot}" value="#{bookCalendar.bookSlotDataBeanList[1].slotId}"/>
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedUser}" value="#{systemResultViewUtil.id}"/>
+                                        </a4j:commandButton>
+                                        <h:panelGroup rendered="#{bookCalendar.bookSlotDataBeanList[1].slotStatus == 0}">
+                                            <div style="border: none;width: 66px;height: 56px; vertical-align:middle;text-align: center;background-image: url(#{facesContext.externalContext.requestContextPath.concat('/images/u116_full.png')});background-repeat: no-repeat" title="Session is full"/>
+                                        </h:panelGroup>
+                                        <h:panelGroup rendered="#{bookCalendar.bookSlotDataBeanList[1].slotStatus == -1}">
+                                            <div style="border: none;width: 66px;height: 56px; vertical-align:middle;text-align: center;background-image: url(#{facesContext.externalContext.requestContextPath.concat('/images/u138_disabled.png')});background-repeat: no-repeat" title="Session not available">
+                                                <span style="display:#{bookCalendar.bookSlotDataBeanList[1].slotStatus == 0 ? 'block' : 'none'};padding-top: 20px">#{bookCalendar.bookSlotDataBeanList[1].noOfBook}</span>
+                                            </div>
+                                        </h:panelGroup>
+                                        <a4j:commandButton style="cursor: pointer;border: none;width: 66px;height: 56px;background-image:url(#{facesContext.externalContext.requestContextPath}/images/booked.png)" action="#{schedulerServiceBean.cancelSession}" rendered="#{bookCalendar.bookSlotDataBeanList[1].slotStatus == 2}" render="calenderPanel,dataMessage,sessionLeft,sessionBook"  onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content')" value="&nbsp;" title="click here to cancel">
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedDate}" value="#{bookCalendar.bookSlotDataBeanList[1].bookDate}"/>
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedSlot}" value="#{bookCalendar.bookSlotDataBeanList[1].slotId}"/>
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedUser}" value="#{systemResultViewUtil.id}"/>
+                                        </a4j:commandButton>
+                                    </a4j:outputPanel>
+                                </rich:column>
+                                <rich:column style="height: 56px;width: 66px;text-align: center;background-color: #{systemResultViewUtil.blockDays[2] ? '#CCCCCC' : 'transparent'}">
+                                    <a4j:outputPanel style="display: #{bookCalendar.bookSlotDataBeanList[2] != null? 'block': 'none'}">
+                                        <a4j:commandButton style="cursor: #{systemResultViewUtil.blockDays[2] ?  'default' : 'pointer' };border: none;width: 66px;height: 56px;background-image:url(#{facesContext.externalContext.requestContextPath}/images/u19_original.png)" action="#{schedulerServiceBean.bookSession}" rendered="#{bookCalendar.bookSlotDataBeanList[2].slotStatus == 1}" render="calenderPanel,dataMessage,sessionLeft,sessionBook"  value="#{bookCalendar.bookSlotDataBeanList[2].noOfBook}" onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content')" disabled="#{systemResultViewUtil.blockDays[2]}" title="#{systemResultViewUtil.blockDays[2] ?  '' : 'Click here to book'}">
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedDate}" value="#{bookCalendar.bookSlotDataBeanList[2].bookDate}"/>
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedSlot}" value="#{bookCalendar.bookSlotDataBeanList[2].slotId}"/>
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedUser}" value="#{systemResultViewUtil.id}"/>
+                                        </a4j:commandButton>
+                                        <h:panelGroup rendered="#{bookCalendar.bookSlotDataBeanList[2].slotStatus == 0}">
+                                            <div style="border: none;width: 66px;height: 56px; vertical-align:middle;text-align: center;background-image: url(#{facesContext.externalContext.requestContextPath.concat('/images/u116_full.png')});background-repeat: no-repeat" title="Session is full"/>
+                                        </h:panelGroup>
+                                        <h:panelGroup rendered="#{bookCalendar.bookSlotDataBeanList[2].slotStatus == -1}">
+                                            <div style="border: none;width: 66px;height: 56px; vertical-align:middle;text-align: center;background-image: url(#{facesContext.externalContext.requestContextPath.concat('/images/u138_disabled.png')});background-repeat: no-repeat" title="Session not available">
+                                                <span style="display:#{bookCalendar.bookSlotDataBeanList[2].slotStatus == 0 ? 'block' : 'none'};padding-top: 20px">#{bookCalendar.bookSlotDataBeanList[2].noOfBook}</span>
+                                            </div>
+                                        </h:panelGroup>
+                                        <a4j:commandButton style="cursor: pointer;border: none;width: 66px;height: 56px;background-image:url(#{facesContext.externalContext.requestContextPath}/images/booked.png)" action="#{schedulerServiceBean.cancelSession}" rendered="#{bookCalendar.bookSlotDataBeanList[2].slotStatus == 2}" render="calenderPanel,dataMessage,sessionLeft,sessionBook"  onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content')" value="&nbsp;" title="click here to cancel">
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedDate}" value="#{bookCalendar.bookSlotDataBeanList[2].bookDate}"/>
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedSlot}" value="#{bookCalendar.bookSlotDataBeanList[2].slotId}"/>
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedUser}" value="#{systemResultViewUtil.id}"/>
+                                        </a4j:commandButton>
+                                    </a4j:outputPanel>
+                                </rich:column>
+                                <rich:column style="height: 56px;width: 66px;text-align: center;background-color: #{systemResultViewUtil.blockDays[3] ? '#CCCCCC' : 'transparent'}">
+                                    <a4j:outputPanel style="display: #{bookCalendar.bookSlotDataBeanList[3] != null? 'block': 'none'}">
+                                        <a4j:commandButton style="cursor: #{systemResultViewUtil.blockDays[3] ?  'default' : 'pointer' };border: none;width: 66px;height: 56px;background-image:url(#{facesContext.externalContext.requestContextPath}/images/u19_original.png)" action="#{schedulerServiceBean.bookSession}" rendered="#{bookCalendar.bookSlotDataBeanList[3].slotStatus == 1}" render="calenderPanel,dataMessage,sessionLeft,sessionBook"  value="#{bookCalendar.bookSlotDataBeanList[3].noOfBook}" onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content')" disabled="#{systemResultViewUtil.blockDays[3]}" title="#{systemResultViewUtil.blockDays[3] ?  '' : 'Click here to book'}">
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedDate}" value="#{bookCalendar.bookSlotDataBeanList[3].bookDate}"/>
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedSlot}" value="#{bookCalendar.bookSlotDataBeanList[3].slotId}"/>
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedUser}" value="#{systemResultViewUtil.id}"/>
+                                        </a4j:commandButton>
+                                        <h:panelGroup rendered="#{bookCalendar.bookSlotDataBeanList[3].slotStatus == 0}">
+                                            <div style="border: none;width: 66px;height: 56px; vertical-align:middle;text-align: center;background-image: url(#{facesContext.externalContext.requestContextPath.concat('/images/u116_full.png')});background-repeat: no-repeat" title="Session is full"/>
+                                        </h:panelGroup>
+                                        <h:panelGroup rendered="#{bookCalendar.bookSlotDataBeanList[3].slotStatus == -1}">
+                                            <div style="border: none;width: 66px;height: 56px; vertical-align:middle;text-align: center;background-image: url(#{facesContext.externalContext.requestContextPath.concat('/images/u138_disabled.png')});background-repeat: no-repeat" title="Session not available">
+                                                <span style="display:#{bookCalendar.bookSlotDataBeanList[3].slotStatus == 0 ? 'block' : 'none'};padding-top: 20px">#{bookCalendar.bookSlotDataBeanList[3].noOfBook}</span>
+                                            </div>
+                                        </h:panelGroup>
+                                        <a4j:commandButton style="cursor: pointer;border: none;width: 66px;height: 56px;background-image:url(#{facesContext.externalContext.requestContextPath}/images/booked.png)" action="#{schedulerServiceBean.cancelSession}" rendered="#{bookCalendar.bookSlotDataBeanList[3].slotStatus == 2}" render="calenderPanel,dataMessage,sessionLeft,sessionBook"  onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content')" value="&nbsp;" title="click here to cancel">
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedDate}" value="#{bookCalendar.bookSlotDataBeanList[3].bookDate}"/>
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedSlot}" value="#{bookCalendar.bookSlotDataBeanList[3].slotId}"/>
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedUser}" value="#{systemResultViewUtil.id}"/>
+                                        </a4j:commandButton>
+                                    </a4j:outputPanel>
+                                </rich:column>
+                                <rich:column style="height: 56px;width: 66px;text-align: center;background-color: #{systemResultViewUtil.blockDays[4] ? '#CCCCCC' : 'transparent'}">
+                                    <a4j:outputPanel style="display: #{bookCalendar.bookSlotDataBeanList[4] != null? 'block': 'none'}">
+                                        <a4j:commandButton style="cursor:#{systemResultViewUtil.blockDays[4] ?  'default' : 'pointer' };border: none;width: 66px;height: 56px;background-image:url(#{facesContext.externalContext.requestContextPath}/images/u19_original.png)" action="#{schedulerServiceBean.bookSession}" rendered="#{bookCalendar.bookSlotDataBeanList[4].slotStatus == 1}" render="calenderPanel,dataMessage,sessionLeft,sessionBook"  value="#{bookCalendar.bookSlotDataBeanList[4].noOfBook}" onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content')" disabled="#{systemResultViewUtil.blockDays[4]}" title="#{systemResultViewUtil.blockDays[4] ?  '' : 'Click here to book'}">
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedDate}" value="#{bookCalendar.bookSlotDataBeanList[4].bookDate}"/>
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedSlot}" value="#{bookCalendar.bookSlotDataBeanList[4].slotId}"/>
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedUser}" value="#{systemResultViewUtil.id}"/>
+                                        </a4j:commandButton>
+                                        <h:panelGroup rendered="#{bookCalendar.bookSlotDataBeanList[4].slotStatus == 0}">
+                                            <div style="border: none;width: 66px;height: 56px; vertical-align:middle;text-align: center;background-image: url(#{facesContext.externalContext.requestContextPath.concat('/images/u116_full.png')});background-repeat: no-repeat" title="Session is full"/>
+                                        </h:panelGroup>
+                                        <h:panelGroup rendered="#{bookCalendar.bookSlotDataBeanList[4].slotStatus == -1}">
+                                            <div style="border: none;width: 66px;height: 56px; vertical-align:middle;text-align: center;background-image: url(#{facesContext.externalContext.requestContextPath.concat('/images/u138_disabled.png')});background-repeat: no-repeat" title="Session not available">
+                                                <span style="display:#{bookCalendar.bookSlotDataBeanList[4].slotStatus == 0 ? 'block' : 'none'};padding-top: 20px">#{bookCalendar.bookSlotDataBeanList[4].noOfBook}</span>
+                                            </div>
+                                        </h:panelGroup>
+                                        <a4j:commandButton style="cursor: pointer;border: none;width: 66px;height: 56px;background-image:url(#{facesContext.externalContext.requestContextPath}/images/booked.png)" action="#{schedulerServiceBean.cancelSession}" rendered="#{bookCalendar.bookSlotDataBeanList[4].slotStatus == 2}" render="calenderPanel,dataMessage,sessionLeft,sessionBook"  onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content')" value="&nbsp;" title="click here to cancel">
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedDate}" value="#{bookCalendar.bookSlotDataBeanList[4].bookDate}"/>
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedSlot}" value="#{bookCalendar.bookSlotDataBeanList[4].slotId}"/>
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedUser}" value="#{systemResultViewUtil.id}"/>
+                                        </a4j:commandButton>
+                                    </a4j:outputPanel>
+                                </rich:column>
+                                <rich:column style="height: 56px;width: 66px;text-align: center;background-color: #{systemResultViewUtil.blockDays[5] ? '#CCCCCC' : 'transparent'}">
+                                    <a4j:outputPanel style="display: #{bookCalendar.bookSlotDataBeanList[5] != null? 'block': 'none'}">
+                                        <a4j:commandButton style="cursor:#{systemResultViewUtil.blockDays[5] ?  'default' : 'pointer' };border: none;width: 66px;height: 56px;background-image:url(#{facesContext.externalContext.requestContextPath}/images/u19_original.png)" action="#{schedulerServiceBean.bookSession}" rendered="#{bookCalendar.bookSlotDataBeanList[5].slotStatus == 1}" render="calenderPanel,dataMessage,sessionLeft,sessionBook"  value="#{bookCalendar.bookSlotDataBeanList[5].noOfBook}" onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content')" disabled="#{systemResultViewUtil.blockDays[5]}" title="#{systemResultViewUtil.blockDays[5] ?  '' : 'Click here to book'}">
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedDate}" value="#{bookCalendar.bookSlotDataBeanList[5].bookDate}"/>
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedSlot}" value="#{bookCalendar.bookSlotDataBeanList[5].slotId}"/>
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedUser}" value="#{systemResultViewUtil.id}"/>
+                                        </a4j:commandButton>
+                                        <h:panelGroup rendered="#{bookCalendar.bookSlotDataBeanList[5].slotStatus == 0}">
+                                            <div style="border: none;width: 66px;height: 56px; vertical-align:middle;text-align: center;background-image: url(#{facesContext.externalContext.requestContextPath.concat('/images/u116_full.png')});background-repeat: no-repeat" title="Session is full"/>
+                                        </h:panelGroup>
+                                        <h:panelGroup rendered="#{bookCalendar.bookSlotDataBeanList[5].slotStatus == -1}">
+                                            <div style="border: none;width: 66px;height: 56px; vertical-align:middle;text-align: center;background-image: url(#{facesContext.externalContext.requestContextPath.concat('/images/u138_disabled.png')});background-repeat: no-repeat" title="Session not available">
+                                                <span style="display:#{bookCalendar.bookSlotDataBeanList[5].slotStatus == 0 ? 'block' : 'none'};padding-top: 20px">#{bookCalendar.bookSlotDataBeanList[5].noOfBook}</span>
+                                            </div>
+                                        </h:panelGroup>
+                                        <a4j:commandButton style="cursor: pointer;border: none;width: 66px;height: 56px;background-image:url(#{facesContext.externalContext.requestContextPath}/images/booked.png)" action="#{schedulerServiceBean.cancelSession}" rendered="#{bookCalendar.bookSlotDataBeanList[5].slotStatus == 2}" render="calenderPanel,dataMessage,sessionLeft,sessionBook"  onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content')" value="&nbsp;" title="click here to cancel">
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedDate}" value="#{bookCalendar.bookSlotDataBeanList[5].bookDate}"/>
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedSlot}" value="#{bookCalendar.bookSlotDataBeanList[5].slotId}"/>
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedUser}" value="#{systemResultViewUtil.id}"/>
+                                        </a4j:commandButton>
+                                    </a4j:outputPanel>
+                                </rich:column>
+                                <rich:column style="height: 56px;width: 66px;text-align: center;background-color: #{systemResultViewUtil.blockDays[6] ? '#CCCCCC' : 'transparent'}">
+                                    <a4j:outputPanel style="min-height: 56px;min-width: 66px;display: #{bookCalendar.bookSlotDataBeanList[6] != null? 'block': 'none'}">
+                                        <a4j:commandButton style="cursor: #{systemResultViewUtil.blockDays[6] ?  'default' : 'pointer' };border: none;width: 66px;height: 56px;background-image:url(#{facesContext.externalContext.requestContextPath}/images/u19_original.png)" action="#{schedulerServiceBean.bookSession}" rendered="#{bookCalendar.bookSlotDataBeanList[6].slotStatus == 1}" render="calenderPanel,dataMessage,sessionLeft,sessionBook"  value="#{bookCalendar.bookSlotDataBeanList[6].noOfBook}" onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content')" disabled="#{systemResultViewUtil.blockDays[6]}" title="#{systemResultViewUtil.blockDays[6] ?  '' : 'Click here to book'}">
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedDate}" value="#{bookCalendar.bookSlotDataBeanList[6].bookDate}"/>
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedSlot}" value="#{bookCalendar.bookSlotDataBeanList[6].slotId}"/>
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedUser}" value="#{systemResultViewUtil.id}"/>
+                                        </a4j:commandButton>
+                                        <h:panelGroup rendered="#{bookCalendar.bookSlotDataBeanList[6].slotStatus == 0}">
+                                            <div style="border: none;width: 66px;height: 56px; vertical-align:middle;text-align: center;background-image: url(#{facesContext.externalContext.requestContextPath.concat('/images/u116_full.png')});background-repeat: no-repeat" title="Session is full"/>
+                                        </h:panelGroup>
+                                        <h:panelGroup rendered="#{bookCalendar.bookSlotDataBeanList[6].slotStatus == -1}">
+                                            <div style="border: none;width: 66px;height: 56px; vertical-align:middle;text-align: center;background-image: url(#{facesContext.externalContext.requestContextPath.concat('/images/u138_disabled.png')});background-repeat: no-repeat" title="Session not available">
+                                                <span style="display:#{bookCalendar.bookSlotDataBeanList[6].slotStatus == 0 ? 'block' : 'none'};padding-top: 20px">#{bookCalendar.bookSlotDataBeanList[6].noOfBook}</span>
+                                            </div>
+                                        </h:panelGroup>
+                                        <a4j:commandButton style="cursor: pointer;border: none;width: 66px;height: 56px;background-image:url(#{facesContext.externalContext.requestContextPath}/images/booked.png)" action="#{schedulerServiceBean.cancelSession}" rendered="#{bookCalendar.bookSlotDataBeanList[6].slotStatus == 2}" render="calenderPanel,dataMessage,sessionLeft,sessionBook"  onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content')" value="&nbsp;" title="click here to cancel">
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedDate}" value="#{bookCalendar.bookSlotDataBeanList[6].bookDate}"/>
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedSlot}" value="#{bookCalendar.bookSlotDataBeanList[6].slotId}"/>
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedUser}" value="#{systemResultViewUtil.id}"/>
+                                        </a4j:commandButton>
+                                    </a4j:outputPanel>
+                                </rich:column>
+                            </rich:dataTable>
+                            <br/>
+                            <div style="text-align:  right;width: 100%">
+                                <a4j:outputPanel rendered="#{systemResultViewUtil.id != null and systemResultViewUtil.bookCalendarDataBeanList != null and systemResultViewUtil.bookCalendarDataBeanList.size() > 0}" style="width:740px; text-align: right;">
+                                    <img src="#{facesContext.externalContext.requestContextPath.concat('/images/session-legend.png')}" />
+                                </a4j:outputPanel>
+                            </div>
+                        </h:panelGroup>
+                    </h:form>
+                </div>              
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

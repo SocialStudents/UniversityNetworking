@@ -1,0 +1,396 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:c="http://java.sun.com/jsp/jstl/core">
+
+    <body>
+        <ui:composition template="./../layout/adminLayout.xhtml">
+            <ui:define name="content">
+                 <script type="text/javascript">
+                    if(document.getElementById("manageRoster") != null) {
+                        document.getElementById("manageRoster").setAttribute("class", "active");
+                    } else {
+                        location.href ="#{loginDataBean.lendingPage}";
+                    }                    
+                </script>
+                <h3>PBS Roster</h3>
+                <hr class="red"/>
+                <div id="content">
+                    <h:form prependId="false">
+                        <ui:include src="../common/message.xhtml" />
+                        <a href="/createShift" title="Create Shift">
+                            <img src="#{facesContext.externalContext.requestContextPath}/images/new-shift.jpg" alt="Create Shift"/>
+                        </a>
+                        <br/>
+                        <f:event type="preRenderComponent" listener="#{schedulerServiceBean.generateShiftCalendar}"/>
+                        <h:panelGroup id="mainPanel">
+                            <h:panelGroup rendered="#{systemResultViewUtil.shiftCalendarDataBeanList != null and systemResultViewUtil.shiftCalendarDataBeanList.size() gt 0}">
+                                <div class="calendarHeader">The Week</div>
+                                <rich:dataTable id="calender" value="#{systemResultViewUtil.shiftCalendarDataBeanList}" var="shiftCalendar"  styleClass="meal-plan" style="width: 100%">
+                                    <f:facet name="header">
+                                        <rich:columnGroup>
+                                            <rich:column width="12%">
+
+                                            </rich:column>
+                                            <rich:column styleClass="header" width="12%">
+                                                <h:outputText value="SUN"/>
+                                            </rich:column>
+                                            <rich:column styleClass="header" width="12%">
+                                                <h:outputText value="MON"/>
+                                            </rich:column>
+                                            <rich:column styleClass="header" width="12%">
+                                                <h:outputText value="TUE"/>
+                                            </rich:column>
+                                            <rich:column styleClass="header" width="12%">
+                                                <h:outputText value="WED"/>
+                                            </rich:column>
+                                            <rich:column styleClass="header" width="12%">
+                                                <h:outputText value="THU"/>
+                                            </rich:column>
+                                            <rich:column styleClass="header" width="12%">
+                                                <h:outputText value="FRI"/>
+                                            </rich:column>
+                                            <rich:column styleClass="header" width="12%">
+                                                <h:outputText value="SAT"/>
+                                            </rich:column>
+                                            <rich:column styleClass="header" width="4%">
+                                            </rich:column>
+                                        </rich:columnGroup>
+                                    </f:facet>
+                                    <rich:column style="height: 56px;width: 106px;">
+                                        <h:panelGroup>
+                                            <h:outputText value="#{shiftCalendar.shiftDataBean.startHour}">
+                                                <f:convertNumber minIntegerDigits="2" />
+                                            </h:outputText>
+                                            :
+                                            <h:outputText value="#{shiftCalendar.shiftDataBean.startMin}">
+                                                <f:convertNumber minIntegerDigits="2"/>
+                                            </h:outputText>
+                                            -
+                                            <h:outputText value="#{shiftCalendar.shiftDataBean.endHour}">
+                                                <f:convertNumber minIntegerDigits="2"/>
+                                            </h:outputText> :
+                                            <h:outputText value="#{shiftCalendar.shiftDataBean.endMin}">
+                                                <f:convertNumber minIntegerDigits="2"/>
+                                            </h:outputText>
+                                        </h:panelGroup>
+                                    </rich:column>
+                                    <rich:column style="height: 56px;width: 66px;text-align: center">
+                                        <h:panelGroup rendered="#{shiftCalendar.sunSlot != null}">
+                                            <div class="calendar" title="#{shiftCalendar.sunTrainers}">
+                                                <div class="a" style="width: 66px;height: 56px;background-image: url(#{facesContext.externalContext.requestContextPath}/images/u19_original.png)" onclick="setSlotIdForUpdate('#{shiftCalendar.sunSlot}');">
+                                                    <a class="b" href="#" onclick="setSlotIdForDelete('#{shiftCalendar.sunSlot}');#{rich:component('deleteSlotConformPanel')}.show();" style="margin-left: 54px;height: 17px;width: 12px;">
+                                                        <img src="#{facesContext.externalContext.requestContextPath}/images/u68_original.png" alt="delete"/>
+                                                    </a>
+                                                    <br/>
+                                                    PBS
+                                                </div>
+                                            </div>
+                                        </h:panelGroup>
+                                        <h:panelGroup rendered="#{shiftCalendar.sunSlot == null}">
+                                            <div class="calendar" title="#{shiftCalendar.sunTrainers}">
+                                                <h:commandButton styleClass="calendar" style="border: none;background-image: url(#{facesContext.externalContext.requestContextPath}/images/u116_original.png)" action="createSlot?faces-redirect=true" onclick="loadWaitPanel('content');">
+                                                    <f:setPropertyActionListener target="#{systemResultSessionUtil.shiftId}" value="#{shiftCalendar.shiftDataBean.id}"/>
+                                                    <f:setPropertyActionListener target="#{systemResultSessionUtil.selectedDay}" value="SUN"/>
+                                                </h:commandButton>
+                                            </div>
+                                        </h:panelGroup>
+                                    </rich:column>
+                                    <rich:column style="height: 56px;width: 66px;text-align: center">
+                                        <h:panelGroup rendered="#{shiftCalendar.monSlot != null}">
+                                            <div class="calendar" title="#{shiftCalendar.monTrainers}">
+                                                <div class="a" style="width: 66px;height: 56px;background-image: url(#{facesContext.externalContext.requestContextPath}/images/u19_original.png)" onclick="setSlotIdForUpdate('#{shiftCalendar.monSlot}');">
+                                                    <a class="b" href="#" onclick="setSlotIdForDelete('#{shiftCalendar.monSlot}');#{rich:component('deleteSlotConformPanel')}.show();" style="margin-left: 54px;height: 17px;width: 12px;">
+                                                        <img src="#{facesContext.externalContext.requestContextPath}/images/u68_original.png" alt="delete"/>
+                                                    </a>
+                                                    <br/>
+                                                    PBS
+                                                </div>
+                                            </div>
+                                        </h:panelGroup>
+                                        <h:panelGroup rendered="#{shiftCalendar.monSlot == null}">
+                                            <div class="calendar" title="#{shiftCalendar.monTrainers}">
+                                                <h:commandButton styleClass="calendar" style="border: none;background-image: url(#{facesContext.externalContext.requestContextPath}/images/u116_original.png)" action="createSlot?faces-redirect=true" onclick="loadWaitPanel('content');">
+                                                    <f:setPropertyActionListener target="#{systemResultSessionUtil.shiftId}" value="#{shiftCalendar.shiftDataBean.id}"/>
+                                                    <f:setPropertyActionListener target="#{systemResultSessionUtil.selectedDay}" value="MON"/>
+                                                </h:commandButton>
+                                            </div>
+                                        </h:panelGroup>
+                                    </rich:column>
+                                    <rich:column style="height: 56px;width: 66px;text-align: center">
+                                        <h:panelGroup rendered="#{shiftCalendar.tueSlot != null}">
+                                            <div class="calendar" title="#{shiftCalendar.tueTrainers}">
+                                                <div class="a" style="width: 66px;height: 56px;background-image: url(#{facesContext.externalContext.requestContextPath}/images/u19_original.png)" onclick="setSlotIdForUpdate('#{shiftCalendar.tueSlot}');">
+                                                    <a class="b" href="#" onclick="setSlotIdForDelete('#{shiftCalendar.tueSlot}');#{rich:component('deleteSlotConformPanel')}.show();" style="margin-left: 54px;height: 17px;width: 12px;">
+                                                        <img src="#{facesContext.externalContext.requestContextPath}/images/u68_original.png" alt="delete"/>
+                                                    </a>
+                                                    <br/>
+                                                    PBS
+                                                </div>
+                                            </div>
+                                        </h:panelGroup>
+                                        <h:panelGroup rendered="#{shiftCalendar.tueSlot == null}">
+                                            <div class="calendar" title="#{shiftCalendar.tueTrainers}">
+                                                <h:commandButton styleClass="calendar" style="border: none;background-image: url(#{facesContext.externalContext.requestContextPath}/images/u116_original.png)" action="createSlot?faces-redirect=true" onclick="loadWaitPanel('content');">
+                                                    <f:setPropertyActionListener target="#{systemResultSessionUtil.shiftId}" value="#{shiftCalendar.shiftDataBean.id}"/>
+                                                    <f:setPropertyActionListener target="#{systemResultSessionUtil.selectedDay}" value="TUE"/>
+                                                </h:commandButton>
+                                            </div>
+                                        </h:panelGroup>
+                                    </rich:column>
+                                    <rich:column style="height: 56px;width: 66px;text-align: center">
+                                        <h:panelGroup rendered="#{shiftCalendar.wedSlot != null}">
+                                            <div class="calendar" title="#{shiftCalendar.wedTrainers}">
+                                                <div class="a" style="width: 66px;height: 56px;background-image: url(#{facesContext.externalContext.requestContextPath}/images/u19_original.png)" onclick="setSlotIdForUpdate('#{shiftCalendar.wedSlot}');">
+                                                    <a class="b" href="#" onclick="setSlotIdForDelete('#{shiftCalendar.wedSlot}');#{rich:component('deleteSlotConformPanel')}.show();" style="margin-left: 54px;height: 17px;width: 12px;">
+                                                        <img src="#{facesContext.externalContext.requestContextPath}/images/u68_original.png" alt="delete"/>
+                                                    </a>
+                                                    <br/>
+                                                    PBS
+                                                </div>
+                                            </div>
+                                        </h:panelGroup>
+                                        <h:panelGroup rendered="#{shiftCalendar.wedSlot == null}">
+                                            <div class="calendar" title="#{shiftCalendar.wedTrainers}">
+                                                <h:commandButton styleClass="calendar" style="border: none;background-image: url(#{facesContext.externalContext.requestContextPath}/images/u116_original.png)" action="createSlot?faces-redirect=true" onclick="loadWaitPanel('content');">
+                                                    <f:setPropertyActionListener target="#{systemResultSessionUtil.shiftId}" value="#{shiftCalendar.shiftDataBean.id}"/>
+                                                    <f:setPropertyActionListener target="#{systemResultSessionUtil.selectedDay}" value="WED"/>
+                                                </h:commandButton>
+                                            </div>
+                                        </h:panelGroup>
+                                    </rich:column>
+                                    <rich:column style="height: 56px;width: 66px;text-align: center">
+                                        <h:panelGroup rendered="#{shiftCalendar.thuSlot != null}">
+                                            <div class="calendar" title="#{shiftCalendar.thuTrainers}">
+                                                <div class="a" style="width: 66px;height: 56px;background-image: url(#{facesContext.externalContext.requestContextPath}/images/u19_original.png)" onclick="setSlotIdForUpdate('#{shiftCalendar.thuSlot}');">
+                                                    <a class="b" href="#" onclick="setSlotIdForDelete('#{shiftCalendar.thuSlot}');#{rich:component('deleteSlotConformPanel')}.show();" style="margin-left: 54px;height: 17px;width: 12px;">
+                                                        <img src="#{facesContext.externalContext.requestContextPath}/images/u68_original.png" alt="delete"/>
+                                                    </a>
+                                                    <br/>
+                                                    PBS
+                                                </div>
+                                            </div>
+                                        </h:panelGroup>
+                                        <h:panelGroup rendered="#{shiftCalendar.thuSlot == null}">
+                                            <div class="calendar" title="#{shiftCalendar.thuTrainers}">
+                                                <h:commandButton styleClass="calendar" style="border: none;background-image: url(#{facesContext.externalContext.requestContextPath}/images/u116_original.png)" action="createSlot?faces-redirect=true" onclick="loadWaitPanel('content');">
+                                                    <f:setPropertyActionListener target="#{systemResultSessionUtil.shiftId}" value="#{shiftCalendar.shiftDataBean.id}"/>
+                                                    <f:setPropertyActionListener target="#{systemResultSessionUtil.selectedDay}" value="THU"/>
+                                                </h:commandButton>
+                                            </div>
+                                        </h:panelGroup>
+                                    </rich:column>
+                                    <rich:column style="height: 56px;width: 66px;text-align: center">
+                                        <h:panelGroup rendered="#{shiftCalendar.friSlot != null}">
+                                            <div class="calendar" title="#{shiftCalendar.friTrainers}">
+                                                <div class="a" style="width: 66px;height: 56px;background-image: url(#{facesContext.externalContext.requestContextPath}/images/u19_original.png)" onclick="setSlotIdForUpdate('#{shiftCalendar.friSlot}');">
+                                                    <a class="b" href="#" onclick="setSlotIdForDelete('#{shiftCalendar.friSlot}');#{rich:component('deleteSlotConformPanel')}.show();" style="margin-left: 54px;height: 17px;width: 12px;">
+                                                        <img src="#{facesContext.externalContext.requestContextPath}/images/u68_original.png" alt="delete"/>
+                                                    </a>
+                                                    <br/>
+                                                    PBS
+                                                </div>
+                                            </div>
+                                        </h:panelGroup>
+                                        <h:panelGroup rendered="#{shiftCalendar.friSlot == null}">
+                                            <div class="calendar" title="#{shiftCalendar.friTrainers}">
+                                                <h:commandButton styleClass="calendar" style="border: none;background-image: url(#{facesContext.externalContext.requestContextPath}/images/u116_original.png)" action="createSlot?faces-redirect=true" onclick="loadWaitPanel('content');">
+                                                    <f:setPropertyActionListener target="#{systemResultSessionUtil.shiftId}" value="#{shiftCalendar.shiftDataBean.id}"/>
+                                                    <f:setPropertyActionListener target="#{systemResultSessionUtil.selectedDay}" value="FRI"/>
+                                                </h:commandButton>
+                                            </div>
+                                        </h:panelGroup>
+                                    </rich:column>
+                                    <rich:column style="height: 56px;width: 66px;text-align: center">
+                                        <h:panelGroup rendered="#{shiftCalendar.satSlot != null}">
+                                            <div class="calendar" title="#{shiftCalendar.satTrainers}">
+                                                <div style="float: right;width: 66px;height: 56px;background-image: url(#{facesContext.externalContext.requestContextPath}/images/u19_original.png)" onclick="setSlotIdForUpdate('#{shiftCalendar.satSlot}');">
+                                                    <a class="b" href="#" onclick="setSlotIdForDelete('#{shiftCalendar.satSlot}');#{rich:component('deleteSlotConformPanel')}.show();" style="margin-left: 54px;height: 17px;width: 12px;">
+                                                        <img src="#{facesContext.externalContext.requestContextPath}/images/u68_original.png" alt="delete"/>
+                                                    </a>
+                                                    <br/>
+                                                    PBS
+                                                </div>
+                                            </div>
+                                        </h:panelGroup>
+                                        <h:panelGroup rendered="#{shiftCalendar.satSlot == null}">
+                                            <div class="calendar" title="#{shiftCalendar.satTrainers}">
+                                                <h:commandButton styleClass="calendar" style="border: none;background-image: url(#{facesContext.externalContext.requestContextPath}/images/u116_original.png)" action="createSlot?faces-redirect=true" onclick="loadWaitPanel('content');">
+                                                    <f:setPropertyActionListener target="#{systemResultSessionUtil.shiftId}" value="#{shiftCalendar.shiftDataBean.id}"/>
+                                                    <f:setPropertyActionListener target="#{systemResultSessionUtil.selectedDay}" value="SAT"/>
+                                                </h:commandButton>
+                                            </div>
+                                        </h:panelGroup>
+                                    </rich:column>
+                                    <rich:column style="height: 56px;width: 15px;text-align: center">
+                                        <a href="#" onclick="setShiftIdForDelete('#{shiftCalendar.shiftDataBean.id}');#{rich:component('deleteShiftConformPanel')}.show();">
+                                            <img src="#{facesContext.externalContext.requestContextPath}/images/u106_original.jpg" alt="delete"/>
+                                        </a>
+                                    </rich:column>
+                                </rich:dataTable>
+                                <div style="font-size:11px; text-align: right;padding-top: 10px;">
+                                    Click on a vacant space to create a session
+                                </div>
+                                <script type="text/javascript">
+                                    $('.a').add('.b').click(handler);
+                                </script>
+                            </h:panelGroup>
+                        </h:panelGroup>
+                        <a4j:jsFunction name="redirect" action="#{schedulerServiceBean.retrieveSlotDetail}" onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content');if(#{schedulerServiceBean.strength != null and schedulerServiceBean.selectedTrainerListForUpdate != null and not empty schedulerServiceBean.selectedTrainerListForUpdate}) {#{rich:component('updateSession')}.show();}" render="updateSlotPanel">
+                            <a4j:param value="slotDetailId" assignTo="#{systemResultViewUtil.slotId}" noEscape="true"/>
+                        </a4j:jsFunction>
+                    </h:form>
+                </div>
+                <div id="panelContent" >
+                    <rich:popupPanel id="updateSession" height="300" width="450" >
+                        <div id="loadPanelupdate">
+                            <div>
+                                <h6>Update Session
+                                    <a value="" style="float: right" onclick="#{rich:component('updateSession')}.hide();">
+                                        <img src="#{facesContext.externalContext.requestContextPath}/images/close-btn.jpg" alt="close" title="Close" align="texttop"/>
+                                    </a>
+                                </h6>
+                                <hr class="red"/>
+                            </div>
+                            <h:form prependId="false">
+                                <a4j:outputPanel id="updateSlotPanel" >
+                                    <h:inputHidden value="#{systemResultViewUtil.slotId}" id="slotId"/>
+                                    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" >
+                                        <tr>
+                                            <th>Specialist : <sup><font color="red">*</font></sup></th>
+                                            <td>
+                                                <h:selectManyMenu id="trainers" value="#{schedulerServiceBean.selectedTrainerListForUpdate}" required="true" requiredMessage="Select Trainers" style="width: 240px" >
+                                                    <f:selectItems value="#{schedulerServiceBean.trainerList}"/>
+                                                </h:selectManyMenu>
+                                                <rich:message for="trainers"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>Max. Session count : <sup><font color="red">*</font></sup></th>
+                                            <td>
+                                                <h:inputText value="#{schedulerServiceBean.strength}" styleClass="small" required="true" requiredMessage="Enter Strength" id="strength" maxlength="4" validatorMessage="Invalid strength">
+                                                    <f:validateLongRange minimum="1" maximum="9999"/>
+                                                </h:inputText>
+                                                <rich:message for="strength"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" align="center">
+                                                <hr class="red"/>
+                                                <div align="center">
+                                                    <a4j:commandButton value="Submit" action="#{schedulerServiceBean.updateSlotDetail}" styleClass="standard-button" onbegin="loadWaitPanel('loadPanelupdate');" oncomplete="stopWaitPanel('loadPanelupdate');if(#{messageDataBean.isSuccess != null and messageDataBean.isSuccess}) {#{rich:component('updateSession')}.hide();}" render="dataMessage,mainPanel">
+                                                    </a4j:commandButton>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    <script type="text/javascript">
+                                        $("#trainers").data("placeholder", "Select Specialist").chosen();
+                                    </script>
+                                </a4j:outputPanel>
+                            </h:form>
+                        </div>
+                    </rich:popupPanel>
+                    <rich:popupPanel id="deleteShiftConformPanel" height="145" minWidth="450" autosized="false">
+                        <div id="loadPanelDelSlot">
+                            <div>
+                                <h6>Confirmation
+                                     <a value="" style="float: right" onclick="#{rich:component('deleteShiftConformPanel')}.hide();">
+                                        <img src="#{facesContext.externalContext.requestContextPath}/images/close-btn.jpg" alt="close" title="Close" align="texttop"/>
+                                    </a>
+                                </h6>
+                                <hr class="red"/>
+                            </div>
+                            <h:form prependId="false">
+                                <a4j:outputPanel id="deleteShiftPanel">
+                                    <h:inputHidden value="#{schedulerServiceBean.shiftDataBean.id}" id="delShift"/>
+                                    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" >
+                                        <tr>
+                                            <td>
+                                                Are you sure you want to delete this shift ?
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" align="center">
+                                                <hr class="red"/>
+                                                <div align="center">
+                                                    <a4j:commandButton value="Yes" action="#{schedulerServiceBean.deleteShift}" styleClass="standard-button" onbegin="loadWaitPanel('loadPanelDelSlot');" oncomplete="stopWaitPanel('loadPanelDelSlot');#{rich:component('deleteShiftConformPanel')}.hide();" render="dataMessage,mainPanel" rendered="#{not systemResultViewUtil.flag}">
+                                                    </a4j:commandButton>
+                                                    <input type="button" value="No" class="standard-button" onclick="#{rich:component('deleteShiftConformPanel')}.hide();"/>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </a4j:outputPanel>
+                            </h:form>
+                        </div>
+                    </rich:popupPanel>
+                    <rich:popupPanel id="deleteSlotConformPanel" height="145" minWidth="450" autosized="false">
+                        <div id="loadPanelDelSession">
+                            <div>
+                                <h6>Confirmation
+                                     <a value="" style="float: right" onclick="#{rich:component('deleteSlotConformPanel')}.hide();">
+                                        <img src="#{facesContext.externalContext.requestContextPath}/images/close-btn.jpg" alt="close" title="Close" align="texttop"/>
+                                    </a>
+                                </h6>
+                                <hr class="red"/>
+                            </div>
+                            <h:form prependId="false">
+                                <a4j:outputPanel id="deleteSlotPanel">
+                                    <h:inputHidden value="#{schedulerServiceBean.slotDetailDataBean.slot}" id="delSlot"/>
+                                    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" >
+                                        <tr>
+                                            <td>
+                                                Are you sure you want to delete this session ?
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2" align="center">
+                                                <hr class="red"/>
+                                                <div align="center">
+                                                    <a4j:commandButton value="Yes" action="#{schedulerServiceBean.deleteSlot}" styleClass="standard-button" onbegin="loadWaitPanel('loadPanelDelSession');" oncomplete="stopWaitPanel('loadPanelDelSession');#{rich:component('deleteSlotConformPanel')}.hide();" render="dataMessage,mainPanel" rendered="#{not systemResultViewUtil.flag}">
+                                                    </a4j:commandButton>
+                                                    <input type="button" value="No" class="standard-button" onclick="#{rich:component('deleteSlotConformPanel')}.hide();"/>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </a4j:outputPanel>
+                            </h:form>
+                        </div>
+                    </rich:popupPanel>
+                </div>
+                <script type="text/javascript">
+                    var slotDetailId;                   
+                   function setSlotIdForUpdate(slotId){
+                       document.getElementById("slotId").value = slotId;
+                       slotDetailId = slotId;
+                       redirect();
+                   }
+
+                   function setShiftIdForDelete(shiftId){
+                       document.getElementById("delShift").value = shiftId;
+                   }
+
+                   function setSlotIdForDelete(slotId){
+                       document.getElementById("delSlot").value = slotId;
+                   }
+
+                   function handler(event) {
+                        event.stopPropagation();
+                    }
+
+
+                   jQuery("#strength").numeric();
+                   $('.a').add('.b').click(handler);
+
+                </script>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

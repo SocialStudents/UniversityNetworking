@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html">
+    <h:body>       
+        <ui:composition template="./layout/homeLayout.xhtml">
+            <ui:define name="content">
+                <div id="left" style="margin-top:55PX;">
+                    <h6>CATEGORIES
+                    </h6><hr class="red" />
+                    <ul id="subnav" style="margin:0PX;">
+                        <li class="active" >Introduction</li> 
+                        <a href="/videoswarmup"><li >Warmup</li></a>                        
+                        <a href="/videosstretching"><li >Stretching</li></a>
+                        <a href="/videosworkout"><li >Workout</li></a>
+                        <a href="/videosother"><li>Others</li></a>                        
+                    </ul>
+
+                </div>
+                <div id="right">
+                    <h3 ><img src="#{facesContext.externalContext.requestContextPath}/images/video-icon.jpg" alt="video" width="43" height="32" />PB Video Gallery</h3>
+                    <div class="breadcrumbs"> <a href="/login">HOME</a> | INTRODUCTION</div>
+                    <div class="content" style="margin-top:20px;">
+                        <table width="100%" border="0" cellpadding="0" cellspacing="0" class="form-table">                          
+                            <tr>
+                                <td width="20%"><a class="youtube" href="#" rel="uNxQcWrI8p8" title="Welcome to the perfect balance guidance videos"><img src="#{facesContext.externalContext.requestContextPath}/images/videos/011.jpg" alt="pbalance video" width="140" height="77" /></a></td>
+                                <td width="25%" class="video-txt"><span class="video-heading">Welcome to the perfect balance</span><br/> guidance videos</td>
+                                <td width="6%" >&#160;</td>
+                                <td width="20%" >&#160;</td>
+                                <td width="29%" >&#160;</td>
+                            </tr>
+                            <tr>
+                                <td>&#160;</td>
+                                <td>&#160;</td>
+                                <td>&#160;</td>
+                                <td>&#160;</td>
+                                <td>&#160;</td>
+                            </tr>
+                        </table>                        
+                    </div><!--content ends here -->
+                </div> 
+                 <script type="text/javascript">
+                     document.getElementById("videos").setAttribute("class", "active")
+                </script>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

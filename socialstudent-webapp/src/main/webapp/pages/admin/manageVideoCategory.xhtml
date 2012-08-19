@@ -1,0 +1,159 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+    <h:body>
+        <ui:composition template="../layout/adminLayout.xhtml">
+            <ui:define name="content">
+                <script type="text/javascript">
+                    if(document.getElementById("manageVideoCategory") != null) {
+                        document.getElementById("manageVideoCategory").setAttribute("class", "active");
+                    } else {
+                        location.href ="#{loginDataBean.lendingPage}";
+                    }                    
+                </script>
+                <h:form prependId="false">
+                    <f:event listener="#{videoCategoryServiceBean.retrieveVideoCategories()}" type="preRenderComponent"/>
+                    <h3>Manage Video Categories</h3>
+                    <hr class="red"/>
+                    <div id="search-panel"> 
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tbody>
+                                <tr>
+                                    <td width="40%">                                               
+                                        <a4j:commandLink title="Create Video Category" oncomplete="#{rich:component('addVideoCategory')}.show();" action="#{videoCategoryServiceBean.clearData()}" render="manageinq"> 
+                                            <img src="#{facesContext.externalContext.requestContextPath}/images/new-button.jpg"/>
+                                        </a4j:commandLink>                                                
+                                    </td>
+                                    <td width="14%" style="vertical-align: middle;">
+                                        <h:selectBooleanCheckbox value="#{systemResultViewUtil.isShowInActiveData}" >
+                                            <a4j:ajax listener="#{videoCategoryServiceBean.retrieveVideoCategories()}" render="videoCategoryListPanel" />
+                                        </h:selectBooleanCheckbox>
+                                        <strong>Show All</strong></td>
+                                    <td width="34%"><div id="search-box-bg">
+                                            <h:inputText value="#{systemResultViewUtil.searchString}" id="searchString" maxlength="50" class="search-txt-box" />                                                
+                                        </div></td>
+                                    <td width="12%" style="vertical-align: middle;"> &#160;                                               
+                                        <a4j:commandButton value="Search"  action="#{videoCategoryServiceBean.retrieveVideoCategories()}" styleClass="standard-button"  onclick="loadWaitPanel('content');" oncomplete="stopWaitPanel('content');" render="videoCategoryListPanel, dataMessage"  title="Search Video Category" status="status" />                                                 
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                    </div>                   
+                    <div class="content">
+                        <a4j:outputPanel id="videoCategoryListPanel">         
+                            <ui:include src="../common/message.xhtml" /> 
+
+                            <rich:dataTable  id="videoCategoryDataList" rowKeyVar="rowId" rows="10" rendered="#{systemResultViewUtil.videoCategoryDataBeanList!=null and not empty systemResultViewUtil.videoCategoryDataBeanList}"
+                                             var="videoCategory" value="#{systemResultViewUtil.videoCategoryDataBeanList}" styleClass="meal-plan" style="width: 100%" rowClass="#{rowId%2 == 0 ? 'alt-row1':'alt-row'}" >
+                                <f:facet name="header">
+                                    <rich:columnGroup>
+<!--                                        <rich:column style="width: 20%" styleClass="header">
+                                            <h:outputText value="Code"/>
+                                        </rich:column>-->
+                                        <rich:column style="width: 25%" styleClass="header">
+                                            <h:outputText value="Category Name"/>
+                                        </rich:column>                                        
+                                        <rich:column style="width: 24%"  styleClass="header">
+                                            <h:outputText value="Created On" />
+                                        </rich:column>
+                                        <rich:column style="width: 7%; text-align: center;"  styleClass="header">
+                                            <h:outputText value="Status" />
+                                        </rich:column>
+                                    </rich:columnGroup>
+                                </f:facet>                              
+                                <rich:column style="vertical-align: top">
+                                    <a4j:commandLink title="Click here to Edit" value="#{videoCategory.name}" onclick="loadWaitPanel('content');" oncomplete="#{rich:component('addVideoCategory')}.show();" render="manageinq">                                        
+                                        <f:setPropertyActionListener target="#{videoCategoryServiceBean.videoCategoryDataBean}" value="#{videoCategory}"/>
+                                        <f:setPropertyActionListener target="#{systemResultViewUtil.updateOperation}" value="u"/>
+                                        <f:setPropertyActionListener target="#{videoCategoryServiceBean.operationChar}" value="U"/>
+                                    </a4j:commandLink>                                    
+                                </rich:column>
+<!--                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="{videoCategory.name}"></h:outputText>                                    
+                                </rich:column>                                -->
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{videoCategory.lastModifiedOn}">
+                                        <f:convertDateTime type="date" pattern="MM/dd/yyyy" timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                    </h:outputText>                                    
+                                </rich:column>
+                                <rich:column style="text-align: center;vertical-align: top">                                    
+                                    <h:outputLabel id="statusPanel">
+                                        <a4j:commandLink action="#{videoCategoryServiceBean.updateVideoCategory()}" title="#{videoCategory.isActive ? 'Click here to Deactivate':'Click here to Activate'}" onclick="loadWaitPanel('content');" render="videoCategoryListPanel" oncomplete="stopWaitPanel('content');">
+                                            <h:graphicImage value="#{videoCategory.isActive ?'/images/activate.png' :'/images/deactivate.png'}" style="border: none;" />
+                                            <f:setPropertyActionListener target="#{videoCategoryDataBean.id}" value="#{videoCategory.id}"/>
+                                            <f:setPropertyActionListener target="#{videoCategoryDataBean.isActive}" value="#{not videoCategory.isActive}"/>
+                                            <f:setPropertyActionListener target="#{videoCategoryDataBean.name}" value="#{videoCategory.name}"/>
+                                        </a4j:commandLink>
+                                    </h:outputLabel>
+                                </rich:column>                               
+                                <f:facet name="footer" >                                    
+                                    <div align="center" style="width: 100%;">
+                                        <rich:dataScroller for="videoCategoryDataList" renderIfSinglePage="true" maxPages="10" fastStep="5"></rich:dataScroller>  
+                                    </div>                                    
+                                </f:facet>
+                            </rich:dataTable>
+                            <a4j:jsFunction name="clearData" action="#{videoCategoryServiceBean.retrieveVideoCategories()}" render="videoCategoryListPanel"/>
+                        </a4j:outputPanel>
+                    </div>
+                </h:form>
+                <rich:popupPanel id="addVideoCategory" minHeight="220" width="400" autosized="true">
+                    <h:form prependId="false">
+                        <a4j:outputPanel id="manageinq">
+
+                            <h6>#{videoCategoryServiceBean.operationChar == 'C' ? 'Add' : 'Update'} Video Category
+                                <h:outputLink value="manageVideoCategory" style="float: right">
+                                    <img src="#{facesContext.externalContext.requestContextPath}/images/close-btn.jpg" alt="close" title="Close" align="texttop"/>
+                                </h:outputLink></h6><hr class="red"/>
+                            <a4j:outputPanel id="innerDataM">
+                                <h:outputLabel rendered="#{not messageDataBean.isSuccess and messageDataBean.message != null}">
+                                    <div class="ui-widget">
+                                        <div class="ui-state-error ui-corner-all" style="padding:0px 5px; margin-bottom:10px; font-weight:bold; line-height:16px; "> 
+                                            <p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span> 
+                                               #{messageDataBean.message}</p><div class="clearing"></div>
+                                        </div>                
+                                    </div>
+                                </h:outputLabel>
+                            </a4j:outputPanel>
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" >
+                                <tr>
+                                    <td width="30%"></td>
+                                    <td width="55%"></td>
+                                    <td width="15%"></td>
+                                </tr> 
+                                <tr >
+                                    <th>Category Name<sup><font color="red">*</font></sup></th>
+                                    <td colspan="2">
+                                        <h:inputText id="iName" value="#{videoCategoryServiceBean.videoCategoryDataBean.name}"  styleClass="medium">
+                                            <f:ajax event="blur" render="iNameMessage"/>
+                                        </h:inputText>
+                                        <rich:message id="iNameMessage" for="iName"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th style="vertical-align: top">Description</th>
+                                    <td colspan="2">
+                                        <h:inputTextarea style="width: 236px" id="iDescription"  onfocus="counterForTextArea('iDescription','iDescriptionCounter',255)" onkeyup="counterForTextArea('iDescription','iDescriptionCounter',255)" value="#{videoCategoryServiceBean.videoCategoryDataBean.description}"/>
+                                    <div style="text-align:left" ><i><h:outputText value="(You can type" style="color: grey;"/> &#160;<h:outputText id="iDescriptionCounter"  value="255" style="color: grey;"/> &#160;<h:outputText value="more characters)" style="color: grey;"/></i></div>
+                                    </td>
+                                </tr>
+                                
+                            </table>
+                            <h:inputHidden value="#{videoCategoryServiceBean.videoCategoryDataBean.isActive}"/>
+                            <h:inputHidden value="#{videoCategoryServiceBean.videoCategoryDataBean.id}"/>
+                            <hr class="red"/>
+                            <div align="center" style="width: 100%;">
+                                <a4j:commandButton value="Submit" action="#{videoCategoryServiceBean.createVideoCategory()}" styleClass="standard-button" render="videoCategoryListPanel, dataMessage, innerDataM" style="display: #{videoCategoryServiceBean.operationChar == 'C'?'' :'none'}" oncomplete="if(#{messageDataBean.isSuccess != null and messageDataBean.isSuccess}) {#{rich:component('addVideoCategory')}.hide();};" />
+                                <a4j:commandButton value="Submit" action="#{videoCategoryServiceBean.updateVideoCategory()}" styleClass="standard-button" render="videoCategoryListPanel, dataMessage, innerDataM" style="display: #{videoCategoryServiceBean.operationChar == 'U'?'' :'none'}" oncomplete="if(#{messageDataBean.isSuccess != null and messageDataBean.isSuccess}) {#{rich:component('addVideoCategory')}.hide();};"/>&#160;
+                            </div>
+                        </a4j:outputPanel>
+                    </h:form>
+                </rich:popupPanel>               
+            </ui:define>
+
+        </ui:composition>
+    </h:body>
+</html>

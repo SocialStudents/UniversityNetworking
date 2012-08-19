@@ -1,0 +1,168 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j">
+
+    <body>
+        <ui:composition template="layout/homeLayout.xhtml">
+            <ui:define name="content">
+                <f:metadata>
+                    <f:event type="preRenderComponent" listener="#{recipeServiceBean.retriveRecipe()}" />
+                </f:metadata>
+                <h:form prependId="false">
+                    <div id="left">
+                        <ul id="subnav">
+                            <a href="/pbalancediet"><li>Eating</li></a> 
+                            <h:commandLink action="#{menuServiceBean.loginNavigate}">
+                                <li>PB Meal Plan</li>
+                                <f:param name="id" value="pbalancemealplan"/>
+                            </h:commandLink>
+                            <h:commandLink action="#{menuServiceBean.loginNavigate}">
+                                <li class="active">PB Recipes</li>
+                                <f:param name="id" value="pbalanceRecipes"/>
+                            </h:commandLink>
+                        </ul>
+                        <div class="contact-bg">
+                            <h4>Questions?</h4>
+                            <h5>Just call and talk to us:</h5>
+                            (510) 668-0701<br/>
+                            <br/>
+                            <a href="/contact"><div id="emailus">&#160;</div></a>
+                        </div>
+                    </div>
+                    <a4j:outputPanel id="recipe">
+                        <div id="right">
+                            <h3>PB Recipes</h3>
+                            <div class="breadcrumbs"> <a href="/login">HOME</a> | <a href="/pbalanceRecipes">PB RECIPES</a> | <h:outputLabel value="BREAKFAST RECIPES" rendered="#{recipeDataBean.sub_category eq 'BF'}"></h:outputLabel><h:outputLabel value="LUNCH/DINNER RECIPES" rendered="#{recipeDataBean.sub_category eq 'LD'}"></h:outputLabel>
+                                <h:outputLabel value="SNACKS RECIPES" rendered="#{recipeDataBean.sub_category eq 'SN'}"></h:outputLabel>
+                                <h:graphicImage value="#{recipeDataBean.category eq 'V' ?'/images/veg.jpg' :'/images/non-veg.jpg'}" style="border: none; float: right" />
+                            </div>
+                            <div class="content">
+                                <h:outputLabel rendered="#{not messageDataBean.isSuccess and messageDataBean.message != null}">
+                                    <div class="errmsg"><ul><li>#{messageDataBean.message}</li></ul></div>
+                                </h:outputLabel>
+                                <h6>#{recipeDataBean.name}</h6>
+                                <div style="width: 100%;min-height: 250px;float: left">
+                                    <div style="float: left;width:60%">
+                                        <h5>Serving</h5>
+                                        <ul id="description" name="description" style="list-style-type: none;background-image: none;margin-top:10px;padding-left: 0">
+                                        </ul>
+                                        <script type="text/javascript">
+                                            var str3 = "#{recipeDataBean.description}".replace(/%0A%0A/g,"\n&nbsp;\n");
+                                            var temp3 = unescape(str3.replace(/%0A/g,"\n"));
+                                            var list3 = new Array();
+                                            list3= temp3.split("\n");
+                                            var ul3 = document.getElementById("description");
+                                            for(var i=0; i &lt; list3.length;i++){
+                                                var li = document.createElement("li");
+                                                li.innerHTML=list3[i];
+                                                if(ul3.getElementsByTagName("li")[i] == undefined){
+                                                    ul3.insertBefore(li,null);
+                                                }
+                                                if(ul3.getElementsByTagName("li")[i] != undefined){
+                                                    ul3.insertBefore(li,ul3.getElementsByTagName("li")[i]);
+                                                }
+                                            }
+                                        </script>
+                                        <h5>Ingredients</h5>
+                                        <ul id="ingredients" name="ingredients" style="list-style-type: none;background-image: none;margin-top:10px;padding-left: 0">
+                                        </ul>
+                                        <script type="text/javascript">
+                                            var str2 = "#{recipeDataBean.ingredent}".replace(/%0A%0A/g,"\n&nbsp;\n");
+                                            var temp2 = unescape(str2.replace(/%0A/g,"\n"));
+                                            var list2 = new Array();
+                                            list2= temp2.split("\n");
+                                            var ul2 = document.getElementById("ingredients");
+                                            for(var i=0; i &lt; list2.length;i++){
+                                                var li = document.createElement("li");
+                                                li.innerHTML=list2[i];
+                                                if(ul2.getElementsByTagName("li")[i] == undefined){
+                                                    ul2.insertBefore(li,null);
+                                                }
+                                                if(ul2.getElementsByTagName("li")[i] != undefined){
+                                                    ul2.insertBefore(li, ul2.getElementsByTagName("li")[i]);
+                                                }
+                                                    
+                                            }
+                                        </script>
+                                    </div>
+                                    <div style="float: left;min-width:40%">
+                                        <a4j:mediaOutput id="u7_img" style="padding-left: 10px;border:none; width: 240px; height: 220px" 
+                                                 element="img" createContent="#{systemResultSessionUtil.drawImage}" 
+                                                 value="#{recipeDataBean.imageName}" rendered="#{recipeDataBean.imageName != null}" mimeType="image/jpg"  
+                                                 styleClass="u7"/>
+                                    </div>
+                                </div>
+                                <div style="min-width:100%">
+                                    <h5>Method</h5>
+                                    <ul id="method" name="method" style="list-style-type: none;background-image: none;margin-top:10px;padding-left: 0">
+                                    </ul>
+                                    <script type="text/javascript">
+                                        var str1 = "#{recipeDataBean.method}".replace(/%0A%0A/g,"\n&nbsp;\n");
+                                        var temp1 = unescape(str1.replace(/%0A/g,"\n"));
+                                        var list1 = new Array();
+                                        list1= temp1.split("\n");
+                                        var ul1 = document.getElementById("method");
+                                        for(var i=0; i &lt; list1.length;i++){
+                                            var li = document.createElement("li");
+                                            li.innerHTML=list1[i];
+                                            if(ul1.getElementsByTagName("li")[i] == undefined){
+                                                ul1.insertBefore(li,null);
+                                            }
+                                            if(ul1.getElementsByTagName("li")[i] != undefined){
+                                                ul1.insertBefore(li, ul1.getElementsByTagName("li")[i]);
+                                            }
+                                                    
+                                        }
+                                        
+                                    </script>
+                                </div>
+                                <div style="width: 100%">
+                                    <strong>
+                                        <table width="100%" border="0" cellpadding="0" cellspacing="0" class="form-table">
+                                            <tbody>
+                                                <tr>
+                                                    <td width="44%">&nbsp;</td>
+                                                    <td width="29%">&nbsp;</td>
+                                                    <td width="27%">&nbsp;</td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="3"><hr class="red"/></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <strong>
+                                                            &#171;
+                                                            <a4j:commandLink action="#{recipeServiceBean.retrivePreviousRecipe}" value="Previous" style="font-weight: bold" render="recipe" oncomplete="window.scrollTo(0,0);   ">
+                                                                <a4j:param assignTo="#{systemResultSessionUtil.recipeCategory}" value="#{recipeDataBean.category}"/>
+                                                            </a4j:commandLink>
+                                                        </strong>
+                                                    </td>
+                                                    <td><a href="/pbalanceRecipes"><strong>All Recipes</strong></a></td>
+                                                    <td style="text-align: right">
+                                                        <strong>
+                                                            <a4j:commandLink action="#{recipeServiceBean.retriveNextRecipe}" value="Next" render="recipe" oncomplete="window.scrollTo(0,0);">
+                                                                <a4j:param assignTo="#{systemResultSessionUtil.recipeCategory}" value="#{recipeDataBean.category}"/>
+                                                            </a4j:commandLink>
+                                                            &#187;
+                                                        </strong>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </strong>
+                                </div>
+                            </div>
+                        </div>
+                    </a4j:outputPanel>
+                    <script type="text/javascript">
+                        document.getElementById("pbalancediet").setAttribute("class", "active");
+                    </script>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

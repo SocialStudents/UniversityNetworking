@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="outStandingFeesReport" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="eb79bc93-f524-4c5a-a287-66fd5cdc61bb">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="fromDate" class="java.util.Date">
+		<parameterDescription><![CDATA[fromDate]]></parameterDescription>
+	</parameter>
+	<parameter name="toDate" class="java.util.Date">
+		<parameterDescription><![CDATA[toDate]]></parameterDescription>
+	</parameter>
+	<parameter name="imageLink" class="java.lang.String"/>
+	<field name="firstName" class="java.lang.String">
+		<fieldDescription><![CDATA[firstName]]></fieldDescription>
+	</field>
+	<field name="lastName" class="java.lang.String">
+		<fieldDescription><![CDATA[lastName]]></fieldDescription>
+	</field>
+	<field name="totalUnits" class="java.lang.Integer">
+		<fieldDescription><![CDATA[totalUnits]]></fieldDescription>
+	</field>
+	<field name="sessions" class="java.lang.Integer">
+		<fieldDescription><![CDATA[sessions]]></fieldDescription>
+	</field>
+	<field name="memberAttended" class="java.lang.Integer">
+		<fieldDescription><![CDATA[memberAttended]]></fieldDescription>
+	</field>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="179" splitType="Stretch">
+			<image scaleImage="FillFrame">
+				<reportElement uuid="f1a76c25-2b68-43df-9d6e-d8d67e826e48" x="2" y="0" width="441" height="132"/>
+				<imageExpression><![CDATA[$P{imageLink}.toString()]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement uuid="371d2254-1e88-4f04-995b-953f5062e22a" x="2" y="116" width="555" height="35"/>
+				<textElement textAlignment="Left">
+					<font size="18"/>
+				</textElement>
+				<text><![CDATA[PB Specialist Session Report]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="b9716cea-e1cb-4b45-8688-ddf97e8ca48f" x="0" y="143" width="89" height="20"/>
+				<textElement/>
+				<text><![CDATA[Registered From]]></text>
+			</staticText>
+			<textField pattern="MM/dd/yyyy">
+				<reportElement uuid="991477cf-04ad-48cf-b2f2-2c83614f836a" x="92" y="143" width="73" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$P{fromDate}]]></textFieldExpression>
+			</textField>
+			<textField pattern="MM/dd/yyyy">
+				<reportElement uuid="e0ca0d95-b2b8-48d5-b98d-7c3c2656b59d" x="182" y="143" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$P{toDate}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="49e8b591-e291-4fcc-bb04-9953bc6462c7" x="159" y="143" width="15" height="20"/>
+				<textElement/>
+				<text><![CDATA[To]]></text>
+			</staticText>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="25" splitType="Stretch">
+			<rectangle>
+				<reportElement uuid="54c86095-b606-4025-8874-6a740b130ae0" x="44" y="0" width="138" height="25" backcolor="#5F5F5F"/>
+			</rectangle>
+			<rectangle>
+				<reportElement uuid="ed65ac0a-452e-4ddd-a7b4-1c0594d7629d" x="182" y="0" width="115" height="25" backcolor="#5F5F5F"/>
+			</rectangle>
+			<rectangle>
+				<reportElement uuid="8d3ef09d-f632-4d5d-afd4-fc489f90980f" x="293" y="0" width="135" height="25" backcolor="#5F5F5F"/>
+			</rectangle>
+			<staticText>
+				<reportElement uuid="5de24b83-0a1f-4850-9298-89d0ac5cd941" x="297" y="0" width="127" height="25" forecolor="#FEFEFE"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Sessions Conducted]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement uuid="3a9f7170-ac97-42d7-9508-68067259f61c" x="424" y="0" width="131" height="25" backcolor="#5F5F5F"/>
+			</rectangle>
+			<staticText>
+				<reportElement uuid="091e1ee1-bb48-4b5a-a393-6df1f404cb8c" x="428" y="0" width="127" height="25" forecolor="#FEFEFE"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[PBers Attended]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="ec6fb43e-0ebc-476a-b472-747250c91af8" x="48" y="0" width="41" height="20" forecolor="#FEFEFE"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Name]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement uuid="144dd99e-7892-4bbf-a93d-bad9597e4876" x="0" y="0" width="44" height="25" backcolor="#5F5F5F"/>
+			</rectangle>
+			<staticText>
+				<reportElement uuid="9caf8548-b6a9-4212-bc8d-5d412917fd25" x="4" y="0" width="40" height="20" forecolor="#FEFEFE"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Sr No.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="c5ee8b34-d64b-46a5-a3f1-c412c23bb7e3" x="186" y="0" width="107" height="25" forecolor="#FEFEFE"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[No. of Days Present]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="24" splitType="Stretch">
+			<rectangle>
+				<reportElement uuid="14c779dd-7c51-4dcf-89f5-3fac49bb2ee0" x="424" y="0" width="131" height="24" forecolor="#636363" backcolor="#FFFFFF">
+					<printWhenExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 == 0)]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement uuid="c8e92171-e273-4d5a-82d9-fc7935ff3085" x="182" y="0" width="115" height="24" forecolor="#636363" backcolor="#FFFFFF">
+					<printWhenExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 == 0)]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement uuid="4d267ff5-db05-4710-aabf-2ca558c84976" x="44" y="0" width="138" height="24" forecolor="#636363" backcolor="#FFFFFF">
+					<printWhenExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 == 0)]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement uuid="f7c2f298-50d4-4f4d-ac4d-413adcf4d427" x="293" y="0" width="131" height="24" forecolor="#636363" backcolor="#FFFFFF">
+					<printWhenExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 == 0)]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement uuid="12c8b04b-a044-4792-8d54-c3db22fec2ac" x="0" y="0" width="44" height="24" forecolor="#636363" backcolor="#FFFFFF">
+					<printWhenExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 == 0)]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement uuid="4d267ff5-db05-4710-aabf-2ca558c84976" x="44" y="0" width="138" height="24" forecolor="#636363" backcolor="#F4F4F4">
+					<printWhenExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 == 1)]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement uuid="c8e92171-e273-4d5a-82d9-fc7935ff3085" x="182" y="0" width="115" height="24" forecolor="#636363" backcolor="#F4F4F4">
+					<printWhenExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 == 1)]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement uuid="f7c2f298-50d4-4f4d-ac4d-413adcf4d427" x="293" y="0" width="135" height="24" forecolor="#636363" backcolor="#F4F4F4">
+					<printWhenExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 == 1)]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement uuid="14c779dd-7c51-4dcf-89f5-3fac49bb2ee0" x="424" y="0" width="131" height="24" forecolor="#636363" backcolor="#F4F4F4">
+					<printWhenExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 == 1)]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement uuid="12c8b04b-a044-4792-8d54-c3db22fec2ac" x="0" y="0" width="44" height="24" forecolor="#636363" backcolor="#F4F4F4">
+					<printWhenExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue() % 2 == 1)]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<textField>
+				<reportElement uuid="9d2a2640-a2b1-48e9-bdf4-bedfef3b7326" x="2" y="0" width="44" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$V{REPORT_COUNT}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="6495d04c-0883-4c75-8dce-32ab7b5228ad" x="48" y="0" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{firstName}.concat(" " + $F{lastName})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="bf0136f9-6d94-4d36-a95a-a06cf091669e" x="188" y="0" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{totalUnits}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="5fb76120-1d31-4fdf-abf0-0d21ba82e1cf" x="297" y="0" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{sessions}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="64c946ac-20fc-4636-a717-bac40a6ef496" x="430" y="0" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression><![CDATA[$F{memberAttended}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="50">
+			<textField>
+				<reportElement uuid="b71e2488-6c73-4c03-a227-ff2aa10f137d" x="380" y="30" width="164" height="20"/>
+				<textElement textAlignment="Right">
+					<font fontName="SansSerif" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<textField pattern="MM/dd/yyyy">
+				<reportElement uuid="0ed3a430-3c0a-4965-bd08-30cada6e0358" x="111" y="30" width="67" height="20"/>
+				<textElement>
+					<font fontName="SansSerif" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new Date()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="2656aaab-2152-4531-bfeb-36059ee60a4d" x="0" y="30" width="107" height="20"/>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Generated on"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement uuid="e0511228-4e84-4fd5-9a18-ab8b13d19d6c" mode="Transparent" x="54" y="23" width="58" height="20" forecolor="#FFFFFF"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Name]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

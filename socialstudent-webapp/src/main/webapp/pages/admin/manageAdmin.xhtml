@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      >   
+    <h:body>
+        <ui:composition template="./../layout/adminLayout.xhtml">
+            <ui:define name="content">
+                <h:form prependId="false">
+                    This is Admin Page
+                </h:form>
+                <h:outputLink value="#{facesContext.externalContext.requestContextPath}/searchRole">Manage Role</h:outputLink>
+                <div id="video"/>
+                <script type="text/javascript">
+                    $('#video').jwPlayer({
+                        swf: '#{facesContext.externalContext.requestContextPath}/videos/player.swf',
+                        file: '#{facesContext.externalContext.requestContextPath}/videos/editedvideomerged.flv',
+                        height: 240,
+                        width: 320
+                    });
+                </script>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

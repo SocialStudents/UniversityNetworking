@@ -1,0 +1,206 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+
+    <ui:composition template="../layout/adminReportLayout.xhtml">
+        <ui:define name="content">
+            <div id="content">
+                <h:form prependId="false">
+                    <script type="text/javascript">
+                        if("#{userRightsDataBean.haveUserReportsRights}" == "false") {                          
+                            location.href ="#{loginDataBean.lendingPage}";
+                        } 
+                        $(document).ready(function() {
+                            sorting();
+                        } );
+                    </script>
+                    <ui:include src="../common/message.xhtml" /> 
+                    <div id="search-panel" class="userinfo">
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" id="selectionTable"> 
+                            <tr>
+                                <th ><h:outputText value="Total Active Leads"/></th>
+                                <td ><h:outputText value="#{userServiceBean.totalMemberCount}" /></td>
+                                <td >&#160;</td>
+                                <td >&#160;</td>
+                                <td width="20%">&#160;</td>
+                            </tr>
+
+                            <tr>
+                                <th ><h:outputText value="Registration From"/></th>
+                                <td >
+                                    <h:inputText id="subscriptionFromDate" styleClass="medium" value="#{systemResultViewUtil.subscriptionFromDate}" required="true" requiredMessage="Enter from date">
+                                        <f:convertDateTime type="date" dateStyle="MM/dd/yyyy" pattern="MM/dd/yyyy"  timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                    </h:inputText>
+                                    <rich:message for="subscriptionFromDate" />
+                                </td>
+                                <th >
+                                    <h:outputText value="To"/>
+                                </th>
+                                <td >
+                                    <h:inputText id="subscriptionToDate" styleClass="medium" value="#{systemResultViewUtil.subscriptionToDate}" required="true" requiredMessage="Enter To date">
+                                        <f:convertDateTime type="date" dateStyle="MM/dd/yyyy" pattern="MM/dd/yyyy"  timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                    </h:inputText>
+                                    <rich:message for="subscriptionToDate" />
+                                </td>
+                                <td >
+                                    <a4j:commandButton value="Search" action="#{userServiceBean.retrieveWebsiteMemberReportDetails()}" 
+                                                       onclick="loadWaitPanel('content');" oncomplete="stopWaitPanel('content');sorting()" 
+                                                       render="reportListPanel,leadCount,state,city,dataMessage,downloadLink"                                                       styleClass="standard-button">
+                                    </a4j:commandButton>
+
+                                </td>
+                            </tr>                          
+                        </table>
+                        <br/>
+                        <div id="count" align="right">
+                            <h:selectBooleanCheckbox id="showAllCheckBox" value="#{systemResultViewUtil.isShowInActiveData}" >
+                                <a4j:ajax listener="#{userServiceBean.retrieveWebsiteMemberReportDetails()}" event="click" onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content');sorting()" execute="subscriptionFromDate,subscriptionToDate" render="reportListPanel,leadCount,downloadLink"/>
+                            </h:selectBooleanCheckbox>
+                            <strong>Show All</strong> | 
+
+                            <h:outputLabel id="leadCount">
+                                <h:outputText value="Lead Count "/>
+                                <h:outputText value="#{userServiceBean.countOfData}"/>
+                            </h:outputLabel>
+                        </div>
+                    </div>                    
+                    <br></br>
+                    <div class="content">
+                        <a4j:outputPanel id="downloadLink" >
+                            <h:commandLink action="#{reportToPdfServiceBean.leadListiReport()}" rendered="#{systemResultViewUtil.userDataBeanList !=null and not empty systemResultViewUtil.userDataBeanList}">
+                                <h:graphicImage value="/images/download-pdf.jpg" style="border: none; float: right" title="Click to Download Report"/>
+                                &nbsp;&nbsp;&nbsp;
+                            </h:commandLink>
+                            <br></br>
+                        </a4j:outputPanel>
+                        <a4j:outputPanel id="reportListPanel">
+                            <rich:dataTable  id="reportDataList" rowKeyVar="rowId" var="report" value="#{systemResultViewUtil.userDataBeanList}" styleClass="meal-plan" style="width: 100%;line-height: 12px;padding: 5px" rendered="#{systemResultViewUtil.userDataBeanList !=null and not empty systemResultViewUtil.userDataBeanList}" rowClass="#{rowId%2 == 0 ? 'alt-row1':'alt-row'}" >
+                                <f:facet name="header">
+                                    <rich:columnGroup>
+                                        <rich:column style="width: 25%" styleClass="header">
+                                            <h:outputText value="Name"/>
+                                        </rich:column>
+                                        <rich:column style="width: 8% " styleClass="header">
+                                            <h:outputText value="Source of Lead"/>
+                                        </rich:column>
+                                        <rich:column style="width: 10%"  styleClass="header">
+                                            <h:outputText value="State" />
+                                        </rich:column>
+                                        <rich:column style="width: 10%"  styleClass="header">
+                                            <h:outputText value="City"/>
+                                        </rich:column>                                       
+                                        <rich:column style="width: 10%"  styleClass="header">
+                                            <h:outputText value="ZipCode" />
+                                        </rich:column>
+                                        <rich:column style="width: 12%"  styleClass="header">
+                                            <h:outputText value="Registered On" />
+                                        </rich:column>
+                                        <rich:column style="width: 8%"  styleClass="header">
+                                            <h:outputText value="Videos Viewed" />
+                                        </rich:column>
+                                        <rich:column style="width: 8%"  styleClass="header">
+                                            <h:outputText value="Videos Voted" />
+                                        </rich:column>
+                                        <rich:column style="width: 9%"  styleClass="header">
+                                            <h:outputText value="Questions" />
+                                        </rich:column>
+                                    </rich:columnGroup>
+                                </f:facet>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{report.firstName} #{report.lastName}"/><br/><br/>
+                                    <h:outputLabel rendered="#{report.phoneNo != null}" >
+                                        <h:outputText value="#{report.phoneNo}" /><br/><br/>
+                                    </h:outputLabel>
+                                    <h:outputLabel rendered="#{report.email != ''}">
+                                        <h:outputText value="#{report.email}" /><br/><br/>
+                                    </h:outputLabel>
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{report.source == null || report.source == '' ? 'N/A' : report.source}"/>
+<!--                                    <h:outputText value="Google" rendered="{report.source eq 'GO'}" />
+                                    <h:outputText value="Bing" rendered="{report.source eq 'BI'}" />
+                                    <h:outputText value="Yahoo" rendered="{report.source eq 'YA'}" />
+                                    <h:outputText value="PBer" rendered="#report.source eq 'ME'}" />
+                                    <h:outputText value="Friend/Word of mouth" rendered="{report.source eq 'FW'}" />
+                                    <h:outputText value="Yelp" rendered="{report.source eq 'YE'}" />
+                                    <h:outputText value="Newspaper" rendered="{report.source eq 'NE'}" />
+                                    <h:outputText value="Facebook" rendered="{report.source eq 'FB'}" />
+                                    <h:outputText value="Twitter" rendered="{report.source eq 'TW'}" />
+                                    <h:outputText value="N/A" rendered="{report.source eq null}"/>-->
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{report.state == null ? 'N/A' : report.state}"/>
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{report.city == null ? 'N/A' : report.city}" />
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{report.zipCode == null ? 'N/A' : report.zipCode}"/>
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{report.createdOn == null ? 'N/A' : report.createdOn}">
+                                        <f:convertDateTime type="date" pattern="MM/dd/yyyy" timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                    </h:outputText>
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{report.views  == null ? '0' : report.views}"/>
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{report.likes  == null ? '0' : report.likes}"/>
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{report.totalQuestions  == null ? '0' : report.totalQuestions}"/>
+                                </rich:column>
+                            </rich:dataTable>
+                        </a4j:outputPanel>
+                    </div>
+
+
+                </h:form>
+            </div>
+            <script type="text/javascript">
+                getDatePickerForRangeForFuture('subscriptionFromDate','subscriptionToDate');
+                    
+                $(window).load(function() {
+                    jsf.ajax.addOnEvent(function (data) {
+                           
+                        if (data.status === "success") {
+                            sorting();
+                        }
+                    })
+                });
+                   
+                function sorting(){
+                    $('#reportDataList').dataTable( {
+                        "aoColumns": [
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            { "sType": "eu_date" },
+                            null,
+                            null,
+                            null
+                        ],
+                        "bJQueryUI": false,
+                        "sPaginationType": "full_numbers",
+                        "bRetrieve" : true,
+
+                        "bFilter": true,
+                        "bInfo": false,
+                        "bAutoWidth": false 
+                    } );
+                }
+                
+                
+            </script>
+        </ui:define>
+    </ui:composition>
+</html>
+

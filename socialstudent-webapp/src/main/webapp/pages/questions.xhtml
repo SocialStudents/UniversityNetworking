@@ -1,0 +1,291 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <h:body>       
+        <ui:composition template="./layout/homeLayout.xhtml">
+            <ui:define name="content">
+                <f:event listener="#{questionServiceBean.retrieveQuestionsByCategory()}" type="preRenderView"/>
+                <h:form prependId="false">
+                    <div id="left" style="margin-top:80PX;">
+                        <h6>CATEGORIES
+                        </h6><hr class="red" />
+                        <h:outputLabel id="menuPanel">
+                            <ul id="subnav" style="margin:0PX;">
+                                <a4j:commandLink action="videos?faces-redirect=true" onclick="loadWaitPanel('content');">
+                                    <li id="All">
+                                        ALL
+                                    </li>
+                                    <f:setPropertyActionListener target="#{systemResultSessionUtil.categorySelected}" value="ALL"/>
+                                    <f:setPropertyActionListener target="#{systemResultSessionUtil.videoCategoryName}" value="All"/>
+                                </a4j:commandLink>
+                                <a4j:commandLink action="videos?faces-redirect=true" onclick="loadWaitPanel('content');">
+                                    <li id="NEW">
+                                        NEW
+                                    </li>
+                                    <f:setPropertyActionListener target="#{systemResultSessionUtil.categorySelected}" value="NEW"/>
+                                    <f:setPropertyActionListener target="#{systemResultSessionUtil.videoCategoryName}" value="NEW"/>
+                                </a4j:commandLink>
+                                <ui:repeat var="videoCategories" value="#{videoServiceBean.retrieveVideoCategories()}" rendered="#{videoServiceBean.retrieveVideoCategories()!=null}">
+                                    <h:commandLink immediate="true" style="width: 100%" action="videos?faces-redirect=true" onclick="loadWaitPanel('content');">
+                                        <li id="#{videoCategories.label}">
+                                            #{videoCategories.label.toUpperCase()}
+                                        </li>
+                                        <f:setPropertyActionListener target="#{systemResultSessionUtil.categorySelected}" value="#{videoCategories.value}"/>
+                                        <f:setPropertyActionListener target="#{systemResultSessionUtil.videoCategoryName}" value="#{videoCategories.label}"/>
+                                    </h:commandLink>
+                                </ui:repeat>
+                                <a4j:commandLink action="questions">
+                                    <li id="QUESTIONS">
+                                        QUESTIONS
+                                        <h:outputLabel id="questionsCounter">
+                                            <h:outputText value="(#{videoForumServiceBean.questionCountAnswered})" rendered="#{videoForumServiceBean.questionCountAnswered ne '0' }"/>
+                                        </h:outputLabel>
+                                    </li>
+                                </a4j:commandLink>
+                                <a4j:commandLink action="#{videoServiceBean.navigateToPlaylists()}">
+                                    <li id="PLAYLISTS">
+                                        PLAYLISTS
+                                    </li>
+                                </a4j:commandLink>
+                                <a4j:commandLink action="videos?faces-redirect=true" onclick="loadWaitPanel('content');">
+                                    <li id="FAVOURITES">
+                                        FAVOURITES
+                                    </li>
+                                    <f:setPropertyActionListener target="#{systemResultSessionUtil.videoCategoryName}" value="FAVOURITES"/>
+                                    <f:setPropertyActionListener target="#{systemResultSessionUtil.categorySelected}" value="FAVOURITES"/>
+                                </a4j:commandLink>
+
+                            </ul>
+
+                        </h:outputLabel>
+                    </div>
+
+                    <div id="right">
+                        <h3 ><img src="#{facesContext.externalContext.requestContextPath}/images/video-icon.jpg" alt="video" width="43" height="32" />PB Video Gallery</h3>
+                        <div id="search-panel"> 
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tbody>
+                                    <tr>
+                                        <td width="11%">
+                                            <a4j:commandLink title="Ask a Question" oncomplete="#{rich:component('addQuestion')}.show();" render="manageinq">
+                                                <img src="#{facesContext.externalContext.requestContextPath}/images/new-button.jpg"/>
+                                            </a4j:commandLink>                                                  
+                                        </td>
+                                        <td width="27%">
+                                            <h:selectOneMenu id="selectSearchCriteria" style="width: 190px;height: 30px" value="#{systemResultViewUtil.questionCategory}"  styleClass="medium">
+                                                <f:selectItem itemLabel="Answered" itemValue="a"/>
+                                                <f:selectItem itemLabel="Pending" itemValue="p"/>
+                                                <a4j:ajax event="change" render="questionPanel" listener="#{questionServiceBean.retrieveQuestionsByCategory()}"/>
+                                            </h:selectOneMenu>
+                                        </td>
+                                        <td width="13%" style="vertical-align: middle;">
+                                            <h:selectBooleanCheckbox value="#{systemResultViewUtil.isShowInActiveData}" >
+                                                <a4j:ajax listener="#{questionServiceBean.retrieveQuestionsByCategory()}" render="questionPanel" />
+                                            </h:selectBooleanCheckbox>
+                                            <strong>Show All</strong>
+                                        </td>
+                                        <td width="36%"><div id="search-box-bg">
+                                                <h:inputText title="Search Here" value="#{systemResultViewUtil.searchString}" id="searchString" maxlength="50" class="search-txt-box" >
+                                                </h:inputText>               
+                                            </div></td>
+                                        <td width="13%" style="vertical-align: middle;"> &#160;                                               
+                                            <a4j:commandButton value="Search"  action="#{questionServiceBean.retrieveQuestionsByCategory()}" styleClass="standard-button"  onclick="loadWaitPanel('content');" oncomplete="stopWaitPanel('content');" render="questionPanel"  title="Search Question" status="status" />                             
+                                        </td>
+                                    </tr>
+                                </tbody></table>
+                        </div>                   
+                        <hr class="red" />
+                        <div class="content" style="margin-top:20px;">
+                            <div id="content">
+                                <!--                            New code-->
+                                <h:outputLabel id="questionPanel">  
+                                    <!-- message page included-->
+                                    <ui:include src="./common/message.xhtml" /> 
+
+                                    <rich:dataTable  id="videoDataList" rowKeyVar="rowId" rows="10" rendered="#{systemResultViewUtil.questionDataBeanList!=null and not empty systemResultViewUtil.questionDataBeanList}"
+                                                     var="question" value="#{systemResultViewUtil.questionDataBeanList}" styleClass="meal-plan" style="width: 100%" rowClass="#{rowId%2 == 0 ? 'alt-row1':'alt-row'}" >
+
+                                        <f:facet name="header">
+                                            <rich:columnGroup>
+                                                <rich:column style="width: 44%" styleClass="header">
+                                                    <h:outputText value="Question"/>
+                                                </rich:column>
+                                                <rich:column style="width: 14%" styleClass="header">
+                                                    <h:outputText value="Question Status"/>
+                                                </rich:column>
+                                                <rich:column rendered="#{systemResultViewUtil.questionCategory=='a'}" style="width: 14%" styleClass="header">
+                                                    <h:outputText value="View Answer"/>
+                                                </rich:column>                                        
+                                                <rich:column style="width: 10%"  styleClass="header">
+                                                    <h:outputText value="Asked On" />
+                                                </rich:column>
+                                                <rich:column rendered="#{systemResultViewUtil.questionCategory=='p'}" style="width: 10%; text-align: center;"  styleClass="header">
+                                                    <h:outputText value="Action" />
+                                                </rich:column>
+                                            </rich:columnGroup>
+                                        </f:facet>           
+
+                                        <rich:column style="vertical-align: top;background-color: #{question.isNotReaded?'#fcdada':''};border-color: #{question.isNotReaded?'#d46254':''}">
+                                            <h:outputText value="#{question.question}" style="width: 200px"/>
+                                        </rich:column>
+                                        <rich:column  rendered="#{systemResultViewUtil.questionCategory=='a'}" style="vertical-align: top;background-color: #{question.isNotReaded?'#fcdada':''};border-color: #{question.isNotReaded?'#d46254':''}">
+                                            <h:outputText rendered="#{question.questionStatus=='p'?false:true}" value="Answered"/>                                 
+                                        </rich:column>
+                                        <rich:column style="vertical-align: top;background-color: #{question.isNotReaded?'#fcdada':''};border-color: #{question.isNotReaded?'#d46254':''};text-align: center">
+                                            <h:outputText rendered="#{question.questionStatus=='p'}" value="Pending"/>                                 
+                                            <a4j:commandLink rendered="#{question.questionStatus=='p'?false:true}" action="#{questionServiceBean.loadVideoFile()}" oncomplete="#{rich:component('playVideo')}.show();stopWaitPanel('content');" render="playVideoPanel,manageinq">
+                                                <h:graphicImage value="/images/view-video.png" style="border: none;"/>
+                                                <f:setPropertyActionListener target="#{systemResultViewUtil.videoId}" value="#{question.videoId}"/>
+                                                <f:setPropertyActionListener target="#{systemResultViewUtil.id}" value="#{question.id}"/>
+                                            </a4j:commandLink>
+                                        </rich:column>
+                                        <rich:column style="vertical-align: top;background-color: #{question.isNotReaded?'#fcdada':''};border-color: #{question.isNotReaded?'#d46254':''}">
+                                            <h:outputText value="#{question.questionDate}">                            
+                                                <f:convertDateTime type="date" pattern="MM/dd/yyyy" />
+                                            </h:outputText>
+                                        </rich:column>
+                                        <rich:column rendered="#{systemResultViewUtil.questionCategory=='p'}" style="vertical-align: top;text-align: center;background-color: #{question.isNotReaded?'#fcdada':''};border-color: #{question.isNotReaded?'#d46254':''}">
+                                            <h:outputLabel id="statusPanel">
+                                                <a4j:commandLink title="#{question.isActive ? 'Click here to Deactivate':'Click here to Activate'}" onclick="loadWaitPanel('content');" action="#{questionServiceBean.updateQuestion()}" rendered="#{question.isActive != null}" render="questionPanel" oncomplete="stopWaitPanel('content');">
+                                                    <h:graphicImage value="#{question.isActive ?'/images/activate.png' :'/images/deactivate.png'}" style="border: none;" />
+                                                    <f:setPropertyActionListener target="#{questionServiceBean.questionDataBean.id}" value="#{question.id}"/>
+                                                    <f:setPropertyActionListener target="#{questionServiceBean.questionDataBean.isActive}" value="#{not question.isActive}"/>
+                                                </a4j:commandLink>
+                                            </h:outputLabel>
+                                        </rich:column>
+                                    </rich:dataTable>
+                                </h:outputLabel>
+                            </div><!--content ends here -->
+                        </div> 
+                    </div>
+                    <script type="text/javascript">
+                        document.getElementById('QUESTIONS').setAttribute("class", "active");
+                    </script>
+                </h:form>
+
+
+                <rich:popupPanel id="addQuestion" autosized="true">
+                    <div style="width: 510px">
+                        <h:form prependId="false">
+                            <a4j:outputPanel id="manageinq">
+
+                                <h6>
+                                    <table width="100%">
+                                        <tr>
+                                            <td width="90%">
+                                                Do you have a question about any exercise or health?<br/>Ask us and we will get back to you..
+                                            </td>
+                                            <td width="5%" valign="top">
+                                                <a4j:commandLink style="float: right" render="questionPanel" onclick="#{rich:component('addQuestion')}.hide();">
+                                                    <img src="#{facesContext.externalContext.requestContextPath}/images/close-btn.jpg" alt="close" title="Close" align="texttop"/>
+                                                </a4j:commandLink>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </h6>
+                                <hr class="red"/>
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" >
+                                    <tr>
+                                        <td width="30%"></td>
+                                        <td width="55%"></td>
+                                        <td width="15%"></td>
+                                    </tr> 
+                                    <tr>                                        
+                                        <td colspan="3">
+                                            <h:inputTextarea onfocus="counterForTextArea('questionInput','iDescriptionCounter',255)" onkeyup="counterForTextArea('questionInput','iDescriptionCounter',255)" required="true" requiredMessage="Enter question" style="width: 99%; vertical-align: top" id="questionInput" value="#{questionDataBean.question}"  styleClass="medium">
+                                                <f:ajax event="blur" render="questionInputMessage"/>
+                                            </h:inputTextarea>
+                                            <div style="text-align:left" ><i><h:outputText value="(You can type" style="color: grey;"/> &#160;<h:outputText id="iDescriptionCounter"  value="255" style="color: grey;"/> &#160;<h:outputText value="more characters)" style="color: grey;"/></i></div>
+                                            <rich:message id="questionInputMessage" for="questionInput"/>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <hr class="red"/>
+                                <div align="center" style="width: 100%;">
+                                    <a4j:commandButton value="Submit" action="#{questionServiceBean.createQuestion()}" styleClass="standard-button" render="questionPanel" oncomplete="if(#{messageDataBean.isSuccess != null and messageDataBean.isSuccess}) {#{rich:component('addQuestion')}.hide();};" />
+                                </div>
+                            </a4j:outputPanel>
+
+                        </h:form>
+                    </div>
+                </rich:popupPanel>
+
+
+                <rich:popupPanel id="playVideo" onbeforeshow="showPlayer();" minHeight="490" minWidth="580">
+                    <h:form prependId="false">
+                        <a4j:outputPanel id="playVideoPanel">
+                            <div class="login-header">
+                                <h:outputText value="#{systemResultViewUtil.fileName}" style="color: white"/>
+                                <a4j:commandLink action="#{questionServiceBean.markAnswerAsReaded()}" oncomplete="#{rich:component('playVideo')}.hide()" style="float: right" render="questionPanel,questionsCounter" >
+                                    <img src="#{facesContext.externalContext.requestContextPath}/images/close-btn.jpg" alt="close" title="Close" align="texttop"/>
+                                </a4j:commandLink>
+                            </div>
+
+                            <div id="video"/>
+                            <script>
+                                function showPlayer()
+                                {
+                                    $('#video').jwPlayer({
+                                        swf: '#{facesContext.externalContext.requestContextPath}/videos/player.swf',
+                                        file: '#{facesContext.externalContext.requestContextPath}/videos/#{systemResultViewUtil.filePath}',
+                                        height: 400,
+                                        width: 575
+                                    });
+                                }
+                                //                        $('input[title!=""]').hint();
+                        
+                            </script>
+                            <!--Feeds Section Starts-->
+                            <h:outputLabel id="feedsPanel">
+                                <div id="feeds">
+                                    <br/>
+                                    <table border="0" cellspacing="0" cellpadding="0" style="margin-left: 70px">
+                                        <tbody>
+                                            <tr>
+                                                <td>   
+                                                    <h:graphicImage rendered="#{systemResultViewUtil.voteFlag}" value="/images/like.png" style="width: 20px;height: 20px"/>
+                                                    &#160;
+                                                </td>
+                                                <td width="150px">
+                                                    <a4j:commandLink rendered="#{systemResultViewUtil.voteFlag}" value="Vote this video" style="color: #c11b1d;" title="Click to vote Video" action="#{videoServiceBean.addVideoVote()}" render="feedsPanel" execute="@this">                                        
+                                                    </a4j:commandLink>   
+                                                    <h:outputText value="Your vote has been registered" rendered="#{!systemResultViewUtil.voteFlag}" style="color: #c11b1d;"/>
+                                                </td>
+                                                <td>
+                                                    <h:graphicImage rendered="#{systemResultViewUtil.favouriteFlag}" value="/images/favourite.png" style="width: 20px;height: 20px"/>
+                                                    &#160;
+                                                </td>
+                                                <td width="150px">
+                                                    <a4j:commandLink rendered="#{systemResultViewUtil.favouriteFlag}" value="Mark as favourite" style="color: #c11b1d;" title="Click to vote Video" action="#{videoServiceBean.addVideoToFavourite()}" render="feedsPanel" execute="@this">                                        
+                                                    </a4j:commandLink>   
+                                                    <h:outputText value="Added to your Favorites" rendered="#{!systemResultViewUtil.favouriteFlag}" style="color: #c11b1d;"/>
+                                                </td>
+                                                <td>
+                                                    <h:graphicImage rendered="#{systemResultViewUtil.playlistFlag}" value="/images/add.png" style="width: 20px;height: 20px"/>
+                                                    &#160;
+                                                </td>
+                                                <td>
+                                                    <a4j:commandLink rendered="#{systemResultViewUtil.playlistFlag}" value="Add to playlist" style="color: #c11b1d;" title="Click to vote Video" action="#{videoServiceBean.addVideoToPlaylist()}" render="feedsPanel" execute="@this">                                        
+                                                    </a4j:commandLink>   
+                                                    <h:outputText value="Added to Playlist" rendered="#{!systemResultViewUtil.playlistFlag}" style="color: #c11b1d;"/>
+                                                </td>
+                                                <td width="11%" style="vertical-align: middle;"> &#160;                                               
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </h:outputLabel>
+                        </a4j:outputPanel>
+                    </h:form>
+                </rich:popupPanel>
+
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

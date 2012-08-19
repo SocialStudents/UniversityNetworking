@@ -1,0 +1,102 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+
+    <body>
+        <ui:composition template="./../layout/adminLayout.xhtml">
+            <ui:define name="content">
+                <script type="text/javascript">
+                    if(document.getElementById("trainerRoster") != null) {
+                        document.getElementById("trainerRoster").setAttribute("class", "active");
+                    } else {
+                        location.href ="#{loginDataBean.lendingPage}";
+                    }                    
+                </script>
+                <h3>Session Details</h3>
+                <hr class="red"/>
+                <div id="content">
+                    <f:metadata>
+                        <f:event type="preRenderComponent" listener="#{schedulerServiceBean.otherSessionBookedMembers()}" />
+                    </f:metadata>
+                    <h:form prependId="false">
+                        <ui:include src="../common/message.xhtml" />
+                        <a4j:outputPanel id="mainPanel" >
+                            <h:panelGroup id="session">
+                                <table class="form-table" >
+                                    <tr>
+                                        <td style="font-weight: bold">On&nbsp; <h:outputLabel value="#{schedulerServiceBean.currentDate}">
+                                                <f:convertDateTime pattern="MM/dd/yyyy" />
+                                            </h:outputLabel> </td>
+                                        <td style="font-weight: bold">At&nbsp; <h:outputLabel value="#{schedulerServiceBean.currentTime}"/></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="font-weight: bold">In this session</td>
+                                        <td style="font-weight: bold">Attendance&nbsp; <h:outputLabel value="#{schedulerServiceBean.currentAttendance}"/></td>
+                                    </tr>
+                                </table>
+                            </h:panelGroup>
+                            <rich:dataTable id="checkedIn" value="#{systemResultViewUtil.otherSessionBookedList}" var="checkedIn"  rowKeyVar="rowCnt" styleClass="meal-plan" style="width: 100%" rendered="#{systemResultViewUtil.otherSessionBookedList != null and not empty systemResultViewUtil.otherSessionBookedList}">
+                                <f:facet name="header">
+                                    <rich:columnGroup>
+                                        <rich:column styleClass="header" >
+                                            <h:outputText value="Name"/>
+                                        </rich:column>
+                                        <rich:column styleClass="header">
+                                            <h:outputText value="Status"/>
+                                        </rich:column>
+                                        <rich:column styleClass="header">
+                                            <h:outputText value="Session Left"/>
+                                        </rich:column>
+                                        <rich:column styleClass="header">
+                                            <h:outputText value="Alerts"/>
+                                        </rich:column>
+                                    </rich:columnGroup>
+                                </f:facet>
+                                <rich:column>
+                                    <h:outputLabel value="#{checkedIn.memberFirstName}  #{checkedIn.memberLastName}" />
+                                </rich:column>
+                                <rich:column>
+                                    <a4j:outputPanel rendered="#{not systemResultViewUtil.isSessionActive}">
+                                        <h:outputLabel value="Attended" rendered="#{checkedIn.status == 'a'}"/>
+                                        <h:outputLabel value="Booked" rendered="#{checkedIn.status == 'b'}"/>
+                                        <h:outputLabel value="Skipped" rendered="#{checkedIn.status == 's'}"/>
+                                    </a4j:outputPanel>
+                                    <a4j:outputPanel rendered="#{systemResultViewUtil.isSessionActive}">
+                                        <a4j:commandButton action="#{schedulerServiceBean.checkedInMember}" value="Check In" rendered="#{checkedIn.status == 'b' or checkedIn.status == 's'}" onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content')" styleClass="standard-button" render="mainPanel" >
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedUser}" value="#{checkedIn.memberId}"/>
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedDate}" value="#{checkedIn.onDate}"/>
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedSlot}" value="#{checkedIn.slotId}"/>
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.subscriptionId}" value="#{checkedIn.subscriptionId}"/>
+                                        </a4j:commandButton>
+                                        <a4j:commandButton action="#{schedulerServiceBean.checkedOutMember}" value="Undo" rendered="#{checkedIn.status == 'a'}" onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content')" styleClass="standard-button" render="mainPanel">
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedUser}" value="#{checkedIn.memberId}"/>
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedDate}" value="#{checkedIn.onDate}"/>
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.selectedSlot}" value="#{checkedIn.slotId}"/>
+                                            <f:setPropertyActionListener target="#{schedulerServiceBean.subscriptionId}" value="#{checkedIn.subscriptionId}"/>
+                                        </a4j:commandButton>
+                                    </a4j:outputPanel>
+                                </rich:column>
+                                <rich:column>
+                                    <h:outputLabel value="#{checkedIn.sessionLeft}" />
+                                </rich:column>
+                                <rich:column>
+                                    <h:outputLabel value="New " rendered="#{checkedIn.isNew}" style="color: green"/>
+                                    <h:outputLabel style="color: red" value="#{checkedIn.injury} "/>
+                                    <h:outputLabel value="#{checkedIn.payment}" rendered="#{checkedIn.payment gt 0}" ><f:convertNumber type="currency" currencySymbol="$" /></h:outputLabel>
+                                    <h:outputLabel></h:outputLabel>
+                                    <h:graphicImage url="#{facesContext.externalContext.requestContextPath}/images/measuring-tape.png" rendered="#{checkedIn.measurement}"/>
+                                    <h:outputLabel style="color: red" value=" RN" rendered="#{checkedIn.sessionLeft le checkedIn.renewalAlert}"/>
+                                </rich:column>
+                            </rich:dataTable>
+                        </a4j:outputPanel>
+                    </h:form>
+                </div>               
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

@@ -1,0 +1,172 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+    <h:body>
+
+        <ui:composition template="../layout/adminLayout.xhtml">
+            <ui:define name="content">
+                <script type="text/javascript">
+                    if(document.getElementById("manageVideo") != null) {
+                        document.getElementById("manageVideo").setAttribute("class", "active");
+                    } else {
+                        location.href ="#{loginDataBean.lendingPage}";
+                    }                    
+                </script>
+                <link href="#{facesContext.externalContext.requestContextPath}/css/jquery.multiselect.css" rel="stylesheet" type="text/css" />
+                <script src="#{facesContext.externalContext.requestContextPath}/scripts/jquery/jquery.multiselect.min.js" type="text/javascript"></script>
+                <h:form prependId="false">
+                    <f:event listener="#{videoServiceBean.retrieveVideos()}" type="preRenderComponent"/>
+                    <h3>Manage Videos</h3>
+                    <hr class="red"/>
+                    <div class="content" >
+                        <div id="search-panel"> 
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                <tbody>
+                                    <tr>
+                                        <td width="25%">                                               
+                                            <h:commandLink title="Create Video" onclick="loadWaitPanel('content');" immediate="true" action="#{videoServiceBean.navigateToAddVideo()}"> 
+                                                <img src="#{facesContext.externalContext.requestContextPath}/images/new-button.jpg"/>
+                                            </h:commandLink>                                                
+                                        </td>
+                                        <td width="35%" style="vertical-align: middle;">
+                                            <h:selectManyMenu id="iSelectCategorySearch" value="#{videoServiceBean.videoDataBean.selectedCategoryList}"  styleClass="medium">
+                                                <f:selectItems value="#{videoServiceBean.retrieveVideoCategories()}"/>
+                                            </h:selectManyMenu>
+                                        </td>
+                                        <td width="30%"><div id="search-box-bg">
+                                                <h:inputText value="#{systemResultViewUtil.searchString}" id="searchString" maxlength="50" class="search-txt-box" />                                                
+                                            </div></td>
+                                        <td width="10%" style="vertical-align: middle;">                                              
+                                            <a4j:commandButton id="search" value="Search"  action="#{videoServiceBean.retrieveVideos()}" styleClass="standard-button"  onclick="loadWaitPanel('content');" oncomplete="stopWaitPanel('content');" render="videoCategoryListPanel, dataMessage"  title="Search Video" status="status" />                                                 
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right" colspan="4">
+                                            <h:outputText value="(Click on the name to edit a video)" styleClass="infomessages"/>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="left" colspan="4">
+                                            <h:selectBooleanCheckbox value="#{systemResultViewUtil.isShowInActiveData}" >
+                                                <a4j:ajax listener="#{videoServiceBean.retrieveVideos()}" render="videoCategoryListPanel" />
+                                            </h:selectBooleanCheckbox>
+                                            <strong>Show All</strong>&#160;
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>                   
+                        <div class="content" id="content" style="min-height: 500px">
+
+                            <a4j:outputPanel id="videoCategoryListPanel">
+
+                                <ui:include src="../common/message.xhtml" /> 
+                                <rich:dataGrid  id="videoCategoryDataList" columns="2" rowKeyVar="rowId" rows="10" rendered="#{systemResultViewUtil.videoDataBeanList!=null and not empty systemResultViewUtil.videoDataBeanList}"
+                                                var="video" value="#{systemResultViewUtil.videoDataBeanList}" style="width: 100%;" >
+
+                                    <table width="350px" border="0" cellpadding="0" cellspacing="0" class="form-table">
+                                        <tbody>
+                                            <tr>
+                                                <td width="40%">
+
+                                                    <a4j:commandLink title="Click to watch Video" action="#{videoServiceBean.loadVideoFile()}" onclick="loadWaitPanel('content');" oncomplete="#{rich:component('playVideo')}.show();" render="manageinq,playVideo" execute="@this">                                        
+                                                        <a4j:mediaOutput id="u7_img" style="float: left;border:none; width: 170px; height: 130px" value="#{video.imagePath}" element="img" createContent="#{systemResultSessionUtil.drawImage}" mimeType="image/jpg"  styleClass="u7"/>
+                                                        <f:setPropertyActionListener target="#{systemResultViewUtil.videoId}" value="#{video.id}"/>
+                                                        <f:setPropertyActionListener target="#{systemResultViewUtil.filePath}" value="#{video.path}"/>
+                                                        <f:setPropertyActionListener target="#{systemResultViewUtil.fileName}" value="#{video.title}"/>
+                                                    </a4j:commandLink>
+                                                </td>
+                                                <td width="60%" class="video-txt">
+                                                    <span class="video-heading">
+                                                        <a4j:commandLink id="updateVideo" title="Click to edit" action="#{videoServiceBean.navigateToUpdateVideo()}" execute="@this" onclick="loadWaitPanel('content');">
+                                                            <h:outputText style="float: left;" value="#{video.videoTitleDisplay}" styleClass="video-heading"></h:outputText>
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.id}" value="#{video.id}"/>
+                                                            <f:setPropertyActionListener target="#{systemResultViewUtil.filePath}" value="#{video.path}"/>
+                                                        </a4j:commandLink>
+                                                    </span><br/>
+                                                    <div style="width: 150px">
+                                                        <h:outputText style="font-size: 12px" title="#{video.description}" value="#{video.descriptionView}"/>
+                                                    </div>
+                                                    <f:verbatim rendered="#{video.descriptionView.length() le 28}">
+                                                        <br/>
+                                                    </f:verbatim>
+                                                    <br/>
+                                                    <h:outputText title="#{video.userFullName}" style="float: left;font-size: 12px;" value="by #{video.lastModifiedByDisplay}" styleClass="video-txt"></h:outputText>
+                                                    <br/>
+
+                                                    <img style="margin-bottom: -5px;" src="#{facesContext.externalContext.requestContextPath}/images/like.png"/>
+                                                    <h:outputText style="font-size: 12px" id="videoVote" value="#{video.likes}">
+                                                        <f:convertNumber pattern="##,##,##,###"/>
+                                                    </h:outputText> &#160;|&#160;
+                                                    <h:outputText value="#{video.views}" styleClass="video-txt" style="font-size: 12px">
+                                                        <f:convertNumber pattern="##,##,##,###"/>
+                                                    </h:outputText>
+                                                    <h:outputText value=" views" styleClass="video-txt" style="font-size: 12px"></h:outputText>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <a4j:commandLink action="#{videoServiceBean.activateOrDeActivateVideo()}" onclick="loadWaitPanel('content');" oncomplete="stopWaitPanel('content');" render="videoCategoryListPanel,categorySelected,menuPanel" execute="@this">                                        
+                                                        <h:graphicImage style="vertical-align:middle" title="Click here to Deactivate" rendered="#{video.isActive}" value="#{facesContext.externalContext.requestContextPath}/images/deactivate.png" id="closeImage"/>
+                                                        <h:graphicImage style="vertical-align:middle" title="Click here to Activate" rendered="#{!video.isActive}" value="#{facesContext.externalContext.requestContextPath}/images/activate.png" />
+                                                        <h:outputText style="font-size: 12px;vertical-align: middle" title="#{video.isActive ?'Click here to Deactivate' :'Click here to Activate'}" value="#{video.isActive ?'Deactivate' :'Activate'}"/>
+                                                        <f:setPropertyActionListener target="#{systemResultViewUtil.videoId}" value="#{video.id}"/>
+                                                        <f:setPropertyActionListener target="#{videoDataBean.isActive}" value="#{video.isActive}"/>
+                                                    </a4j:commandLink>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>               
+                                    <f:facet name="footer" >                                    
+                                        <div align="center" style="width: 100%;">
+                                            <rich:dataScroller for="videoCategoryDataList" renderIfSinglePage="true" maxPages="10" fastStep="5"></rich:dataScroller>  
+                                        </div>                                    
+                                    </f:facet>
+                                </rich:dataGrid>
+
+                                <a4j:jsFunction name="clearData" action="#{videoServiceBean.retrieveVideo()}" render="videoCategoryListPanel"/>
+                            </a4j:outputPanel>
+                        </div>
+                    </div>
+                </h:form>
+                <h:form prependId="false">
+                    <rich:popupPanel id="playVideo" onbeforeshow="showPlayer();stopWaitPanel('content');" minHeight="445" minWidth="580">
+
+                        <div class="login-header">
+                            <h:outputText value="#{systemResultViewUtil.fileName}" style="color: white"/>
+
+                            <a4j:commandLink onclick="#{rich:component('playVideo')}.hide();" style="float: right" render="videoCategoryListPanel">
+                                <img src="#{facesContext.externalContext.requestContextPath}/images/close-btn.jpg" alt="close" title="Close" align="texttop"/>
+                            </a4j:commandLink>
+                        </div>
+                        <div id="video"/>
+                        <script>
+                            function showPlayer()
+                            {
+                                $('#video').jwPlayer({
+                                    swf: '#{facesContext.externalContext.requestContextPath}/videos/player.swf',
+                                    file: '#{facesContext.externalContext.requestContextPath}/videos/#{systemResultViewUtil.filePath}',
+                                    height: 400,
+                                    width: 575
+                                });
+                            }
+                        </script>
+                    </rich:popupPanel>
+                </h:form>
+
+                <script type="text/javascript">                                                        
+                    jQuery("[id$=iSelectCategorySearch]").multiselect({
+                        noneSelectedText: 'Search Video Category'
+                    });
+                </script>
+
+            </ui:define>
+
+        </ui:composition>
+    </h:body>
+</html>

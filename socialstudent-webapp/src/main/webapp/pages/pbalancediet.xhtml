@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html">
+    <h:body>       
+        <ui:composition template="./layout/homeLayout.xhtml">
+            <ui:define name="content">
+                <h:form>
+                    <div id="left">
+                        <ul id="subnav">                       
+                            <li class="active">Eating</li>                            
+                            <h:commandLink action="#{menuServiceBean.loginNavigate}">
+                                <li>PB Meal Plan</li>
+                                <f:param name="id" value="pbalancemealplan"/>
+                            </h:commandLink>
+                            <h:commandLink action="#{menuServiceBean.loginNavigate}">
+                                <li>PB Recipes</li>
+                                <f:param name="id" value="pbalanceRecipes"/>
+                            </h:commandLink>
+                        </ul>
+                        <div class="contact-bg">
+                            <h4>Questions?</h4>
+                            <h5>Just call and talk to us:</h5>
+                            (510) 668-0701<br/>
+                            <br/>
+                            <a href="/contact"><div id="emailus">&#160;</div></a>
+                        </div>
+                    </div>
+                    <div id="right">
+                        <h3 >The PB Eating Concept</h3>
+                        <div class="breadcrumbs">  <a href="/login">HOME</a> | THE PB EATING CONCEPT</div>
+                        <div><img src="#{facesContext.externalContext.requestContextPath}/images/pbeating.jpg" alt="The PB Eating Concept"/></div>
+                        <div class="content">
+
+                            <p>Perfect Balance builds its meal plans around two key fundamental concepts: a good balance of the elements you need and a reduction or elimination of the elements you don’t need. You have likely heard people, even nutritionists, say “Calories are calories. If you eat fewer calories than you burn, you will lose weight.” There is plenty of truth in this concept. However, we do know some calories give us a lot of value and others give us nothing. For example, the much maligned egg provides us with protein, polyunsaturated fats (which help to lower LDL [bad] cholesterol and raise HDL [good] cholesterol), folic acid, other B vitamins, and vitamin D while a teaspoon of sugar provides only calories and an insulin spike. There is no value to refined sugar. What it does offer is an unceasing cycle of hormonal spikes and crashes which stimulates, amongst other things, a craving for more sugar to re-capture the elation of the spike. Another thing we know is too much sugar can lead to the development of diabetes. Diabetes has become one of the most prevalent health dangers of our time. It is often a precursor and/or partner to high blood pressure, high cholesterol, and heart disease.</p><p> What we’ve found both through our research and continuing experimentation is that a balance of the right types of carbohydrates, proteins and fats is key to weight loss and a general feeling of well-being. Those who follow our program of fitness combined with well-balanced eating find they have more energy, are healthier, and feel more capable to handle the stresses of life than they were prior to joining Perfect Balance. We don’t really embrace the concept of “dieting” as we consider healthy eating a permanent part of our lifestyles. That said, those of our members who are seeking weight loss goals find themselves less hungry and satisfied longer which, in turn, aids them in staying the course and losing the weight they want.
+                            </p>
+                            <p>
+                                By having good control of water, oxygen and nutrition you can have a healthy and good-looking body. However, it might take you 5 years, 10 years, 20 years to meet your ideal goals. We at Perfect Balance use the addition of a fourth element “exercise” to speed up the process. We believe that our PB Specialist directed exercise program will shorten the time it would normally take for you to obtain your health, weight loss and fitness goals. In a way we call it “cheating”. By adding exercise to the three elements above we cheat the body and speed up the process because nobody wants to wait.</p>
+                            <p> <strong>The simplest things in life can get you and keep you healthy and in shape.</strong> We believe good control of water, oxygen, food and exercise in your daily life will do the job. The art is how you manage them properly. We at Perfect Balance will show you the right way to manage these elements to obtain your health goals and your dream body.</p>
+                            <!--content ends here -->
+                        </div>
+                        <!--right div ends here --> 
+                    </div>
+                </h:form>
+                <script type="text/javascript">
+                    document.getElementById("pbalancediet").setAttribute("class", "active")
+                </script>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

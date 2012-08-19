@@ -1,0 +1,111 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+    <h:body>
+        <ui:composition template="../layout/adminLayout.xhtml">
+            <ui:define name="content">
+                <script type="text/javascript">
+                    if(document.getElementById("manageRecipe") != null) {
+                        document.getElementById("manageRecipe").setAttribute("class", "active");
+                    } else {
+                        location.href ="#{loginDataBean.lendingPage}";
+                    }
+                </script>
+                <h:form prependId="false">
+                    <f:metadata>
+                        <f:event listener="#{recipeServiceBean.loadRecipes()}" type="preRenderView"/>
+                    </f:metadata>
+                    <h3>Manage Recipes</h3>
+                    <hr class="red"/>
+
+                    <div id="search-panel"> 
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                            <tbody>
+                                <tr>
+                                    <td width="39%">
+                                        <h:commandLink action="#{recipeServiceBean.navigateToCreateRecipe()}" title="Create Recipe">
+                                            <img src="#{facesContext.externalContext.requestContextPath}/images/new-button.jpg" alt="Create Recipe"/>
+                                        </h:commandLink>
+                                    </td>
+                                    <td width="14%" style="vertical-align: middle;">
+                                        <h:selectBooleanCheckbox value="#{systemResultViewUtil.isShowInActiveData}" >
+                                            <a4j:ajax listener="#{recipeServiceBean.loadRecipes()}" render="recipeListPanel,dataMessage"/>
+                                        </h:selectBooleanCheckbox>
+                                        <strong>Show All</strong></td>
+                                    <td width="35%"><div id="search-box-bg">
+                                            <h:inputText value="#{systemResultViewUtil.searchString}" id="searchString" maxlength="50" styleClass="search-txt-box"/>
+                                        </div></td>
+                                    <td width="12%" style="vertical-align: middle;"> &#160;
+                                        <a4j:commandButton value="Search"  action="#{recipeServiceBean.loadRecipes()}" onclick="loadWaitPanel('content');" oncomplete="stopWaitPanel('content');" render="recipeListPanel,recipeDataList, dataMessage" styleClass="standard-button"  title="Search Recipe" status="status" />
+                                    </td>
+                                </tr>
+                            </tbody></table>
+                    </div>
+
+                    <div class="content">
+                        <ui:include src="../common/message.xhtml" /> 
+                        <a4j:outputPanel id="recipeListPanel">
+                            <rich:dataTable  id="recipeDataList" rowKeyVar="rowId" rows="10" var="recipe" value="#{systemResultViewUtil.recipeDataBeanList}" styleClass="meal-plan" style="width: 100%" rendered="#{systemResultViewUtil.recipeDataBeanList !=null and not empty systemResultViewUtil.recipeDataBeanList}" rowClass="#{rowId%2 == 0 ? 'alt-row1':'alt-row'}" >
+                                <f:facet name="header">
+                                    <rich:columnGroup>
+                                        <rich:column style="width: 35%" styleClass="header">
+                                            <h:outputText value="Name"/>
+                                        </rich:column>
+                                        <rich:column style="width: 25%"  styleClass="header">
+                                            <h:outputText value="Category" />
+                                        </rich:column>
+                                        <rich:column style="width: 15%"  styleClass="header">
+                                            <h:outputText value="Created On"/>
+                                        </rich:column>                                       
+                                        <rich:column style="width: 10%; text-align: center;"  styleClass="header">
+                                            <h:outputText value="Status" />
+                                        </rich:column>
+                                    </rich:columnGroup>
+                                </f:facet>
+                                <rich:column style="vertical-align: top">
+                                    <h:commandLink title="Click here to view Recipe detail" value="#{recipe.name}" action="#{recipeServiceBean.navigateToParticularRecipe()}" onclick="loadWaitPanel('content');">
+                                        <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeId}" value="#{recipe.id}"/>
+                                    </h:commandLink>
+                                </rich:column>
+                                <rich:column style="vertical-align: top">
+                                    <a4j:commandLink title="Click here to sort according to Category" action="#{recipeServiceBean.loadRecipes()}" render="recipeListPanel,dataMessage" >
+                                        <h:outputText value="Vegetarian" rendered="#{recipe.category eq 'V'}" />
+                                        <h:outputText value="Non-Vegetarian" rendered="#{recipe.category eq 'NV'}"/>
+                                        <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="#{recipe.category}"/>
+                                    </a4j:commandLink>
+                                </rich:column>
+
+                                <rich:column style="vertical-align: top">
+                                    <h:outputText value="#{recipe.createdOn}">
+                                        <f:convertDateTime type="date" pattern="MM/dd/yyyy" timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                    </h:outputText>
+                                </rich:column>
+                                <rich:column style="text-align: center;vertical-align: top">
+                                    <h:outputLabel id="statusPanel">
+                                        <a4j:commandLink title="#{recipe.isActive ? 'Click here to Deactivate':'Click here to Activate'}" onclick="loadWaitPanel('content');" action="#{recipeServiceBean.deActiveRecipe()}" rendered="#{recipe.isActive != null }" render="recipeListPanel,dataMessage" oncomplete="stopWaitPanel('content');">
+                                            <h:graphicImage value="#{recipe.isActive ?'/images/activate.png' :'/images/deactivate.png'}" style="border: none;" />
+                                            <f:setPropertyActionListener target="#{recipeDataBean.id}" value="#{recipe.id}"/>
+                                            <f:setPropertyActionListener target="#{recipeDataBean.isActive}" value="#{not recipe.isActive}"/>
+                                        </a4j:commandLink>
+                                    </h:outputLabel>
+                                </rich:column>
+                                <f:facet name="footer" >
+                                    <div align="center" style="width: 100%;">
+                                        <rich:dataScroller for="recipeDataList" renderIfSinglePage="true" maxPages="10" fastStep="5"></rich:dataScroller>
+                                    </div>
+                                </f:facet>
+                            </rich:dataTable>
+                        </a4j:outputPanel>
+                    </div>
+
+                </h:form>               
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

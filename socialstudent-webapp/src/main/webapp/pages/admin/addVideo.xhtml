@@ -1,0 +1,240 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+    <h:body>
+
+        <ui:composition template="../layout/adminLayout.xhtml">
+            <ui:define name="content">
+                <script type="text/javascript">
+                    if(document.getElementById("manageVideo") != null) {
+                        document.getElementById("manageVideo").setAttribute("class", "active");
+                    } else {
+                        location.href ="#{loginDataBean.lendingPage}";
+                    }                       
+                    
+                    $(document).ready(
+                    function () {
+                        textboxHint("iLikes");
+                        textboxHint("iViews");
+                    });
+                    
+                    function applyHint() {
+                        textboxHint("iLikes");
+                        textboxHint("iViews");
+                    }
+                </script>
+                <f:metadata>
+                    <f:event type="preRenderView" listener="#{userServiceBean.clearFlashData()}"/>
+                </f:metadata>
+
+                <link href="#{facesContext.externalContext.requestContextPath}/css/jquery.multiselect.css" rel="stylesheet" type="text/css" />
+                <script src="#{facesContext.externalContext.requestContextPath}/scripts/jquery/jquery.multiselect.min.js" type="text/javascript"></script>
+                <h3>Add Video</h3>
+                <div align="right" style="margin-top: -23px"> <h:outputText value="(Fields marked with * are mandatory)" styleClass="infomessages"/></div>                 
+                <hr class="red"/>
+                <div class="content">
+                    <h:form prependId="false">
+                        <a4j:outputPanel id="manageinq" style="width: 100%">
+                            <script>
+                                applyCss();
+                            </script>
+                            <ui:include src="../common/message.xhtml" /> 
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" align="left" >
+                                <tr>
+                                    <td width="22%"></td>
+                                    <td width="25%"></td>
+                                    <td width="0%"></td>
+                                </tr> 
+                                <tr>
+                                    <th width="20%">Title<sup><font color="red">*</font></sup></th>
+                                    <td>
+                                        <h:inputText id="iCode" value="#{videoServiceBean.videoDataBean.title}" style="width: 330px" maxlength="50"  styleClass="medium">
+                                            <f:ajax event="blur" render="iCodeMessage"/>
+                                        </h:inputText>
+                                        <rich:message  id="iCodeMessage" for="iCode"/>
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th valign="top">Description</th>
+                                    <td><h:inputTextarea id="iDescription" onfocus="counterForTextArea('iDescription','iDescriptionCounter',255)" onkeyup="counterForTextArea('iDescription','iDescriptionCounter',255)" style="vertical-align: top"  value="#{videoServiceBean.videoDataBean.description}"  styleClass="medium"/>
+                                        <div style="text-align:left" ><i><h:outputText value="(You can type" style="color: grey"/> &#160;<h:outputText id="iDescriptionCounter"  value="255" style="color: grey;"/> &#160;<h:outputText value="more characters)" style="color: grey;"/></i></div>
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th>Select Category</th>
+                                    <td>
+                                        <h:selectManyMenu id="iSelectCategory" style="width: 330px" value="#{videoServiceBean.videoDataBean.selectedCategoryList}" styleClass="large">
+                                            <f:selectItems value="#{videoServiceBean.retrieveVideoCategories()}"/>
+                                        </h:selectManyMenu>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <th width="22%" valign="top">Choose Thumbnail<sup><font color="red">*</font></sup></th>
+                                    <td width="25%">
+                                        <a4j:commandButton id="stopPicBtn" styleClass="stopBtn" value="Stop" immediate="true"
+                                                           render="imageUploader" oncomplete="document.getElementById('stopPicBtn').style.display='none'" />
+                                        <rich:fileUpload title="Upload your Video's Image"
+                                                         onclear="document.getElementById('imageFileHiddenInput').value=''"
+                                                         onuploadcomplete="document.getElementById('stopPicBtn').style.display='none';document.getElementById('imageFileHiddenInput').value='done';uploadInProcess=0;switchView('imageUploader','imageOutput',0)"
+                                                         onfilesubmit="uploadInProcess=1;document.getElementById('stopPicBtn').style.display=''"
+                                                         maxFilesQuantity="1"
+                                                         addLabel="Video's Image" 
+                                                         style="height: 80px;width: 330px"
+                                                         fileUploadListener="#{fileUploadListener.imageUploadListener}"
+                                                         acceptedTypes="jpg, jpeg, bmp, png, gif"
+                                                         render="imageView,imageUploader"
+                                                         id="imageUploader"
+                                                         >
+                                        </rich:fileUpload>
+                                        <div id="uploadMsg" style="font-size:11px; width: 330px" align="right">
+                                            Recommend size for thumbnail is 1 MB
+                                            <br/>
+                                            Allowed types are JPG, PNG, GIF, BMP and JPEG only
+                                        </div>
+                                        <h:inputHidden id="imageFileHiddenInput" value="#{videoDataBean.imagePath}" required="true" requiredMessage="Upload image file.">
+                                        </h:inputHidden>
+                                        <a4j:outputPanel id="imageView">
+                                            <a4j:mediaOutput id="imageOutput" style="float: left;border:none; width: 170px; height: 120px;display: none" element="img" createContent="#{systemResultSessionUtil.drawImage}"  mimeType="image/jpeg" />
+                                            <img style="position: 'top';display: none" src="#{facesContext.externalContext.requestContextPath}/images/module-close.png" onclick="switchView('imageOutput','imageUploader',1);document.getElementById('imageFileHiddenInput').value=''" id="closeImage" />
+                                        </a4j:outputPanel>
+                                        <rich:message id="imageFileHiddenInputMessage" for="imageFileHiddenInput"/>
+                                    </td>
+                                </tr>
+                                <tr >
+                                    <th width="22%" valign="top">Choose Video<sup><font color="red">*</font></sup></th>
+                                    <td width="25%">
+                                        <a4j:commandButton id="stopBtn" styleClass="stopBtn" value="Stop" immediate="true"
+                                                           render="videoComp" oncomplete="document.getElementById('stopBtn').style.display='none'" />
+                                        <rich:fileUpload title="Upload your Video" onclear="document.getElementById('videoFileHiddenInput').value=''"
+                                                         onuploadcomplete="document.getElementById('videoFileHiddenInput').value='done';uploadInProcess=0;document.getElementById('stopBtn').style.display='none'"
+                                                         onfilesubmit="uploadInProcess=1;document.getElementById('stopBtn').style.display=''"
+                                                         addLabel="Video" maxFilesQuantity="1"
+                                                         style="height: 80px;width: 330px"
+                                                         fileUploadListener="#{fileUploadListener.videoUploadListener}"
+                                                         acceptedTypes="flv, mp4, mov"
+                                                         id="videoComp"
+                                                         >
+                                        </rich:fileUpload>
+                                        <div style="font-size:11px; width: 330px" align="right">
+                                            Maximum Upload File-Size is
+                                            <h:outputText style="font-size: 11px; text-align:right " value="#{initParam['org.richfaces.fileUpload.maxRequestSize']/(1024*1024)}">
+                                                <f:convertNumber  maxFractionDigits="0" />
+                                            </h:outputText> MB
+                                            <br/>
+                                            Allowed types are FLV, MP4, MOV only
+                                        </div>
+                                        <h:inputHidden id="videoFileHiddenInput" value="#{videoDataBean.path}" required="true" requiredMessage="Upload video file.">
+                                        </h:inputHidden>
+                                        <rich:message id="videoFileHiddenInputMessage" for="videoFileHiddenInput"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Start Seeding<sup><font color="red">*</font></sup></th>
+                                    <td>
+                                        <table border="0" width="100%" >
+                                            <tr id="hintArea">
+                                                <td valign="top">                                                   
+                                                    <h:inputText required="true" requiredMessage="Enter likes" id="iLikes" title="Likes" value="#{videoServiceBean.videoDataBean.likes}" style="width: 149px" maxlength="5"  styleClass="small">
+                                                        <f:ajax event="blur" render="iLikesMessage"/>
+                                                    </h:inputText><br/><rich:message id="iLikesMessage" for="iLikes" style="text-align: left"/>                                                  
+                                                </td>
+                                                <td valign="top" width="150px">                                                  
+                                                    <h:inputText required="true" requiredMessage="Enter views" id="iViews" title="Views" value="#{videoServiceBean.videoDataBean.views}" style="width: 149px" maxlength="5"  styleClass="small">
+                                                        <f:ajax event="blur" render="iViewsMessage"/>
+                                                    </h:inputText><br/> <rich:message id="iViewsMessage" for="iViews" style="margin-left: 10px;text-align: left"/>
+                                                </td>
+                                            </tr>                                          
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4">
+                                        <h:inputHidden value="#{videoCategoryServiceBean.videoCategoryDataBean.isActive}"/>
+                                        <hr class="red"/>
+                                        <div align="center" style="width: 100%;">
+                                            <a4j:commandButton value="Submit" onclick="clearBlurredData('hintArea');return checkForExistingUpload()" action="#{videoServiceBean.createVideo()}" styleClass="standard-button" oncomplete="applyHint()" />
+                                        </div>
+                                    </td>
+                                </tr>
+
+                            </table>
+
+                        </a4j:outputPanel>
+                    </h:form>
+
+                    <rich:popupPanel id="uploadInProgressPanel" height="145" minWidth="450" autosized="false">
+                        <div id="loadPanelDelSession">
+                            <div>
+                                <h6>Hold on
+                                    <img src="#{facesContext.externalContext.requestContextPath}/images/close-btn.jpg" style="float: right" onclick="#{rich:component('uploadInProgressPanel')}.hide();" />
+                                </h6>
+                                <hr class="red"/>
+                            </div>
+                            <table class="form-table">
+                                <tr>
+                                    <td>
+                                        <br/>
+                                        Please wait, the file is being uploaded.
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </rich:popupPanel>
+
+                    <script type="text/javascript">
+                        var uploadInProcess=0;
+                        function applyCss() {
+                            jQuery("#iSelectCategory").multiselect();
+                            jQuery("[id$=iLikes]").numeric();
+                            jQuery("[id$=iViews]").numeric();
+                            //                            $('input[title!=""]').hint();
+                        }
+                        
+                        function checkForExistingUpload()
+                        {
+                            if(uploadInProcess==1)
+                            {
+                        #{rich:component('uploadInProgressPanel')}.show();
+                                    return false;
+                                }
+                                else{
+                                    return true;
+                                }
+                            
+                            }
+                                        
+                            function switchView(idHide,idShow,flag)
+                            {
+                                document.getElementById(idHide).style.display ="none";
+                                document.getElementById(idShow).style.display ="block";
+                                document.getElementById('closeImage').style.display ="block";
+                                if(flag==1)
+                                {
+                                    document.getElementById('closeImage').style.display ="none";
+                                    document.getElementById('uploadMsg').style.display ="block";
+                                }
+                                else
+                                {
+                                    document.getElementById('uploadMsg').style.display ="none";
+                                    
+                                }
+                            }
+                    </script>
+
+                </div>
+                <script type="text/javascript">                                    
+                    document.getElementById('stopBtn').style.display='none';
+                    document.getElementById('stopPicBtn').style.display='none';                   
+                    applyCss();
+                </script>
+            </ui:define>
+
+        </ui:composition>
+    </h:body>
+</html>

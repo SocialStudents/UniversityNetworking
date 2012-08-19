@@ -1,0 +1,1203 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+
+    <body>
+
+        <ui:composition template="./../layout/adminLayout.xhtml">
+
+            <ui:define name="content">
+                <script type="text/javascript">
+                    if(document.getElementById("searchMember") != null) {
+                        document.getElementById("searchMember").setAttribute("class", "active");
+                    } else {
+                        location.href ="#{loginDataBean.lendingPage}";
+                    }                    
+                </script>
+                <f:metadata>
+                    <f:event type="preRenderView" listener="#{userServiceBean.retrieveMemberInfo()}"/>
+                </f:metadata>
+
+                <script type="text/javascript">
+                    $(document).ready(
+                    function() {
+                        textboxHint("basic");
+                    });
+                    
+                    $(function() {
+                        $( "#updateMember" ).tabs();
+                        var isUserActive = #{userDataBean.isActive};
+                        var preSelectedTab = '#{systemResultSessionUtil.recipeName}';
+                        if (!isUserActive) {
+                            preSelectedTab = "account";
+                        }
+                        if (!isUserActive || preSelectedTab != '') {
+                            preSelectedTab = '#'+preSelectedTab;
+                            $("#updateMember").tabs("select",preSelectedTab);
+                        }
+                    });
+        
+                </script>
+
+                <h3>Update PBer</h3>
+                <div align="right" style="margin-top: -23px"> <h:outputText value="(Fields marked with * are mandatory)" styleClass="infomessages"/></div>                 
+                <hr class="red" />
+                <ui:include src="../common/message.xhtml" />  
+
+                <div id="updateMember">
+                    <ul>
+                        <li><a href="#info">Info</a></li>
+                        <li><a href="#basic">General</a></li>
+                        <li><a href="#measurement">Measurement</a></li>
+                        <li><a href="#health">Medical Information</a></li>
+                        <li><a href="#travel">Travel</a></li>
+                        <li><a href="#account">Account</a></li>
+                    </ul>
+
+                    <div id="info">
+                        <br/>
+                        <a4j:outputPanel id="infoPanel">
+                            <table width="100%" border="0" cellpadding="0" cellspacing="0" class="form-table">
+                                <tr>
+                                    <th width="22%">
+                                        Name
+                                    </th>
+                                    <td width="30%">
+                                        <h:outputLabel value="#{userDataBean.firstName} #{userDataBean.lastName}" />
+                                    </td>
+                                    <th width="22%">&#160;</th>
+                                    <td width="30%">&#160;</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4">
+                                        <hr class="red"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        Package
+                                    </th>
+                                    <td>
+                                        <h:outputLabel value="#{userDataBean.subscriptionName == null ? 'N/A' : userDataBean.subscriptionName}" />
+                                    </td>
+                                    <th>
+                                        Remaining Sessions
+                                    </th>
+                                    <td>
+                                        <h:outputLabel value="#{userDataBean.remainingUnits} / #{userDataBean.totalUnits}" rendered="#{userDataBean.totalUnits > 0}" />                                        
+                                        <h:outputLabel value="N/A" rendered="#{userDataBean.totalUnits le -1}" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        Subscription Date
+                                    </th>
+                                    <td>
+                                        <h:outputLabel value="#{userDataBean.subscribedDate}" id="subscribeddate" rendered="#{userDataBean.subscribedDate != null}">
+                                            <f:convertDateTime pattern="MM/dd/yyyy" type="date" timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                        </h:outputLabel>
+                                        <h:outputLabel value="N/A" rendered="#{userDataBean.subscribedDate == null}" />
+                                    </td>
+                                    <th>
+                                        Registration Date
+                                    </th>
+                                    <td>
+                                        <h:outputLabel value="#{userDataBean.createdOn}" id="createddate" rendered="#{userDataBean.createdOn != null}">
+                                            <f:convertDateTime pattern="MM/dd/yyyy" type="date" timeZone="#{systemPropertyUtil.serverTimeZone}" />
+                                        </h:outputLabel>
+                                        <h:outputLabel value="N/A" rendered="#{userDataBean.createdOn == null}" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4">
+                                        <h:outputLabel rendered="#{userDataBean.injuries != null and userDataBean.injuries != ''}">
+                                            <hr class="red"/>
+                                        </h:outputLabel>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        <h:outputLabel value="Medical Conditions" rendered="#{userDataBean.injuries != null and userDataBean.injuries != ''}" />
+                                    </th>
+                                    <td colspan="3">
+                                        <h:outputLabel value="#{userDataBean.injuries == null ? 'N/A' : userDataBean.injuries}" id="injuries"
+                                                       rendered="#{userDataBean.injuries != null and userDataBean.injuries != ''}" />                                        
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4">
+                                        <h:outputLabel rendered="#{systemResultViewUtil.currentTravelDetailList != null}">
+                                            <hr class="red"/>
+                                        </h:outputLabel>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th valign="top;">
+                                        <h:outputLabel value="Travel" rendered="#{systemResultViewUtil.currentTravelDetailList != null}" />
+                                    </th>
+                                    <td colspan="3">
+                                        <h:dataTable id="currentTravel" var="travel" value="#{systemResultViewUtil.currentTravelDetailList}" rendered="#{systemResultViewUtil.currentTravelDetailList != null}">
+                                            <h:column>
+                                                <h:outputLabel value="#{travel.fromDate}">
+                                                    <f:convertDateTime pattern="MM/dd/yyyy" timeZone="#{systemPropertyUtil.serverTimeZone}" />
+                                                </h:outputLabel>
+                                                &#160;-&#160;
+                                                <h:outputLabel value="#{travel.toDate}">
+                                                    <f:convertDateTime pattern="MM/dd/yyyy" timeZone="#{systemPropertyUtil.serverTimeZone}" />
+                                                </h:outputLabel>
+                                                &#160;for&#160;
+                                                #{travel.description}
+                                            </h:column>
+                                        </h:dataTable>
+                                    </td>
+                                </tr>
+                            </table>
+                        </a4j:outputPanel>
+                    </div>
+
+                    <div id="basic">
+                        <h:form prependId="false">
+                            <table width="100%" border="0" cellpadding="0" cellspacing="0" class="form-table">
+                                <tr>
+                                    <th width="22%">&nbsp;</th>
+                                    <td width="30%"><h6>Personal Info</h6><hr class="red"/></td>
+                                    <th width="18%">&nbsp;</th>
+                                    <td width="30%"><h6>Contact Info</h6><hr class="red"/></td>
+                                </tr>
+                            </table>
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" align="center">
+                                <tr>
+                                    <th width="22%">Username</th>
+                                    <td width="30%">
+                                        <h:outputLabel value="#{userDataBean.custom1 != null and userDataBean.custom1 == 1 ? 'N/A' : userDataBean.userId}" id="UserId">
+                                        </h:outputLabel>
+                                    </td>
+                                    <th width="18%">Email address<sup><font color="red">*</font></sup></th>
+                                    <td width="30%">
+                                        <h:inputText tabindex="6" style="width: 100%;" styleClass="medium" value="#{userDataBean.email}" id="email" required="true" requiredMessage="Enter email address">
+                                            <f:ajax event="blur" render="emailMsg" />
+                                        </h:inputText>
+                                        <br/>
+                                        <rich:message for="email" style="color: red" id="emailMsg" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Name</th>
+                                    <td>
+                                        <h:outputLabel value="#{userDataBean.firstName} #{userDataBean.lastName}" id="name">
+                                        </h:outputLabel>
+                                    </td>
+                                    <th>Cell phone</th>
+                                    <td>
+                                        <h:inputText tabindex="7" style="width: 100%;" styleClass="medium" value="#{userDataBean.phoneNo}" maxlength="12" id="phone" onkeyup="formatContact(event, 'phone');" onkeypress="var keycode; if (window.event) { keycode = window.event.keyCode;}else {return true;} if (keycode == 13) {return false;}else {return true;}">
+                                            <f:ajax event="blur" render="phoneMsg" />
+                                        </h:inputText>
+                                        <br/>
+                                        <rich:message for="phone" style="color: red" id="phoneMsg" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Age</th>
+                                    <td>
+                                        <h:outputLabel value="#{userDataBean.age}" id="age">
+                                        </h:outputLabel>
+                                    </td>
+                                    <th>Home phone</th>
+                                    <td >
+                                        <h:inputText tabindex="8" style="width: 100%;" styleClass="medium" value="#{userDataBean.alternatePhoneNo}" maxlength="12" id="hphone" onkeyup="formatContact(event, 'hphone');" onkeypress="var keycode; if (window.event) { keycode = window.event.keyCode;}else {return true;} if (keycode == 13) {return false;}else {return true;}">
+                                            <f:ajax event="blur" render="hphoneMsg" />
+                                        </h:inputText>                                  
+                                        <br/>
+                                        <h:message for="hphone" style="color: red" id="hphoneMsg" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Gender</th>
+                                    <td>
+                                        <h:outputLabel id="gender" value="#{userDataBean.gender == 'F' ? 'Female' : 'Male'}">                                                
+                                        </h:outputLabel>
+                                    </td>
+                                    <th>
+                                        Address<sup><font color="red">*</font></sup>
+                                    </th>
+                                    <td>
+                                        <h:inputText tabindex="9" style="width: 100%;" maxlength="100" styleClass="medium" value="#{userDataBean.address}" id="address1" required="true" requiredMessage="Enter street 1" title="Street 1">
+                                            <f:ajax event="blur" render="street1Msg" />
+                                        </h:inputText>
+                                        <br/>
+                                        <rich:message for="address1" style="color: red" id="street1Msg" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Registered on</th>
+                                    <td>
+                                        <h:outputLabel value="#{userDataBean.createdOn}" id="registeredon">
+                                            <f:convertDateTime type="date" pattern="MM/dd/yyyy" timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                        </h:outputLabel>
+                                    </td>
+                                    <th></th>
+                                    <td>
+                                        <h:inputText tabindex="10" style="width: 100%;" styleClass="medium" maxlength="100" id="address2" value="#{userDataBean.address2}" title="Street 2" >
+                                        </h:inputText>
+                                        <br/>
+                                        <rich:message for="address2" style="color: red" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Occupation</th>
+                                    <td>
+                                        <h:inputText tabindex="1" style="width: 100%;" styleClass="medium" id="work" maxlength="50" value="#{memberBasicDetailDataBean.designation}">
+                                            <f:ajax event="blur" render="desgMsg" />
+                                        </h:inputText>
+                                        <br/>
+                                        <rich:message for="work" style="color: red" id="desgMsg" />
+                                    </td>
+                                    <th>
+                                    </th>
+                                    <td>
+                                        <h:inputText tabindex="11" style="width: 100%;" styleClass="medium" id="city" value="#{userDataBean.city}" required="true" requiredMessage="Enter city" title="City">
+                                            <f:ajax event="blur" render="cityMsg" />
+                                        </h:inputText>
+                                        <br/>
+                                        <rich:message for="city" style="color: red" id="cityMsg" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Dietary preference</th>
+                                    <td>
+                                        <h:selectOneMenu tabindex="2" style="width: 100%;" id="dietFood" value="#{memberBasicDetailDataBean.eatingPreference}">
+                                            <f:selectItem itemLabel="-- Select --" />
+                                            <f:selectItems value="#{userServiceBean.dietFoodList}"/>
+                                        </h:selectOneMenu>
+                                    </td>
+                                    <th>
+                                    </th>
+                                    <td>
+                                        <h:selectOneMenu tabindex="12" id="state" style="width: 47%" value="#{userDataBean.state}" required="true" requiredMessage="Select state ">
+                                            <f:selectItems value="#{userServiceBean.stateList}" />
+                                        </h:selectOneMenu>&#160;
+                                        <h:inputText tabindex="13" style="width: 47%; float: right" styleClass="small" id="zip" maxlength="10" value="#{userDataBean.zipCode}" required="true" requiredMessage="Enter zip code" title="Zip Code"
+                                                     onkeyup="formatZipCode(event, 'zip');" >
+                                            <f:ajax event="blur" render="zipMsg" />
+                                        </h:inputText>
+                                        <rich:message for="state" style="color: red" />                                    
+                                        <rich:message for="zip" id="zipMsg" style="color: red" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Goal</th>    
+                                    <td>
+                                        <h:selectOneMenu tabindex="3" style="width: 100%;" value="#{memberBasicDetailDataBean.goal}">
+                                            <f:selectItems value="#{userServiceBean.contactUsGoals}" />
+                                        </h:selectOneMenu>
+                                    </td>
+                                    <th>
+                                        Facebook page
+                                    </th>
+                                    <td>
+                                        <h:inputText tabindex="14" style="width: 100%;" maxlength="50" styleClass="medium" id="facebookpage" value="#{userDataBean.facebookPage}">
+                                        </h:inputText>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Assigned PB Specialist</th>    
+                                    <td>
+                                        <h:selectOneMenu tabindex="4" style="width: 100%;" id="assignedPB" value="#{memberBasicDetailDataBean.assignedPBSpecialist}">
+                                            <f:selectItem itemLabel="-- Select --" />
+                                            <f:selectItems value="#{userServiceBean.specialistList}" />
+                                            <f:ajax event="blur" render="pbMsg" />
+                                        </h:selectOneMenu>
+                                        <br/>                            
+                                        <rich:message for="assignedPB" id="pbMsg" style="color: red" />
+                                    </td>
+                                    <th>Heard About us</th>
+                                    <td>
+                                        <h:inputHidden value="#{memberBasicDetailDataBean.source}" id="cntSrc" />
+                                        <h:selectOneMenu tabindex="15" style="width: 100%;" value="#{systemResultViewUtil.city}" id="contactSrc">
+                                            <f:selectItems value="#{userServiceBean.contactUsSource}" />
+                                            <a4j:ajax event="change" render="srcTxt" oncomplete="document.getElementById('cntSrc').value = document.getElementById('contactSrc').value;('#{systemResultViewUtil.city == 'FR' or systemResultViewUtil.city == 'NE' or systemResultViewUtil.city == 'PP'}' == 'true') ? document.getElementById('srcTxtTr').style.display = '' : document.getElementById('srcTxtTr').style.display = 'none'"/>
+                                        </h:selectOneMenu>
+                                    </td>
+                                </tr>
+                                <tr id="srcTxtTr">
+                                    <th></th>
+                                    <td></td>
+                                    <th></th>
+                                    <td>
+                                        <h:outputLabel id="srcTxt">
+                                            <h:inputText styleClass="small" style="width: 100%;" maxlength="50" value="#{memberBasicDetailDataBean.otherSource}" rendered="#{systemResultViewUtil.city == 'FR' or systemResultViewUtil.city == 'NE' or systemResultViewUtil.city == 'PP'}" />
+                                        </h:outputLabel>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th valign="top">
+                                        Upload new image
+                                    </th>
+                                    <td colspan="2">
+                                        <a4j:commandButton id="stopBtn" styleClass="stopBtn" value="Stop" immediate="true"
+                                                           render="imageUploader" oncomplete="document.getElementById('stopBtn').style.display='none'" />
+                                        <rich:fileUpload 
+                                            id="imageUploader" tabindex="5"
+                                            addLabel="Add Picture"
+                                            style="height: 80px; width: 300px"
+                                            fileUploadListener="#{fileUploadListener.imageUploadListener}"
+                                            acceptedTypes="jpg,jpeg,bmp,png,gif"
+                                            onfilesubmit="document.getElementById('stopBtn').style.display=''"
+                                            onuploadcomplete="document.getElementById('stopBtn').style.display='none'">
+                                            <a4j:ajax event="uploadcomplete" render="imagePanel" />
+                                        </rich:fileUpload>
+                                        <div style="font-size:11px; width: 300px" align="right">
+                                            Maximum Upload File-Size is
+                                            <h:outputText style="font-size: 11px; text-align:right " value="#{initParam['org.richfaces.fileUpload.maxRequestSize']/(1024*1024)}">
+                                                <f:convertNumber  maxFractionDigits="0" />
+                                            </h:outputText> MB
+                                            <br/>
+                                            Allowed types are JPG, PNG, GIF, BMP and JPEG only
+                                        </div>
+                                    </td>
+                                    <td valign="top">
+                                        <a4j:outputPanel id="imagePanel">
+                                            <a4j:commandLink title="Click here to open Album" rendered="#{systemResultViewUtil.albumList != null}" oncomplete="#{rich:component('albumPanel')}.show();">
+                                                <a4j:mediaOutput id="image" style="border:none; width: 80px; height: 80px"
+                                                                 element="img"
+                                                                 createContent="#{systemResultSessionUtil.drawImage}"
+                                                                 value="#{userDataBean.imageName}"
+                                                                 rendered="#{userDataBean.imageName != null and systemResultSessionUtil.imageData == null}"
+                                                                 mimeType="image/jpg"
+                                                                 styleClass="u7" />
+                                                <a4j:mediaOutput id="image1" style="border:none; width: 80px; height: 80px"
+                                                                 element="img"
+                                                                 createContent="#{systemResultSessionUtil.drawImage}"
+                                                                 mimeType="image/jpg"
+                                                                 styleClass="u7"
+                                                                 rendered="#{systemResultSessionUtil.imageData != null}"/>
+                                            </a4j:commandLink>
+                                        </a4j:outputPanel>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th valign="top">
+                                        <h:outputLabel rendered="#{memberBasicDetailDataBean.uploadDocumentName == null}" value="Upload waiver" />
+                                    </th>
+                                    <td colspan="2">
+                                        <h:inputHidden value="#{memberBasicDetailDataBean.uploadDocumentName}" id="uploadedDoc" />
+                                        <h:commandLink id="dwnldLink"
+                                                       action="#{userServiceBean.downloadDocFile()}" value="Download waiver" />
+                                        <a4j:commandButton id="stopDocBtn" styleClass="stopBtn" value="Stop" immediate="true"
+                                                           render="docComp" oncomplete="document.getElementById('stopDocBtn').style.display='none'" />
+                                        <script type="text/javascript">
+                                            document.getElementById('stopDocBtn').style.display='none';
+                                        </script>
+                                        <rich:fileUpload  fileUploadListener="#{fileUploadListener.pdfUploadListener}" 
+                                                          addLabel="Upload Waiver" 
+                                                          sizeExceededLabel="File size exceeded maximum upload limit"
+                                                          style="height: 80px; width: 300px"
+                                                          acceptedTypes="txt,jpg,gif,png,bmp,jpeg,doc,docx,pdf"
+                                                          ontyperejected="alert('Only JPG, PNG, GIF, BMP, JPEG, TXT, DOC, DOCX and PDF files are accepted');" 
+                                                          onclear=""
+                                                          onuploadcomplete="document.getElementById('stopDocBtn').style.display='none';"
+                                                          id="docComp"
+                                                          onfilesubmit="document.getElementById('stopDocBtn').style.display=''"
+                                                          rendered="#{memberBasicDetailDataBean.uploadDocumentName == null or memberBasicDetailDataBean.uploadDocumentName == ''}">
+                                        </rich:fileUpload>
+
+                                        <div style="font-size:11px; width: 300px" align="right" id="docInfoMsg">
+                                            Maximum Upload File-Size is
+                                            <h:outputText id="maxFileSize" style="font-size: 11px; text-align:right " value="#{initParam['org.richfaces.fileUpload.maxRequestSize']/(1024*1024)}">
+                                                <f:convertNumber  maxFractionDigits="0" />
+                                            </h:outputText> MB
+                                            <br/>
+                                            Allowed types are JPG, PNG, GIF, BMP, JPEG, TXT, DOC, DOCX and PDF only
+                                        </div>
+                                        <script type="text/javascript">
+                                            //<![CDATA[
+                                            var doc = '#{memberBasicDetailDataBean.uploadDocumentName}';
+                                            if (doc != null && doc != '') {
+                                                document.getElementById('docInfoMsg').style.display = 'none';
+                                            } else {
+                                                document.getElementById('dwnldLink').style.display = 'none';
+                                            }
+                                            //]]>
+                                        </script>
+                                    </td>
+                                    <td></td>
+                                </tr>
+
+                            </table>
+
+                            <h:inputHidden id="userNewImage" value="#{userDataBean.newImage}" />
+
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" align="center">
+                                <tr>
+                                    <td>
+                                        <hr class="red"/>
+                                        <div align="center">
+                                            <a4j:commandButton value="Submit" onclick="clearBlurredData('basic');loadWaitPanel('updateMember');" action="#{userServiceBean.updateMemberBasicInfo()}" oncomplete="stopWaitPanel('updateMember');textboxHint('basic');" styleClass="standard-button" render="dataMessage" >
+                                            </a4j:commandButton>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </h:form>
+                    </div>
+
+                    <div id="measurement">
+                        <table class="form-table" cellpadding="0" cellspacing="0" border="0" width="100%">
+                            <tr>
+                                <td>
+                                    <h:form prependId="false">
+                                        <a4j:commandButton style="float: right;" styleClass="standard-button" value="#{systemResultViewUtil.measurementDetailList != null and not empty systemResultViewUtil.measurementDetailList ? 'Update Measurement' : 'Add Measurement'}" action="#{userServiceBean.navigateToUpdateMeasurement()}">
+                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeId}" value="#{userDataBean.id}" />
+                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.prevView}" value="updateMember" />
+                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeName}" value="measurement" />
+                                        </a4j:commandButton>
+                                    </h:form>
+                                    <h:outputLabel rendered="#{systemResultViewUtil.measurementDetailList == null or empty systemResultViewUtil.measurementDetailList}">
+                                        <br/>
+                                        No measurement found
+                                    </h:outputLabel>
+                                </td>
+                            </tr>
+                        </table>
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" id="hTable">
+                            <tr>
+                                <th width="11%" class="header" style="text-align: center;">&#160;</th>
+                                <th width="6%" class="header" style="text-align: center;">&#160;</th>
+                                <th width="6%" class="header" style="text-align: center;">&#160;</th>
+                                <th width="35%" colspan="5" class="header" style="text-align: center;font-size : 12px;">Tape(inches)</th>
+                                <th width="35%" colspan="5"  class="header" style="text-align: center;font-size : 12px;">Calipers(mm)</th>
+                            </tr>     
+                            <script type="text/javascript">
+                                var result = '#{systemResultViewUtil.measurementDetailList != null and not empty systemResultViewUtil.measurementDetailList}';
+                                if (result == 'false') {
+                                    document.getElementById('hTable').style.display = 'none';
+                                }
+                            </script>
+                            <rich:dataTable id="measurementDetailDataList" value="#{systemResultViewUtil.measurementDetailList}" var="measurementData" style="width: 100%" rowKeyVar="rowId" styleClass="meal-plan"  rowClass="#{rowId%2 == 0 ? 'alt-row1':'alt-row'}"
+                                             rendered="#{systemResultViewUtil.measurementDetailList != null and not empty systemResultViewUtil.measurementDetailList}">                                
+                                <f:facet name="header">                                                                       
+                                    <rich:columnGroup>
+                                        <rich:column styleClass="header" width="11%" >Date</rich:column>
+                                        <rich:column styleClass="header" width="6%" >Wt.</rich:column>
+                                        <rich:column styleClass="header" width="6%" >BF%</rich:column>
+                                        <rich:column styleClass="header" width="7%" >Arm</rich:column>
+                                        <rich:column styleClass="header" width="7%" >Waist</rich:column>
+                                        <rich:column styleClass="header" width="7%" >Hip</rich:column>
+                                        <rich:column styleClass="header" width="7%">Thigh</rich:column>
+                                        <rich:column styleClass="header" width="7%" >Calf</rich:column>
+                                        <rich:column styleClass="header" width="7%">Bis</rich:column>
+                                        <rich:column styleClass="header" width="7%" >Tris</rich:column>
+                                        <rich:column styleClass="header" width="7%">Hip</rich:column>
+                                        <rich:column styleClass="header" width="7%">Back</rich:column>
+                                        <rich:column styleClass="header" width="7%">Total</rich:column>
+                                    </rich:columnGroup>
+                                </f:facet>                                
+                                <rich:column width="11%">                                                                            
+                                    <h:outputText value="#{measurementData.onDate}">
+                                        <f:convertDateTime type="date" pattern="MM/dd/yy" />
+                                    </h:outputText>
+                                </rich:column>
+                                <rich:column width="6%" style="text-align: right;">                                                                                                                    
+                                    <h:outputText value="#{measurementData.weight}">
+                                        <f:convertNumber minIntegerDigits="1" minFractionDigits="2"/>
+                                    </h:outputText>
+                                </rich:column>
+                                <rich:column width="6%"  style="text-align: right;">                                                                            
+                                    <h:outputText value="#{measurementData.totalBf}">
+                                        <f:convertNumber minIntegerDigits="1" minFractionDigits="2"/>
+                                    </h:outputText>
+                                </rich:column>
+                                <rich:column width="7%"  style="text-align: right;">                                                                                                                    
+                                    <h:outputText value="#{measurementData.tapeArm}">
+                                        <f:convertNumber minIntegerDigits="1" minFractionDigits="2"/>
+                                    </h:outputText>
+                                </rich:column>
+                                <rich:column width="7%" style="text-align: right;">
+                                    <h:outputText value="#{measurementData.tapeWaist}">
+                                        <f:convertNumber minIntegerDigits="1" minFractionDigits="2"/>
+                                    </h:outputText>
+                                </rich:column>
+                                <rich:column width="7%" style="text-align: right;">
+                                    <h:outputText value="#{measurementData.tapeHip}">
+                                        <f:convertNumber minIntegerDigits="1" minFractionDigits="2"/>
+                                    </h:outputText> 
+                                </rich:column>
+                                <rich:column width="7%" style="text-align: right;">
+                                    <h:outputText value="#{measurementData.tapeThigh}">
+                                        <f:convertNumber minIntegerDigits="1" minFractionDigits="2"/>
+                                    </h:outputText> 
+                                </rich:column>
+                                <rich:column width="7%" style="text-align: right;">
+                                    <h:outputText value="#{measurementData.tapeCalf}">
+                                        <f:convertNumber minIntegerDigits="1" minFractionDigits="2"/>
+                                    </h:outputText> 
+                                </rich:column>
+                                <rich:column width="7%" style="text-align: right;">
+                                    <h:outputText value="#{measurementData.callipersBiceps}">
+                                        <f:convertNumber minIntegerDigits="1" minFractionDigits="2"/>
+                                    </h:outputText>
+                                </rich:column>
+                                <rich:column width="7%" style="text-align: right;">
+                                    <h:outputText value="#{measurementData.callipersTriceps}">
+                                        <f:convertNumber minIntegerDigits="1" minFractionDigits="2"/>
+                                    </h:outputText>
+                                </rich:column>
+                                <rich:column width="7%" style="text-align: right;">
+                                    <h:outputText value="#{measurementData.callipersHip}">
+                                        <f:convertNumber minIntegerDigits="1" minFractionDigits="2"/>
+                                    </h:outputText>
+                                </rich:column>
+                                <rich:column width="7%" style="text-align: right;">
+                                    <h:outputText value="#{measurementData.callipersBack}">
+                                        <f:convertNumber minIntegerDigits="1" minFractionDigits="2"/>
+                                    </h:outputText>
+                                </rich:column>
+                                <rich:column width="7%" style="text-align: right;">
+                                    <h:outputText id="total" value="#{measurementData.total}">
+                                        <f:convertNumber minIntegerDigits="1" minFractionDigits="2"/>
+                                    </h:outputText>
+                                </rich:column>                                   
+                            </rich:dataTable>                         
+                        </table>
+                    </div>
+
+                    <div id="health">
+                        <a4j:outputPanel id="healthPanel">
+                            <table class="form-table" cellpadding="0" cellspacing="0" border="0" width="100%">
+                                <tr>
+                                    <td>
+                                        <h:form prependId="false">
+                                            <a4j:commandButton style="float: right;" styleClass="standard-button" value="#{systemResultViewUtil.healthDetailList != null ? 'Update Medical Conditions' : 'Add Medical Conditions'}" action="#{userServiceBean.navigateToUpdateInjury()}">
+                                                <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeId}" value="#{userDataBean.id}" />
+                                                <f:setPropertyActionListener target="#{systemResultSessionUtil.prevView}" value="updateMember" />
+                                                <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeName}" value="health" />
+                                            </a4j:commandButton>
+                                        </h:form>
+                                        <h:outputLabel rendered="#{systemResultViewUtil.healthDetailList == null}">
+                                            <br/>
+                                            No medical conditions found
+                                        </h:outputLabel>                                       
+                                    </td>
+                                </tr>
+                            </table>
+                            <rich:dataTable id="healthDetailDataList" value="#{systemResultViewUtil.healthDetailList}" var="healthData" style="width: 100%"  rendered="#{systemResultViewUtil.healthDetailList != null}"  rowKeyVar="rowId" styleClass="meal-plan"  rowClass="#{rowId%2 == 0 ? 'alt-row1':'alt-row'}">                                
+                                <f:facet name="header">    
+                                    <rich:columnGroup>
+                                        <rich:column width="25%" styleClass="header">Medical Condition</rich:column>
+                                        <rich:column width="25%" styleClass="header">Intensity</rich:column>
+                                        <rich:column width="25%" styleClass="header">Status</rich:column>
+                                        <rich:column width="25%" styleClass="header">Last updated on</rich:column>    
+                                    </rich:columnGroup>
+                                </f:facet>
+                                <rich:column width="25%">
+                                    <h:outputLabel value="#{healthData.injuryName}" />
+                                </rich:column>
+                                <rich:column width="25%">
+                                    <h:outputLabel value="#{healthData.intensity}" />
+                                </rich:column>
+                                <rich:column width="25%">
+                                    <h:outputLabel value="#{healthData.status}" />
+                                </rich:column>
+                                <rich:column width="25%">
+                                    <h:outputText style="width: 100%" value="#{healthData.lastModifiedDate}">
+                                        <f:convertDateTime type="date" pattern="MM/dd/yyyy" timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                    </h:outputText>
+                                </rich:column>
+                            </rich:dataTable>
+                        </a4j:outputPanel>
+                    </div>
+
+                    <div id="travel">
+                        <h:form prependId="false">
+                            <a4j:outputPanel id="travelInfoPanel">
+                                <table class="form-table" cellpadding="0" cellspacing="0" border="0" width="100%">
+                                    <tr>
+                                        <td>
+                                            <a4j:commandButton style="float: right;" styleClass="standard-button" action="#{userServiceBean.clearTravelData()}" value="Plan Travel" oncomplete="getDatePickerForRange('travelFromDate','travelToDate');#{rich:component('planTravelPanel')}.show();" render="travelPanel">
+                                            </a4j:commandButton>
+                                            <h:outputLabel rendered="#{systemResultViewUtil.travelDetailList == null}">
+                                                <br/>
+                                                No travel planned yet
+                                            </h:outputLabel>                                            
+                                        </td>
+                                    </tr>
+                                </table>
+ <rich:dataTable styleClass="meal-plan" id="travelDetailDataList" rendered="#{systemResultViewUtil.travelDetailList != null}" value="#{systemResultViewUtil.travelDetailList}" var="travelData" style="width: 100%" rowKeyVar="rowId" rowClass="#{rowId%2 == 0 ? 'alt-row1':'alt-row'}">                                   
+                                    <f:facet name="header">    
+                                        <rich:columnGroup>
+                                            <rich:column style="width: 15%" styleClass="header">
+                                                <h:outputText value="From Date"/>
+                                            </rich:column>
+                                            <rich:column style="width: 15%"  styleClass="header">
+                                                <h:outputText value="To Date" />
+                                            </rich:column>
+                                            <rich:column style="width: 58%"  styleClass="header">
+                                                <h:outputText value="Description" />
+                                            </rich:column>                                     
+                                            <rich:column style="width: 12%"  styleClass="header">
+                                                <h:outputText value="Action"/>
+                                            </rich:column>                                                                                      
+                                        </rich:columnGroup>                                                                             
+                                    </f:facet>
+                                    <rich:column>
+                                        <h:outputLabel value="#{travelData.fromDate}">                                            
+                                            <f:convertDateTime pattern="MM/dd/yyyy" timeZone="#{systemPropertyUtil.serverTimeZone}" />
+                                        </h:outputLabel>   
+                                    </rich:column>
+                                    <rich:column>
+                                        <h:outputLabel value="#{travelData.toDate}">                                            
+                                            <f:convertDateTime pattern="MM/dd/yyyy" timeZone="#{systemPropertyUtil.serverTimeZone}"  />
+                                        </h:outputLabel>
+                                    </rich:column>
+                                    <rich:column>
+                                        <h:outputLabel value="#{travelData.description == null ? 'N/A' : travelData.description}" />
+                                    </rich:column>
+                                    <rich:column>
+                                           <a4j:commandLink title="Remove Travel Detail" action="#{userServiceBean.removeTravelDetail()}" render="travelInfoPanel,dataMessage,infoPanel" onbegin="loadWaitPanel('updateMember');" oncomplete="stopWaitPanel('updateMember');" execute="@this">
+                                                        <img src="#{facesContext.externalContext.requestContextPath}/images/remove.jpg" alt="Remove"/>
+                                                        <f:setPropertyActionListener target="#{userServiceBean.id}" value="#{travelData.id}" />
+                                           </a4j:commandLink>
+                                    </rich:column>                                       
+                                </rich:dataTable>                                
+                            </a4j:outputPanel>
+                        </h:form>
+                    </div>
+                    <div id="account">
+                        <a4j:outputPanel id="accInfoPanel">
+                            <h:form prependId="false">
+                                <table class="form-table" cellpadding="0" cellspacing="0" border="0" width="100%">
+                                    <tr>
+                                        <td>
+                                            <a4j:commandButton style="float: right;" styleClass="standard-button" value="Add Subscription" action="#{userServiceBean.clearSubscriptionData()}" render="subsDetailDataList,addSubscriptionPanelData,dataMessage" oncomplete="#{rich:component('addSubscriptionPanel')}.show();" execute="@this" rendered="#{userRightsDataBean.haveAddSubscriptionsRights and userDataBean.isActive}">
+                                            </a4j:commandButton>
+                                        </td>
+                                    </tr>
+                                </table>
+                                 <rich:dataTable id="subsDetailDataList" styleClass="meal-plan" value="#{systemResultViewUtil.subscriptionDetailList}" var="subsData" style="width: 100%" rowKeyVar="rowId" rendered="#{systemResultViewUtil.subscriptionDetailList != null}" rowClass="#{rowId%2 == 0 ? 'alt-row1':'alt-row'}">
+                                    <f:facet name="header">
+                                        <rich:columnGroup>
+                                            <rich:column style="width: 21%" styleClass="header">
+                                                <h:outputText value="Package"/>
+                                            </rich:column>
+                                            <rich:column style="width: 15%"  styleClass="header">
+                                                <h:outputText value="Activated on" />
+                                            </rich:column>
+                                            <rich:column style="width: 15%"  styleClass="header">
+                                                <h:outputText value="Expires on" />
+                                            </rich:column>                                     
+                                            <rich:column style="width: 16%"  styleClass="header">
+                                                <h:outputText value="Referred by"/>
+                                            </rich:column>                                       
+                                            <rich:column style="width: 20%;"  styleClass="header">
+                                                <h:outputText value="Sessions left" />
+                                            </rich:column>
+                                            <rich:column style="width: 8%; text-align: center;"  styleClass="header">
+                                                <h:outputText value="Status" />
+                                            </rich:column>
+                                            <rich:column style="text-align: center;" styleClass="header">Action</rich:column>
+                                        </rich:columnGroup>
+                                    </f:facet>
+                               
+                                                <rich:column width="18%" style="background-color: #{subsData.unit gt 0 and (subsData.unit - subsData.unitsUsed) le 5 and (subsData.unit - subsData.unitsUsed) gt 0 ? '#f3d8d8' : ''}">
+
+                                                    <a4j:commandLink action="#{userServiceBean.navigateToUpdateSubscription()}" value="#{subsData.programName}" style="float: left">
+                                                        <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeId}" value="#{subsData.id}" />
+                                                        <f:setPropertyActionListener target="#{systemResultSessionUtil.prevView}" value="updateMember" />
+                                                        <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeName}" value="account" />
+                                                    </a4j:commandLink>&#160;
+                                                    <a href="#" style="float: left;margin-left: 10px">
+                                                        <img src="#{facesContext.externalContext.requestContextPath}/images/pending-icon.png" alt="Pay Now" onclick="redirectToPaypal('#{subsData.programName}', '#{subsData.fees}', '#{subsData.id}');" style="display: #{subsData.status != null and subsData.status == 'P'? 'block' : 'none'}"/>
+                                                    </a>
+                                                </rich:column>
+                                                <rich:column width="15%" style="background-color: #{subsData.unit gt 0 and (subsData.unit - subsData.unitsUsed) le 5 and (subsData.unit - subsData.unitsUsed) gt 0 ? '#f3d8d8' : ''}">
+                                                    <h:outputLabel value="#{subsData.activationDate}" rendered="#{subsData.activationDate != null}">
+                                                        <f:convertDateTime pattern="MM/dd/yyyy" type="date" timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                                    </h:outputLabel>
+                                                    <h:outputLabel value="N/A" rendered="#{subsData.activationDate == null}" />
+                                                </rich:column>
+                                                <rich:column width="14%" style="background-color: #{subsData.unit gt 0 and (subsData.unit - subsData.unitsUsed) le 5 and (subsData.unit - subsData.unitsUsed) gt 0 ? '#f3d8d8' : ''}">
+                                                    <h:outputLabel value="#{subsData.expirationDate}" rendered="#{subsData.expirationDate != null}">
+                                                        <f:convertDateTime pattern="MM/dd/yyyy" type="date" timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                                    </h:outputLabel>
+                                                    <h:outputLabel value="N/A" rendered="#{subsData.expirationDate == null}" />
+                                                </rich:column>
+                                                <rich:column width="20%" style="background-color: #{subsData.unit gt 0 and (subsData.unit - subsData.unitsUsed) le 5 and (subsData.unit - subsData.unitsUsed) gt 0 ? '#f3d8d8' : ''}">
+                                                    <h:outputLabel value="#{subsData.referredByName}" />
+                                                </rich:column>
+                                                <rich:column width="16%" style="background-color: #{subsData.unit gt 0 and (subsData.unit - subsData.unitsUsed) le 5 and (subsData.unit - subsData.unitsUsed) gt 0 ? '#f3d8d8' : ''}">
+                                                    <h:outputLabel value="#{(subsData.unit - subsData.unitsUsed)}/#{subsData.unit}" rendered="#{subsData.unit gt 0}" />
+                                                    <h:outputLabel value="N/A" rendered="#{subsData.unit le 0}" />
+                                                </rich:column>
+                                                <rich:column width="5%" style="text-align: center; background-color: #{subsData.unit gt 0 and (subsData.unit - subsData.unitsUsed) le 5 and (subsData.unit - subsData.unitsUsed) gt 0 ? '#f3d8d8' : ''}">
+                                                    <h:graphicImage value="#{subsData.activeStatus == 1 ?'/images/activate.png' : subsData.activeStatus == 0 ? '/images/deactivate.png' : '/images/queued.png'}" style="border: none;" />
+                                                </rich:column>
+                                                <rich:column width="" style="text-align: center; background-color: #{subsData.unit gt 0 and (subsData.unit - subsData.unitsUsed) le 5 and (subsData.unit - subsData.unitsUsed) gt 0 ? '#f3d8d8' : ''}">
+                                                    <h:outputLabel rendered="#{subsData.activeStatus > 1}">
+                                                        <a4j:commandLink title="Remove Package" immediate="true" action="#{userServiceBean.removeSubscriptionDetail()}" render="accInfoPanel, dataMessage" onbegin="loadWaitPanel('updateMember');" oncomplete="stopWaitPanel('updateMember');" execute="@this">
+                                                            <img src="#{facesContext.externalContext.requestContextPath}/images/remove.jpg" alt="Remove"/>
+                                                            <f:setPropertyActionListener target="#{userServiceBean.id}" value="#{subsData.id}" />
+                                                        </a4j:commandLink>
+                                                    </h:outputLabel>
+                                                    <h:outputLabel value="N/A" rendered="#{subsData.activeStatus == 0 or subsData.activeStatus == 1}">                                                        
+                                                    </h:outputLabel>
+                                                </rich:column>                                           
+                                </rich:dataTable>
+                            </h:form>
+                        </a4j:outputPanel>
+                        <a4j:outputPanel id="addSubsPanel" rendered="#{userDataBean.isActive == null or !userDataBean.isActive}">
+                            <h:form prependId="false">
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" align="center">
+                                    <tr>
+                                        <th width="20%" >Package<sup><font color="red">*</font></sup></th>
+                                        <td width="30%" >
+                                            <h:selectOneMenu style="width: 100%;" id="programA" value="#{memberSubscriptionDetailDataBean.program}" required="true" requiredMessage="Select package" onchange="setProgramId('programIdA', this.value);">
+                                                <f:selectItem itemLabel="-- Select --" />
+                                                <f:selectItems value="#{userServiceBean.programList}" />
+                                                <f:ajax event="blur" render="programAMsg" />
+                                                <a4j:ajax event="change" listener="#{userServiceBean.renderProgramFees}" render="accpanelA,progFeesA" />
+                                            </h:selectOneMenu>
+                                            <br/>
+                                            <rich:message for="programA" style="color: red" id="programAMsg" />
+                                        </td>
+                                        <th width="20%" >Was referred by</th>
+                                        <td width="30%" >
+                                            <h:selectOneMenu style="width: 100%;" value="#{memberSubscriptionDetailDataBean.referredBy}">
+                                                <f:selectItem itemLabel="-- Select --" />
+                                                <f:selectItems value="#{userServiceBean.adminList}" />
+                                            </h:selectOneMenu>                                        
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th >Payment method</th>
+                                        <td >
+                                            <h:inputHidden id="programIdA" value="#{memberSubscriptionDetailDataBean.program}" />
+                                            <h:selectOneMenu style="width: 100%;" id="paidbyA" value="#{systemResultViewUtil.paidBy}">
+                                                <f:selectItems value="#{userServiceBean.paymentModeList}" />
+                                                <a4j:ajax event="change" render="accpanelA" listener="#{userServiceBean.renderProgramFees}" oncomplete="getDatePickerForCheque('chequedateA');" execute="programIdA" />
+                                            </h:selectOneMenu> 
+                                            <br/>
+                                        </td>
+
+                                        <td colspan="2">
+                                        </td>
+                                    </tr>
+                                </table>
+                                <a4j:outputPanel id="accpanelA">
+                                    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" align="center">
+
+                                        <tr>
+                                            <th width="20%" >
+                                                <h:outputLabel rendered="#{systemResultViewUtil.paidBy == 'CS'}">Amount<sup><font color="red">*</font></sup></h:outputLabel>
+                                                <h:outputLabel rendered="#{systemResultViewUtil.paidBy == 'CR'}">Transaction Id<sup><font color="red">*</font></sup></h:outputLabel>
+                                                <h:outputLabel rendered="#{systemResultViewUtil.paidBy == 'CQ'}">Check Date<sup><font color="red">*</font></sup></h:outputLabel>
+                                            </th>
+                                            <td width="30%" >
+                                                <h:inputHidden value="#{memberSubscriptionDetailDataBean.fees}" id="progFeesA" />
+                                                <h:inputText style="width: 100%;" rendered="#{systemResultViewUtil.paidBy == 'CS'}" styleClass="medium" id="amountA" value="#{memberSubscriptionDetailDataBean.fees}" required="true" requiredMessage="Enter amount" maxlength="7" converter="#{javax.faces.converter.DoubleConverter.DOUBLE}" converterMessage="Invalid amount">
+                                                    <f:ajax event="blur" render="amountAMsg" />
+                                                </h:inputText>
+                                                <h:inputText rendered="#{systemResultViewUtil.paidBy == 'CR'}" style="width: 100%;" styleClass="medium" id="transidA" value="#{memberSubscriptionDetailDataBean.transactionNumber}" required="true" requiredMessage="Enter transation id" maxlength="15">
+                                                    <f:ajax event="blur" render="tidAMsg" />
+                                                </h:inputText>
+                                                <h:inputText rendered="#{systemResultViewUtil.paidBy == 'CQ'}" id="chequedateA" style="width: 100%;" styleClass="medium" required="true" requiredMessage="Enter check date" value="#{memberSubscriptionDetailDataBean.transactionDate}">
+                                                    <f:convertDateTime type="date" dateStyle="MM/dd/yyyy" pattern="MM/dd/yyyy"  timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                                    <!--                                                    <f:ajax event="blur" render="chequedateAMsg" />
+                                                                                                        <f:ajax event="change" render="chequedateAMsg" />-->
+                                                </h:inputText>
+                                                <br/>
+                                                <rich:message for="amountA" id="amountAMsg" style="color: red" />
+                                                <rich:message for="transidA" id="tidAMsg" style="color: red" />
+                                                <rich:message for="chequedateA" id="chequedateAMsg" style="color: red" />
+                                            </td>
+                                            <th width="20%" >
+                                                <h:outputLabel rendered="#{systemResultViewUtil.paidBy == 'CS'}">Helped by</h:outputLabel>
+                                                <h:outputLabel rendered="#{systemResultViewUtil.paidBy == 'CQ'}">Check Number<sup><font color="red">*</font></sup></h:outputLabel>
+                                            </th>
+                                            <td width="30%" >
+                                                <h:selectOneMenu style="width: 100%;" rendered="#{systemResultViewUtil.paidBy == 'CS'}" value="#{memberSubscriptionDetailDataBean.receivedBy}" id="receivedbyA" required="true" requiredMessage="Select helped by">
+                                                    <f:selectItem itemLabel="-- Select --" />
+                                                    <f:selectItems value="#{userServiceBean.adminList}" />
+                                                </h:selectOneMenu>         
+                                                <h:inputText rendered="#{systemResultViewUtil.paidBy == 'CQ'}" style="width: 100%;" value="#{memberSubscriptionDetailDataBean.chequeNumber}" styleClass="medium" id="chequenumA" required="true" requiredMessage="Enter check number" maxlength="8">
+                                                    <f:ajax event="blur" render="chequenumMsg" />
+                                                </h:inputText>
+                                                <br/>
+                                                <rich:message for="receivedbyA" style="color: red" />
+                                                <rich:message for="chequenumA" id="chequenumMsg" style="color: red" />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th >
+                                                <h:outputLabel rendered="#{systemResultViewUtil.paidBy == 'CQ'}">Check Status</h:outputLabel>                                        
+                                            </th>
+                                            <td > 
+                                                <h:selectOneMenu style="width: 100%;" rendered="#{systemResultViewUtil.paidBy == 'CQ'}" value="#{memberSubscriptionDetailDataBean.status}">
+                                                    <f:selectItems value="#{userServiceBean.chequeStatusList}" />
+                                                </h:selectOneMenu>
+                                            </td>
+                                            <th></th>
+                                            <td></td>
+                                        </tr>
+                                    </table>
+                                </a4j:outputPanel>
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" align="center">
+                                    <tr>
+                                        <th valign="top" width="20%">
+                                            Description
+                                        </th>
+                                        <td>
+                                            <h:inputTextarea style="width: 300px" value="#{memberSubscriptionDetailDataBean.description}" id="descA" onfocus="counterForTextArea('descA','descCounterA',120)" onkeyup="counterForTextArea('descA','descCounterA',120)">
+                                            </h:inputTextarea>
+                                            <div style="text-align:left" ><i><h:outputText value="(You can type" style="color: grey;"/> &#160;<h:outputText id="descCounterA"  value="120" style="color: grey;"/> &#160;<h:outputText value="more characters)" style="color: grey;"/></i></div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" style="text-align: center">
+                                            <hr class="red"/>
+                                            <h:inputHidden value="#{userDataBean.isActive}" />
+                                            <a4j:commandButton value="Submit" action="#{userServiceBean.addSubscription()}" onclick="loadWaitPanel('updateMember');" oncomplete="stopWaitPanel('updateMember');" styleClass="standard-button" render="dataMessage">
+                                            </a4j:commandButton>                                        
+                                        </td>
+                                    </tr>
+                                </table>
+                            </h:form>
+                        </a4j:outputPanel>
+                    </div>
+
+                </div>
+
+                <rich:popupPanel id="albumPanel" minWidth="800" minHeight="300" autosized="true">
+                    <h6>Album
+                        <a4j:commandLink immediate="true" style="float: right" oncomplete="#{rich:component('albumPanel')}.hide();">
+                            <img src="#{facesContext.externalContext.requestContextPath}/images/close-btn.jpg" alt="close" title="Close" align="texttop"/>
+                        </a4j:commandLink>
+
+                    </h6>
+                    <hr class="red"/>
+                    <div id="albumDiv" class="albumPanel">
+                        <h:form prependId="false">
+                            <h:inputHidden id="newImage" value="#{userDataBean.newImage}" />
+
+                            <rich:dataGrid var="image" columns="6" value="#{systemResultViewUtil.albumList}" style="border: none">
+                                <a4j:commandLink onclick="document.getElementById('newImage').value='#{image.path}'" 
+                                                 render="imagePanel,imageUploader" oncomplete="#{rich:component('albumPanel')}.hide();document.getElementById('userNewImage').value=document.getElementById('newImage').value;" execute="newImage">
+                                    <a4j:mediaOutput id="pic" style="padding-left: 10px;border:none; width: 100px; height: 100px"
+                                                     element="img"
+                                                     createContent="#{systemResultSessionUtil.drawImage}"
+                                                     value="#{image.path}"
+                                                     rendered="#{image.path != null}"
+                                                     mimeType="image/jpg"
+                                                     styleClass="u7"
+                                                     title="Click to select image" />
+                                    <f:setPropertyActionListener value="#{image.path}" target="#{userDataBean.imageName}" />
+                                    <f:setPropertyActionListener value="null" target="#{systemResultSessionUtil.imageName}" />
+                                    <f:setPropertyActionListener value="" target="#{systemResultSessionUtil.imageData}" />
+                                </a4j:commandLink>
+                            </rich:dataGrid>
+
+                        </h:form>
+                    </div>
+                </rich:popupPanel>
+
+                <rich:popupPanel id="planTravelPanel" minWidth="800" minHeight="500" autosized="true">
+                    <div id="travelDiv">
+                        <h:form prependId="false">
+                            <a4j:outputPanel id="travelPanel">
+                                <h6>Plan your travel
+                                    <a4j:commandLink immediate="true" style="float: right" render="travelDetailDataList,dataMessage" oncomplete="#{rich:component('planTravelPanel')}.hide();">
+                                        <img src="#{facesContext.externalContext.requestContextPath}/images/close-btn.jpg" alt="close" title="Close" align="texttop"/>
+                                    </a4j:commandLink>
+                                </h6>
+                                <hr class="red"/>
+                                <div align="right" style="color: #444"><h:outputText value="(All fields are mandatory)"/><br/></div>
+                                <a4j:outputPanel id="innerDataM">
+                                    <h:outputLabel rendered="#{not messageDataBean.isSuccess and messageDataBean.message != null}">
+                                        <div class="ui-widget">
+                                            <div class="ui-state-error ui-corner-all" style="padding:0px 5px; margin-bottom:10px; font-weight:bold; line-height:16px; "> 
+                                                <p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span> 
+                                                    #{messageDataBean.message}</p><div class="clearing"></div>
+                                            </div>                
+                                        </div>
+                                    </h:outputLabel>
+                                </a4j:outputPanel>
+                                <table class="form-table" cellpadding="0" cellspacing="0" border="0" width="100%">
+                                    <tr>
+                                        <th width="20%">
+                                            Travel period
+                                        </th>
+                                        <td width="35%">
+                                            <h:inputText id="travelFromDate" style="width: 100%;" styleClass="medium" value="#{memberTravelDetailDataBean.fromDate}" required="true" requiredMessage="Enter from date">
+                                                <f:convertDateTime type="date" dateStyle="MM/dd/yyyy" pattern="MM/dd/yyyy"  timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                                <!--                                                <f:ajax event="blur" render="fromDateMsg" />
+                                                                                                <f:ajax event="change" render="fromDateMsg" />-->
+                                            </h:inputText>
+                                            <rich:message for="travelFromDate" id="fromDateMsg" />
+                                        </td>
+                                        <th width="10%">
+                                            to                               
+                                        </th>
+                                        <td width="35%">
+                                            <h:inputText id="travelToDate" style="width: 100%;" styleClass="medium" value="#{memberTravelDetailDataBean.toDate}" required="true" requiredMessage="Enter to date">
+                                                <f:convertDateTime type="date" dateStyle="MM/dd/yyyy" pattern="MM/dd/yyyy"  timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                                <!--                                                <f:ajax event="blur" render="toDateMsg" />
+                                                                                                <f:ajax event="change" render="toDateMsg" />-->
+                                            </h:inputText>
+                                            <rich:message for="travelToDate" id="toDateMsg" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th  valign="top">
+                                            Description
+                                        </th>
+                                        <td colspan="3">
+                                            <h:inputTextarea style="width: 95%" value="#{memberTravelDetailDataBean.description}" id="desc" onfocus="counterForTextArea('desc','descCounter',200)" onkeyup="counterForTextArea('desc','descCounter',200)" required="true" requiredMessage="Enter description">
+                                                <f:ajax event="blur" render="planDescMsg" />
+                                            </h:inputTextarea>
+                                            <div style="text-align:left" ><i><h:outputText value="(You can type" style="color: grey;"/> &#160;<h:outputText id="descCounter"  value="200" style="color: grey;"/> &#160;<h:outputText value="more characters)" style="color: grey;"/></i></div>
+                                            <rich:message for="desc" id="planDescMsg" />
+
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="4" style="text-align: center">
+                                            <hr class="red"/>
+                                            <a4j:commandButton value="Submit" action="#{userServiceBean.planTravel()}" onclick="loadWaitPanel('travelDiv');" oncomplete="stopWaitPanel('travelDiv');if(#{messageDataBean.isSuccess != null and messageDataBean.isSuccess}) {#{rich:component('planTravelPanel')}.hide();};" styleClass="standard-button" render="#{messageDataBean.isSuccess != null and !messageDataBean.isSuccess ? 'innerDataM' : 'travelInfoPanel,dataMessage,infoPanel'}" >
+                                            </a4j:commandButton>                                        
+                                        </td>
+                                    </tr>
+                                </table>
+                            </a4j:outputPanel>
+                        </h:form>
+                    </div>
+                </rich:popupPanel>
+
+                <rich:popupPanel id="addSubscriptionPanel" minWidth="700" minHeight="500" autosized="true">
+                    <div id="accDiv">
+                        <h:form prependId="false">
+                            <a4j:outputPanel id="addSubscriptionPanelData">
+                                <h6>Add Subscription
+                                    <a4j:commandLink immediate="true" style="float: right" render="subsDetailDataList" oncomplete="#{rich:component('addSubscriptionPanel')}.hide();" execute="@this">
+                                        <img src="#{facesContext.externalContext.requestContextPath}/images/close-btn.jpg" alt="close" title="Close" align="texttop"/>
+                                        <f:setPropertyActionListener target="#{systemResultSessionUtil.selectedDay}" value=""/>                                        
+                                    </a4j:commandLink>
+
+                                </h6>
+                                <hr class="red"/>
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" align="center">
+                                    <tr>
+                                        <th width="25%">Package<sup><font color="red">*</font></sup></th>
+                                        <td width="25%">
+                                            <h:selectOneMenu style="width: 100%;" 
+                                                             id="program" value="#{memberSubscriptionDetailDataBean.program}" required="true" requiredMessage="Select package" onchange="setProgramId('programId', this.value);">
+                                                <f:selectItem itemLabel="-- Select --" />
+                                                <f:selectItems value="#{userServiceBean.programList}" />
+                                                <f:ajax event="blur" render="programMsg" />
+                                                <a4j:ajax event="change" listener="#{userServiceBean.renderProgramFees}" render="cashPanel,progFees" />
+                                            </h:selectOneMenu>
+                                            <br/>
+                                            <rich:message for="program" style="color: red" id="programMsg" />
+                                        </td>
+                                        <th width="25%">Was referred by</th>
+                                        <td width="25%">
+                                            <h:selectOneMenu style="width: 100%;" value="#{memberSubscriptionDetailDataBean.referredBy}">
+                                                <f:selectItem itemLabel="-- Select --" />
+                                                <f:selectItems value="#{userServiceBean.adminList}" />
+                                            </h:selectOneMenu>                                        
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Payment method</th>
+                                        <td>
+                                            <h:inputHidden id="programId" value="#{memberSubscriptionDetailDataBean.program}" />
+                                            <h:selectOneMenu style="width: 100%;" id="paidby" value="#{systemResultViewUtil.paidBy}">
+                                                <f:selectItems value="#{userServiceBean.paymentModeList}" />
+                                                <a4j:ajax event="change" render="accpanel" listener="#{userServiceBean.renderProgramFees}" oncomplete="getDatePickerForCheque('chequedate');" execute="programId" />
+                                            </h:selectOneMenu> 
+                                            <br/>
+                                        </td>
+
+                                        <td colspan="2">
+                                        </td>
+                                    </tr>
+                                </table>
+                                <a4j:outputPanel id="accpanel">
+                                    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" align="center">
+
+                                        <tr>
+                                            <th width="25%">
+                                                <h:outputLabel rendered="#{systemResultViewUtil.paidBy == 'CS'}">Amount<sup><font color="red">*</font></sup></h:outputLabel>
+                                                <h:outputLabel rendered="#{systemResultViewUtil.paidBy == 'CR'}">Transaction Id<sup><font color="red">*</font></sup></h:outputLabel>
+                                                <h:outputLabel rendered="#{systemResultViewUtil.paidBy == 'CQ'}">Check Date<sup><font color="red">*</font></sup></h:outputLabel>
+                                            </th>
+                                            <td width="25%">
+                                                <a4j:outputPanel id="cashPanel">
+                                                    <h:inputText style="width: 100%;" rendered="#{systemResultViewUtil.paidBy == 'CS'}" styleClass="medium" id="amount" value="#{memberSubscriptionDetailDataBean.fees}" required="true" requiredMessage="Enter amount" maxlength="7" converter="#{javax.faces.converter.DoubleConverter.DOUBLE}" converterMessage="Invalid amount">
+                                                        <f:ajax event="blur" render="amountMsg" />
+                                                    </h:inputText>
+                                                </a4j:outputPanel>
+                                                <h:inputHidden value="#{memberSubscriptionDetailDataBean.fees}" id="progFees" />
+                                                <h:inputText rendered="#{systemResultViewUtil.paidBy == 'CR'}" style="width: 100%;" styleClass="medium" id="transid" value="#{memberSubscriptionDetailDataBean.transactionNumber}" required="true" requiredMessage="Enter transation id" maxlength="15">
+                                                    <f:ajax event="blur" render="transidMsg" />
+                                                </h:inputText>
+                                                <h:inputText rendered="#{systemResultViewUtil.paidBy == 'CQ'}" id="chequedate" style="width: 100%;" styleClass="medium" required="true" requiredMessage="Enter check date" value="#{memberSubscriptionDetailDataBean.transactionDate}">
+                                                    <f:convertDateTime type="date" dateStyle="MM/dd/yyyy" pattern="MM/dd/yyyy"  timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                                    <!--                                                    <f:ajax event="blur" render="chequeDMsg" />
+                                                                                                        <f:ajax event="change" render="chequeDMsg" />-->
+                                                </h:inputText>
+                                                <br/>
+                                                <rich:message for="amount" id="amountMsg" style="color: red" />
+                                                <rich:message for="transid" id="transidMsg" style="color: red" />
+                                                <rich:message for="chequedate" id="chequeDMsg" style="color: red" />
+                                            </td>
+                                            <th width="25%">
+                                                <h:outputLabel rendered="#{systemResultViewUtil.paidBy == 'CS'}">Helped by</h:outputLabel>
+                                                <h:outputLabel rendered="#{systemResultViewUtil.paidBy == 'CQ'}">Check Number<sup><font color="red">*</font></sup></h:outputLabel>
+                                            </th>
+                                            <td width="25%">
+                                                <h:selectOneMenu style="width: 100%;" rendered="#{systemResultViewUtil.paidBy == 'CS'}" value="#{memberSubscriptionDetailDataBean.receivedBy}" id="receivedby" required="true" requiredMessage="Select helped by">
+                                                    <f:selectItem itemLabel="-- Select --" />
+                                                    <f:selectItems value="#{userServiceBean.adminList}" />
+                                                    <f:ajax event="blur" render="receivedbyMsg" />
+                                                </h:selectOneMenu>         
+                                                <h:inputText rendered="#{systemResultViewUtil.paidBy == 'CQ'}" style="width: 100%;" value="#{memberSubscriptionDetailDataBean.chequeNumber}" styleClass="medium" id="chequenum" required="true" requiredMessage="Enter check number" maxlength="8">
+                                                    <f:ajax event="blur" render="chequeNMsg" />
+                                                </h:inputText>
+                                                <br/>
+                                                <rich:message for="receivedby" style="color: red" id="receivedbyMsg" />
+                                                <rich:message for="chequenum" id="chequeNMsg" style="color: red" />
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>
+                                                <h:outputLabel rendered="#{systemResultViewUtil.paidBy == 'CQ'}">Check Status</h:outputLabel>                                        
+                                            </th>
+                                            <td> 
+                                                <h:selectOneMenu style="width: 100%;" rendered="#{systemResultViewUtil.paidBy == 'CQ'}" value="#{memberSubscriptionDetailDataBean.status}">
+                                                    <f:selectItems value="#{userServiceBean.chequeStatusList}" />
+                                                </h:selectOneMenu>
+                                            </td>
+                                            <th></th>
+                                            <td></td>
+                                        </tr>
+                                    </table>
+                                </a4j:outputPanel>
+                                <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" align="center">
+                                    <tr>
+                                        <th valign="top" width="25%">
+                                            Description
+                                        </th>
+                                        <td>
+                                            <h:inputTextarea style="width: 300px" value="#{memberSubscriptionDetailDataBean.description}" id="descC" onfocus="counterForTextArea('descC','descCounterC',120)" onkeyup="counterForTextArea('descC','descCounterC',120)">
+                                            </h:inputTextarea>
+                                            <div style="text-align:left" ><i><h:outputText value="(You can type" style="color: grey;"/> &#160;<h:outputText id="descCounterC" value="120" style="color: grey;"/> &#160;<h:outputText value="more characters)" style="color: grey;"/></i></div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2">
+                                            <div align="center">
+                                                <hr class="red"/>
+                                                <a4j:commandButton value="Submit" action="#{userServiceBean.addSubscription()}" onclick="loadWaitPanel('accDiv');"
+                                                                   oncomplete="stopWaitPanel('accDiv');if(#{messageDataBean.isSuccess != null and messageDataBean.isSuccess}) {#{rich:component('addSubscriptionPanel')}.hide();};" 
+                                                                   styleClass="standard-button" render="accpanel,subsDetailDataList,dataMessage" >
+                                                    <f:setPropertyActionListener target="#{systemResultSessionUtil.selectedDay}" value=""/>                                        
+                                                </a4j:commandButton>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </a4j:outputPanel>
+                        </h:form>
+                    </div>
+                </rich:popupPanel>
+                <rich:popupPanel id="paypalReturn" minWidth="500" minHeight="300" autosized="true" show="#{userServiceBean.transactionStatus == 'complete'}">
+                    <h:form prependId="false">
+                        <h6>Paypal Notification
+                        </h6>
+                        <hr class="red"/>
+                        <table class="form-table" cellpadding="0" cellspacing="0" border="0" width="100%">
+                            <tr>
+                                <td>
+                                    <p align="justify">
+                                        Your transaction verification is in progress, your payment will be confirmed within a day.
+                                        For further details contact <b>#{systemPropertyUtil.adminContact}</b>
+                                    </p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align: center">
+                                    <hr class="red"/>
+
+                                    <input type="button" value="OK" onclick="#{rich:component('paypalReturn')}.hide();" styleClass="standard-button" />
+
+                                </td>
+                            </tr>
+                        </table>
+                    </h:form>
+                </rich:popupPanel>
+                <div style="display: none">
+                    <form name="_xclick" action="#{systemPropertyUtil.paypalActionUrl}" method="post">
+                        <input type="hidden" name="cmd" value="_xclick"/>
+                        <input type="hidden" name="business" value="#{systemPropertyUtil.businessName}"/>
+                        <input type="hidden" name="currency_code" value="USD"/>
+                        <input type="hidden" name="item_name" value="" id="itemName"/>
+                        <input type="image" src="#{systemPropertyUtil.paypalPixelImageUrl}" border="0" name="submit" alt="Make payments with PayPal - it's fast, free and secure!" id="pay"/>
+                        <input type="hidden" name="notify_url" value="#{systemPropertyUtil.websiteUrl}/paypalNotification"/>
+                        <input type="hidden" name="rm" value="2"/>
+                        <input type="hidden" name="amount" value="" id="amountVal"/>
+                        <input type="hidden" name="custom" value="" id="custom"/>
+                        <input type="hidden" name="cancel_return" value="#{systemPropertyUtil.websiteUrl}/updateMember"/>
+                        <input type="hidden" name="return" value="#{systemPropertyUtil.websiteUrl}/updateMember?transactionStatus=complete"/>
+                    </form>
+                </div>
+                <script type="text/javascript">
+                    //<![CDATA[
+                    function redirectToPaypal(subscriptionName, amount, subscriptionId) {
+                        document.getElementById('itemName').value = subscriptionName;
+                        document.getElementById('amountVal').value = amount;
+                        document.getElementById('custom').value = subscriptionId;
+                        document.getElementById('pay').click();
+                        loadWaitPanel('main-wrapper');
+                    }
+                    function getDatePickerForCheque(id) {
+                        id = "#" + id;
+                        $(id).datepicker({
+                            changeMonth: true,
+                            changeYear: true,
+                            dateFormat: 'mm/dd/yy',
+                            minDate:+0,
+                            height: 200,
+                            width:200
+                        })
+                        .attr( 'readOnly' , 'true' );
+                    }
+                
+                    function setProgramId(id,value) {
+                        if (value != null && value != '') {
+                            document.getElementById(id).value = value;
+                        } else {
+                            document.getElementById(id).value = 0;
+                        }
+                    }
+
+                    document.getElementById('stopBtn').style.display='none';
+                    document.getElementById('stopDocBtn').style.display='none';
+                    
+                    getDatePickerForCheque('chequedateA');
+
+                    var selectedModule = '#{systemResultSessionUtil.selectedDay}';
+                    if (selectedModule != '' && selectedModule == 'addSubs') {
+                    #{rich:component('addSubscriptionPanel')}.show();
+                        }
+                        //]]>
+                </script>
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+</html>

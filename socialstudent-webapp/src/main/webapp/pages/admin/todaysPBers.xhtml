@@ -1,0 +1,280 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+
+    <body>
+        <ui:composition template="./../layout/blankLayout.xhtml">
+            <ui:define name="content">
+                <br/>
+                <f:event listener="#{schedulerServiceBean.todaysPbers()}" type="preRenderComponent" />
+                <h3>Today's PBers</h3>
+                <hr class="red"/>
+                <div id="content">
+                    <h:form prependId="false">
+                        <a4j:outputPanel id="checkedIn">
+                            <rich:dataTable id="checkedInTable" value="#{systemResultViewUtil.checkedInDataBeanList}" var="checkedIn"  rowKeyVar="rowCnt" styleClass="meal-plan" style="width: 100%" rowClass="#{rowCnt%2 == 0 ? 'alt-row1':'alt-row'}" rendered="#{systemResultViewUtil.checkedInDataBeanList != null and systemResultViewUtil.checkedInDataBeanList.size() gt 0}">
+                                <f:facet name="header">
+                                    <rich:columnGroup>
+                                        <rich:column styleClass="header" >
+                                            <h:outputText value="Name"/>
+                                        </rich:column>
+                                        <rich:column styleClass="header">
+                                            <h:outputText value="Time"/>
+                                        </rich:column>
+                                        <rich:column styleClass="header" style="text-align: center">
+                                            <h:outputText value="Status"/>
+                                        </rich:column>
+                                        <rich:column styleClass="header">
+                                            <h:outputText value=""/>
+                                        </rich:column>
+                                        <rich:column styleClass="header">
+                                            <h:outputText value="Session Left"/>
+                                        </rich:column>
+                                        <rich:column styleClass="header">
+                                            <h:outputText value="Alerts"/>
+                                        </rich:column>
+                                    </rich:columnGroup>
+                                </f:facet>
+                                <rich:column>
+                                    <h:outputLabel value="#{checkedIn.memberFirstName}  #{checkedIn.memberLastName}" />
+                                </rich:column>
+                                <rich:column>
+                                    <h:outputLabel value="#{checkedIn.onDate}">
+                                        <f:convertDateTime pattern="HH:mm"  timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                                    </h:outputLabel>
+                                </rich:column>
+                                <rich:column style="text-align: center">
+                                    <h:panelGroup rendered="#{checkedIn.status eq 'a'}" >
+                                        <div style="border: none;width: 22px;height: 22px;background-image: url(#{facesContext.externalContext.requestContextPath.concat('/images/attended.png')});background-repeat: no-repeat">
+                                        </div>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{checkedIn.status eq 's'}">
+                                        <div style="border: none;width: 22px;height: 22px;background-image: url(#{facesContext.externalContext.requestContextPath.concat('/images/skipped.png')});background-repeat: no-repeat">
+                                        </div>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{checkedIn.status eq 'b'}">
+                                        <div style="border: none;width: 22px;height: 22px;background-image: url(#{facesContext.externalContext.requestContextPath.concat('/images/confirmed.png')});background-repeat: no-repeat">
+                                        </div>
+                                    </h:panelGroup>
+                                </rich:column>
+                                <rich:column>
+                                    <a4j:commandButton title="Buy Service" value="go" render="buySerPanel" onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content');setUserIdForService('#{checkedIn.memberId}');#{rich:component('buyService')}.show();" execute="@none" image="#{facesContext.externalContext.requestContextPath}/images/cart.png"/>
+                                    &nbsp;
+                                    <a4j:outputPanel rendered="#{userRightsDataBean.haveAddSubscriptionsRights}">
+                                        <a title="Add Subscription" href="addSubscription?memberId=#{checkedIn.memberId}" target="_blank">
+                                            <img src="#{facesContext.externalContext.requestContextPath}/images/dollar.png" alt="Add Subscription" />
+                                        </a>
+                                    </a4j:outputPanel>
+                                </rich:column>
+                                <rich:column>
+                                    <h:outputLabel value="#{checkedIn.sessionLeft}" />
+                                </rich:column>
+                                <rich:column>
+                                    <h:outputLabel value="New " rendered="#{checkedIn.isNew}" style="color: green"/>
+                                    <a4j:commandLink style="color: red" value="#{checkedIn.injury} " action="#{schedulerServiceBean.retrieveMemberInjury}" onclick="loadWaitPanel('content');" oncomplete="stopWaitPanel('content');#{rich:component('viewInjuryPanel')}.show();" execute="@this" render="healthDetailDataList">
+                                        <f:setPropertyActionListener value="#{checkedIn.memberId}" target="#{schedulerServiceBean.selectedUser}"/>
+                                    </a4j:commandLink>
+                                    <a4j:commandLink action="#{schedulerServiceBean.updateOutstandingPayment}" onclick="loadWaitPanel('content');" oncomplete="stopWaitPanel('content');#{rich:component('outStandingPayment')}.show();" execute="@this" render="services">
+                                        <f:setPropertyActionListener value="#{checkedIn.memberId}" target="#{schedulerServiceBean.memberId}"/>
+                                        <h:outputLabel value="#{checkedIn.payment}" rendered="#{checkedIn.payment gt 0}" style="cursor: pointer" ><f:convertNumber type="currency" currencySymbol="$" /></h:outputLabel>
+                                        <h:outputLabel></h:outputLabel>
+                                    </a4j:commandLink>
+                                    <h:graphicImage url="#{facesContext.externalContext.requestContextPath}/images/measuring-tape.png" rendered="#{checkedIn.measurement}"/>
+                                    <h:outputLabel style="color: red" value=" RN" rendered="#{checkedIn.sessionLeft le checkedIn.renewalAlert}"/>
+                                </rich:column>
+                            </rich:dataTable>
+                            <div style="float: right;margin-top: 10px;">
+                                <h:panelGroup rendered="#{systemResultViewUtil.checkedInDataBeanList != null and systemResultViewUtil.checkedInDataBeanList.size() gt 0}">
+                                    <img src="#{facesContext.externalContext.requestContextPath.concat('/images/all-legends.jpg')}"/>
+                                </h:panelGroup>
+                            </div>
+                        </a4j:outputPanel>
+                    </h:form>
+                    <rich:popupPanel id="buyService" minHeight="220" width="400" autosized="true">
+                        <div id="buyServiceLoad">
+                            <div>
+                                <h6>Buy service
+                                    <a value="" style="float: right" onclick="#{rich:component('buyService')}.hide();">
+                                        <img src="#{facesContext.externalContext.requestContextPath}/images/close-btn.jpg" alt="close" title="Close" align="texttop"/>
+                                    </a>
+                                </h6>
+                                <hr class="red"/>
+                            </div>
+                            <h:form prependId="false">
+                                <h:inputHidden value="#{memberBuyServiceDataBean.userId}" id="memberId"/>
+                                <a4j:outputPanel id="buySerPanel">
+                                    <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" >
+                                        <tr>
+                                            <th>
+                                                Service<sup><font color="red">*</font></sup>
+                                            </th>
+                                            <td>
+                                                <h:inputText id="service" value="#{schedulerServiceBean.memberBuyServiceDataBean.service}" styleClass="medium" required="true" maxlength="50" requiredMessage="Enter Service">
+                                                    <f:ajax event="blur" render="serviceErr"/>
+                                                </h:inputText>
+                                                <rich:message id="serviceErr" for="service"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th>
+                                                Charge<sup><font color="red">*</font></sup>
+                                            </th>
+                                            <td>
+                                                <h:inputText id="charge" maxlength="7" value="#{schedulerServiceBean.memberBuyServiceDataBean.amount}" styleClass="medium" converter="#{javax.faces.converter.FloatConverter.FLOAT}" converterMessage="Invalid charge" required="true" requiredMessage="Enter charge" validatorMessage="Invalid charge">
+                                                    <f:ajax event="blur" render="chargeErr"/>
+                                                    <f:validateDoubleRange maximum="10000" minimum="1"/>
+                                                </h:inputText>
+                                                <rich:message id="chargeErr" for="charge"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="2">
+                                                <hr class="red"/>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align: center" colspan="2">
+                                                <a4j:commandButton styleClass="standard-button" value="Paid"  onbegin="loadWaitPanel('buyServiceLoad');" oncomplete="stopWaitPanel('buyServiceLoad');if(#{messageDataBean.isSuccess != null and messageDataBean.isSuccess}) {#{rich:component('buyService')}.hide();};" render="dataMessage,checkedIn" action="#{schedulerServiceBean.buyServiceFromTodaysPBers}">
+                                                    <f:setPropertyActionListener target="#{memberBuyServiceDataBean.status}" value="paid"/>
+                                                </a4j:commandButton>&nbsp;
+                                                <a4j:commandButton styleClass="standard-button" value="Pending" onbegin="loadWaitPanel('buyServiceLoad');" oncomplete="stopWaitPanel('buyServiceLoad');if(#{messageDataBean.isSuccess != null and messageDataBean.isSuccess}) {#{rich:component('buyService')}.hide();};" render="dataMessage,checkedIn" action="#{schedulerServiceBean.buyServiceFromTodaysPBers}">
+                                                    <f:setPropertyActionListener target="#{memberBuyServiceDataBean.status}" value="pnd"/>
+                                                </a4j:commandButton>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    <script type="text/javascript">
+                                         $("#charge").numeric({allow:"."});
+                                    </script>
+                                </a4j:outputPanel>
+                                <a4j:jsFunction name="retrieveCurrentSession" action="#{schedulerServiceBean.retrieveCurrentSessionForTrainer()}"/>
+                            </h:form>
+                        </div>
+                    </rich:popupPanel>
+                    <rich:popupPanel id="outStandingPayment" minHeight="220" width="400" autosized="true">
+                        <div id="outStandingPaymentLoad">
+                            <div>
+                                <h6>Update outstanding payment
+                                    <a value="" style="float: right" onclick="#{rich:component('outStandingPayment')}.hide();">
+                                        <img src="#{facesContext.externalContext.requestContextPath}/images/close-btn.jpg" alt="close" title="Close" align="texttop"/>
+                                    </a>
+                                </h6><hr class="red"/>
+                            </div>
+                            <h:form prependId="false">
+                                <rich:dataTable id="services" value="#{systemResultViewUtil.outStandingPaymentList}" var="service" styleClass="meal-plan" style="width: 100%" rowKeyVar="rowCnt" rowClass="#{rowCnt%2 == 0 ? 'alt-row1':'alt-row'}" >
+                                    <f:facet name="header">
+                                        <rich:columnGroup>
+                                            <rich:column styleClass="header" >
+                                                <h:outputText value="Date"/>
+                                            </rich:column>
+                                            <rich:column styleClass="header">
+                                                <h:outputText value="Service"/>
+                                            </rich:column>
+                                            <rich:column styleClass="header">
+                                                <h:outputText value="Amount($)"/>
+                                            </rich:column>
+                                            <rich:column styleClass="header">
+                                                <h:outputText value="Action"/>
+                                            </rich:column>
+                                        </rich:columnGroup>
+                                    </f:facet>
+                                    <rich:column>
+                                        <h:outputLabel value="#{service.onDate}"><f:convertDateTime pattern="MM/dd/yyyy" /></h:outputLabel>
+                                    </rich:column>
+                                    <rich:column>
+                                        <h:outputLabel value="#{service.service}"/>
+                                    </rich:column>
+                                    <rich:column>
+                                        <h:outputText value="#{service.amount}">
+                                            <f:convertNumber minIntegerDigits="1" minFractionDigits="2"/>
+                                        </h:outputText>
+                                    </rich:column>
+                                    <rich:column>
+                                        <a4j:commandButton value="Paid" styleClass="standard-button" onbegin="loadWaitPanel('outStandingPaymentLoad');" oncomplete="stopWaitPanel('outStandingPaymentLoad');if(#{messageDataBean.isSuccess != null and messageDataBean.isSuccess}) {#{rich:component('outStandingPayment')}.hide();};" render="dataMessage,checkedIn" action="#{schedulerServiceBean.paidMemberServiceFromTodaysPBers}">
+                                            <f:setPropertyActionListener target="#{memberBuyServiceDataBean}" value="#{service}"/>
+                                        </a4j:commandButton>
+                                    </rich:column>
+                                </rich:dataTable>
+                            </h:form>
+                        </div>
+                    </rich:popupPanel>
+                    <rich:popupPanel id="viewInjuryPanel" minHeight="150" width="550" autosized="true">
+                        <div>
+                            <h6>Medical Information
+                                <a value="" style="float: right" onclick="#{rich:component('viewInjuryPanel')}.hide();">
+                                    <img src="#{facesContext.externalContext.requestContextPath}/images/close-btn.jpg" alt="close" title="Close" align="texttop"/>
+                                </a>
+                            </h6>
+                            <hr class="red"/>
+                        </div>
+                        <h:form prependId="false">
+                            <rich:dataTable id="healthDetailDataList" value="#{schedulerServiceBean.memberInjuryList}" var="healthData" styleClass="meal-plan" style="width: 100%" rowKeyVar="rowCnt" rowClass="#{rowCnt%2 == 0 ? 'alt-row1':'alt-row'}">
+                                <f:facet name="header">
+                                    <rich:columnGroup>
+                                        <rich:column styleClass="header" >
+                                            Medical Condition
+                                        </rich:column>
+                                        <rich:column styleClass="header" >
+                                            Intensity
+                                        </rich:column>
+                                        <rich:column styleClass="header" >
+                                            Status
+                                        </rich:column>
+                                        <rich:column styleClass="header" >
+                                            Last updated on
+                                        </rich:column>
+                                    </rich:columnGroup>
+                                </f:facet>
+                                <rich:column>
+                                    <h:outputLabel value="#{healthData.injuryName}" />
+                                </rich:column>
+                                <rich:column>
+                                    <h:outputLabel value="#{healthData.intensity}" />
+                                </rich:column>
+                                <rich:column>
+                                    <h:outputLabel value="#{healthData.status}" />
+                                </rich:column>
+                                <rich:column>
+                                    <h:outputText style="width: 100%" value="#{healthData.lastModifiedDate}">
+                                        <f:convertDateTime type="date" pattern="MM/dd/yyyy" />
+                                    </h:outputText>
+                                </rich:column>
+                            </rich:dataTable>
+                            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" >
+                                <tr>
+                                    <td>
+                                        <hr class="red"/>
+                                        <div align="center">
+                                            <input type="button" value="Ok" class="standard-button" onclick="#{rich:component('viewInjuryPanel')}.hide();"/>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </h:form>
+                    </rich:popupPanel>
+                    <script type="text/javascript">
+
+                        function validateField(){
+                            var uid = document.getElementById("uid").value;
+                            if(uid == ""){
+                                document.getElementById("uid").value = 0;
+                            }
+                        }
+
+                        function setUserIdForService(userId){
+                            document.getElementById("memberId").value = userId;
+                            document.getElementById("service").value = "";
+                            document.getElementById("charge").value = "";
+                        }
+                        $("#charge").numeric({allow:"."});
+                    </script>
+                </div>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

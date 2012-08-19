@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+
+    <body>
+        <ui:composition template="./../layout/adminLayout.xhtml">
+            <ui:define name="content">
+                <h3>Upload A Profile Picture</h3>
+                <hr class="red"/>
+                <div id="content">
+                    <ui:include src="../common/message.xhtml" /> 
+                    <ui:include src="../common/manageProfilePicture.xhtml" />
+                </div>
+                <script type="text/javascript">
+//                   document.getElementById("mySession").setAttribute("class", "active");
+                </script>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

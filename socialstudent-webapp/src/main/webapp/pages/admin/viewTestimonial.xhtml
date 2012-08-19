@@ -1,0 +1,95 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+
+    <ui:composition template="../layout/adminLayout.xhtml">
+        <ui:define name="content">       
+            <script type="text/javascript">
+                    if(document.getElementById("manageTestimonial") != null) {
+                        document.getElementById("manageTestimonial").setAttribute("class", "active");
+                    } else {
+                        location.href ="#{loginDataBean.lendingPage}";
+                    }                    
+                </script>
+            <h:form prependId="false" id="publishTestimonial">
+                <h:outputLabel>
+                    <h3>View Testimonial</h3>
+                </h:outputLabel>
+                <hr class="red"/>
+                <ui:include src="../common/message.xhtml" />             
+                <f:metadata>
+                    <f:event type="preRenderView" listener="#{userServiceBean.retrieveTestimonialById()}" />
+                </f:metadata>
+                <table class="form-table" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td>
+                            <a4j:mediaOutput id="u7_img" style="padding-left: 10px;border:none; width: 200px; height: 220px" 
+                                             element="img" createContent="#{systemResultSessionUtil.drawImage}" 
+                                             value="#{memberTestimonialDetailDataBean.imagePathOld}" rendered="#{memberTestimonialDetailDataBean.imagePathOld != null}" mimeType="image/jpg"  
+                                             styleClass="u7"/>
+                            <h:inputText readonly="true" style="padding-left: 10px;border:1px solid #9E9E9E; width: 200px; height: 220px; vertical-align: middle; text-align: center;font-weight: bold; font-style: italic;" value="No Image" rendered="#{memberTestimonialDetailDataBean.imagePathOld == null}" />
+                        </td>
+                        <td>
+                            <a4j:mediaOutput id="u7_img1" style="padding-left: 10px;border:none; width: 200px; height: 220px" 
+                                             element="img" createContent="#{systemResultSessionUtil.drawImage}" 
+                                             value="#{memberTestimonialDetailDataBean.imagePathNew}" rendered="#{memberTestimonialDetailDataBean.imagePathNew != null}" mimeType="image/jpg"  
+                                             styleClass="u7"/>
+                            <h:inputText readonly="true" style="padding-left: 10px;border:1px solid #9E9E9E; width: 200px; height: 220px; vertical-align: middle; text-align: center;font-weight: bold; font-style: italic;" value="No Image" rendered="#{memberTestimonialDetailDataBean.imagePathNew == null}" />
+                        </td>
+                        <td style="vertical-align: top;">
+                            <h:inputTextarea id="testimonialMessage" style="height: 200px; width: 250px" value="#{memberTestimonialDetailDataBean.message}" onfocus="counterForTextArea('testimonialMessage','testimonialMessageCounter',400)" onkeyup="counterForTextArea('testimonialMessage','testimonialMessageCounter',400)" required="true" requiredMessage="Enter message" />
+                            <font color="red">*</font>
+                            <div style="text-align: right" ><i>
+                                    <h:outputText value="(You can type" style="color: grey;"/> &#160;
+                                    <h:outputText id="testimonialMessageCounter"  value="400" style="color: grey;"/> &#160;
+                                    <h:outputText value="more characters)" style="color: grey;"/></i>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Name
+                            <h:outputText value="#{memberTestimonialDetailDataBean.userName}" />
+                        </td>
+                        <td>
+                            
+                        </td>
+                        <td>
+                            <rich:message for="testimonialMessage" style="color: red"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Posted On
+                            <h:outputText value="#{memberTestimonialDetailDataBean.lastModifiedOn}">
+                                <f:convertDateTime type="date" pattern="MM/dd/yyyy" timeZone="#{systemPropertyUtil.serverTimeZone}"/>
+                            </h:outputText>
+                        </td>
+                    </tr>
+                    
+                </table>
+                <hr class="red"/>
+                <h:commandButton value="Discard" action="#{userServiceBean.discardTestimonial}" styleClass="standard-button" style="float: right;display:#{memberTestimonialDetailDataBean.status eq 'P' or memberTestimonialDetailDataBean.status eq 'UP' ? 'block' : 'none'}">
+                    <f:setPropertyActionListener target="#{memberTestimonialDetailDataBean.id}" value="#{systemResultSessionUtil.id}"/>
+                </h:commandButton>      
+                <h:outputText value="  "/>
+                <h:commandButton value="Publish" action="#{userServiceBean.publishTestimonial}" styleClass="standard-button" style="float: right;display:#{memberTestimonialDetailDataBean.status eq 'P' or memberTestimonialDetailDataBean.status eq 'UP' ? 'block' : 'none'}">
+                    <f:setPropertyActionListener target="#{memberTestimonialDetailDataBean.id}" value="#{systemResultSessionUtil.id}"/>
+                </h:commandButton>                                            
+                <h:outputText value="  "/>
+                <h:commandButton value="UnPublish" action="#{userServiceBean.unPublishTestimonial}" styleClass="standard-button"  style="float: right;display:#{memberTestimonialDetailDataBean.status == 'PU' ? 'block' : 'none'}">
+                    <f:setPropertyActionListener target="#{memberTestimonialDetailDataBean.id}" value="#{systemResultSessionUtil.id}"/>
+                </h:commandButton>
+            </h:form>
+            <script type="text/javascript">
+                counterForTextArea('testimonialMessage','testimonialMessageCounter',400);                                
+            </script>
+        </ui:define>
+    </ui:composition>
+</html>
+

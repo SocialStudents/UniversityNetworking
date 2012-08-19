@@ -1,0 +1,81 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+    <h:body>
+        <ui:composition template="../layout/adminLayout.xhtml">
+            <ui:define name="content">
+                <script type="text/javascript">
+                    if(document.getElementById("searchRole") != null) {
+                        document.getElementById("searchRole").setAttribute("class", "active");
+                    } else {
+                        location.href ="#{loginDataBean.lendingPage}";
+                    }                    
+                </script>
+                <f:metadata>
+                    <f:event type="preRenderView" listener="#{roleServiceBean.retriveAllRoles()}"/>
+                </f:metadata>
+                <h3>Manage Roles</h3>
+                <hr class="red"/>                
+                <div id="content" class="content">
+                    <ui:include src="../common/message.xhtml" />                    
+                    <h:form prependId="false">
+                        <rich:dataTable id="roleDataList" styleClass="meal-plan" rowKeyVar="rowId" style="width:100%;" var="role" value="#{systemResultViewUtil.roleDataBeanList}" rendered="#{systemResultViewUtil.roleDataBeanList != null and not empty systemResultViewUtil.roleDataBeanList}" rows="10" rowClass="#{rowId%2 == 0 ? 'alt-row1':'alt-row'}">
+                            <f:facet name="header">
+                                <rich:columnGroup>
+                                    <rich:column style="width: 30%" styleClass="header">
+                                        <h:outputText value="Role"/>
+                                    </rich:column>
+                                    <rich:column style="width: 70%" styleClass="header">
+                                        <h:outputText value="Rights"/>
+                                    </rich:column>
+                                </rich:columnGroup>
+                            </f:facet>
+                            <rich:column style="vertical-align: top">
+                                <h:outputText value="#{role.roleName}" />
+                            </rich:column>
+                            <rich:column style="vertical-align: top">
+                                <h:outputLabel id="featuresDisplay" style="display: #{roleDataBean.isOpen? 'none' : 'block'}">    
+                                    <ui:repeat value="#{role.featureList}" var="info">
+                                        <h:outputText value="#{info}" /><br />
+                                    </ui:repeat>
+                                </h:outputLabel>
+                                <h:outputLabel id="features" style="display: #{roleDataBean.isOpen? 'block' : 'none'};">                              
+                                    <h:selectManyMenu id="featureMultiSelect" value="#{role.featureIdList}"  style="width: 510px;height: 200px;">
+                                        <script type="text/javascript">
+                                            jQuery("[id$=featureMultiSelect]").multiselect();
+                                        </script>
+                                        <f:selectItems value="#{roleServiceBean.sourceFeatureList}" />
+                                        <f:converter converterId="userRoleConverter"/>
+                                    </h:selectManyMenu>                           
+                                </h:outputLabel>
+                                <h:outputLabel id="buttonPanel">
+                                    <h:outputLabel rendered="#{roleDataBean.isOpen}"><br/><hr class="red"/></h:outputLabel>
+                                    <a4j:commandButton image="#{facesContext.externalContext.requestContextPath}/images/edit.jpg" style="float:right;width:56px;height:24px;display: #{roleDataBean.isOpen ? 'none' :'block'}" styleClass="button" render="features,featuresDisplay,buttonPanel,dataMessage" onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content');">
+                                        <f:setPropertyActionListener value="true" target="#{roleDataBean.isOpen}"/>
+                                    </a4j:commandButton>
+                                    <div align="center" style="width: 100%;">
+                                        <a4j:commandButton value="Submit" style="width:72px;height:29px;display: #{roleDataBean.isOpen ? 'block' :'none'}" styleClass="standard-button" render="features,featuresDisplay" action="#{roleServiceBean.updateRole}" onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content');">
+                                            <f:setPropertyActionListener value="#{role.roleId}" target="#{systemResultSessionUtil.roleId}"/>
+                                            <f:setPropertyActionListener value="#{role.roleName}" target="#{systemResultSessionUtil.roleName}"/>
+                                            <f:setPropertyActionListener value="#{role}" target="#{roleServiceBean.roleDataBean}"/>
+                                        </a4j:commandButton>
+                                    </div>
+                                </h:outputLabel>                                 
+                            </rich:column>
+                            <f:facet name="footer">
+                                <div align="center" style="width: 100%;">
+                                    <rich:dataScroller for="roleDataList" renderIfSinglePage="true" maxPages="10" rendered="#{systemResultViewUtil.roleDataBeanList!=null and not empty systemResultViewUtil.roleDataBeanList}" fastStep="5"></rich:dataScroller>
+                                </div>
+                            </f:facet>
+                        </rich:dataTable>
+                    </h:form>                  
+                </div>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

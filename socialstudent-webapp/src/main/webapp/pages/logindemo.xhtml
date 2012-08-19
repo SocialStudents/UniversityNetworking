@@ -1,0 +1,183 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j">
+    <h:body >
+        <f:metadata>
+            <f:event listener="#{loginServiceBean.checkCookie()}" type="preRenderView"/>
+        </f:metadata>
+        <ui:composition template="./layout/homeLayout.xhtml">
+            <ui:define name="content">
+                <h:form id="loginForm" prependId="false">                    
+                    <div class="login-inner" align="right">
+                        <fieldset class="small" style="border-color:#71C1AB;">
+                            <legend>Login</legend>
+                            <center> <h:outputText value="${sessionScope['SPRING_SECURITY_LAST_EXCEPTION'].message}" style="font-size: 13px;"/></center>
+                            <table width="100%" border="0" cellpadding="0" cellspacing="0"  class="form-table" >                       
+                                <tr>
+                                    <th style="padding:2px;"  width="27%" ><h:outputLabel value="#{msg.UserId}"/></th>
+                                    <td style="padding:2px;"  width="55%" ><h:inputText id="j_username" autocomplete="off"  value="#{loginDataBean.userId}" size="23" style="width: 100%"  maxlength="50"/></td>
+                                    <td style="padding:2px;"  width="18%" >&#160;</td>
+                                </tr>
+                                <tr>
+                                    <th style="padding:2px;" ><h:outputLabel value="#{msg.Password}"/></th>
+                                    <td style="padding:2px;" ><h:inputSecret id="j_password" value="#{loginDataBean.password}" autocomplete="off" size="23" style="width: 100%" maxlength="16"/></td>
+                                    <td style="padding:2px;" ><h:outputLink value="#{facesContext.externalContext.requestContextPath}/forgotPassword" title="#{msg.ResetPassword}">(Reset)</h:outputLink></td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        <th><h:outputLink value="#{facesContext.externalContext.requestContextPath}/registration" title="Register for Login">Register!</h:outputLink></th>
+                                    </th>
+                                </tr>
+                                <tr>
+                                    <th style="padding:2px;" >&#160;</th>
+                                    <td style="text-align:right; padding:2px; " colspan="2">                                                               
+                                        <h:selectBooleanCheckbox id="_spring_security_remember_me" value="#{loginDataBean.rememberMe}" />&#160;<label for="_spring_security_remember_me"><h:outputText value="#{msg.RememberMe}" /></label>&#160;&#160;&#160;
+                                        <h:commandButton value="Login" id="signin_submit" type="submit" action="#{loginServiceBean.doLogin}"  style="padding:4px 10px; background:#71C1AB ; color:black; font-weight:bold; border:1px solid #fff;" onclick="validateUsername();"/>                                
+                                    </td>                            
+                                </tr>
+                            </table>   
+                            <h:button image="#{facesContext.externalContext.requestContextPath}/images/facebook.png" onclick="loginWithFacebook()"/>
+
+                            <!-- Code to post to wall -->
+                            <div id="fb-root"></div>
+                            <script>
+                                var userid;
+                                window.fbAsyncInit = function () {
+
+                                    FB.init({
+                                        appId: '374699759244030',
+                                        status: true,
+                                        cookie: true,
+                                        xfbml: true,
+                                        oauth: true
+                                    });
+
+                                };
+
+                                function PostToWall() {
+                                    alert('Post to wall');
+                                    var mymessage = 'Loged in PBalance at '+new Date();
+                                    var mypic = 'http://115.115.128.52:9191/images/pbalance-logo.jpg';
+                                    var mylink = 'http://www.argusoft.com';
+                                    var myname = 'Argusoft India Ltd.';
+                                    var mydesc = 'This is posted when user gets loged in to PBalance .';
+                                    FB.api('/' + userid + '/feed', 'post', { message: mymessage, picture: mypic, link: mylink, name: myname, description: mydesc }, function (response) {
+                                        alert('Post to wall in fb api');
+                                        if (!response || response.error) {
+                                            alert(response.error.message);
+                                        } else {
+                                            alert('Post ID: ' + response.id);
+                                        }
+                                    });
+                                };
+                                (function (d) {
+                                    var js, id = 'facebook-jssdk'; if (d.getElementById(id)) { return; }
+                                    js = d.createElement('script'); js.id = id; js.async = true;
+                                    js.src = "//connect.facebook.net/en_US/all.js";
+                                    d.getElementsByTagName('head')[0].appendChild(js);
+                                } (document));
+                            </script>
+                        </fieldset>
+                    </div>
+                    <script type="text/javascript">
+                        document.getElementById('j_username').focus();
+                        if (document.getElementById('j_username').value == '#######') {
+                            document.getElementById('j_username').value = '';
+                        }
+                        var obj = '#{loginDataBean.password}';
+                        if (obj != '') {
+                            document.getElementById('j_password').value = obj;
+                        }
+                        var is_checked = '#{loginDataBean.rememberMe}';
+                        if (is_checked == 'false') {
+                            document.getElementById('j_password').value = '';
+                        }
+                        function validateUsername() {
+                            if (document.getElementById('j_username').value == '') {
+                                document.getElementById('j_username').value = '#######';
+                            }
+                        }
+                        
+                        function loginWithFacebook()
+                        {
+                              var appID = "374699759244030";
+                            if (window.location.hash.length == 0) {
+                                var path = 'https://www.facebook.com/dialog/oauth?';
+                                var queryParams = ['client_id=' + appID,
+                                    'redirect_uri=' + window.location,
+                                    'response_type=token','scope=email,publish_stream'];
+                                var query = queryParams.join('&#38;');
+                                var url = path + query;
+                                //                                alert('Url if : '+url);
+                                window.location=url;
+                                window.open(url);
+                            }
+                            else {
+                                var accessToken = window.location.hash.substring(1);
+                                var path = "https://graph.facebook.com/me?";
+                                var queryParams = [accessToken, 'callback=userInfo'];
+                                var query = queryParams.join('&#38;');
+                                var url = path + query;
+                                //                                alert('Else url :'+url);
+                                // use jsonp to call the graph
+                                var script = document.createElement('script');
+                                script.src = url;
+                                document.body.appendChild(script);      
+                            }
+                        }
+                        
+                        function userInfo(user)
+                        {
+                            alert(user.id);
+                            alert(user.first_name);
+                            alert(user.last_name);
+                            alert(user.email);
+                            userid=user.id;
+                            PostToWall();
+                            document.getElementById('userIdFB').value=user.id;
+                            alert(document.getElementById('userIdFB').value);
+                            document.getElementById('userFirstNameFB').value=user.first_name;
+                            alert(document.getElementById('userFirstNameFB').value);
+                            document.getElementById('userLastNameFB').value=user.last_name;
+                            alert(document.getElementById('userLastNameFB').value);
+                            document.getElementById('userEmailFB').value=user.email;
+                            alert(document.getElementById('userEmailFB').value);
+                            document.getElementById('fbSubmit').click();
+                        }
+                    </script>
+                    <script>
+                        function pageLoadFBCheck()
+                        {
+                            //                                 alert('length '+window.location.hash.substring(1).length);
+                            if(window.location.hash.substring(1).length>10)
+                            {
+                                //                                        alert('length in if '+window.location.hash.substring(1).length);
+                                var accessToken = window.location.hash.substring(1);
+                                var path = "https://graph.facebook.com/me?";
+                                var queryParams = [accessToken, 'callback=userInfo'];
+                                var query = queryParams.join('&#38;');
+                                var url = path + query;
+                                //                                        alert('Else url : '+url);
+                                // use jsonp to call the graph
+                                var script = document.createElement('script');
+                                script.src = url;
+                                document.body.appendChild(script);  
+                            }
+                        }
+                    </script>
+                    <!-- Code for facebook Login-->
+                    <h:inputHidden id="userIdFB" value="#{userDataBean.userId}"/>
+                    <h:inputHidden id="userFirstNameFB" value="#{userDataBean.firstName}"/>
+                    <h:inputHidden id="userLastNameFB" value="#{userDataBean.lastName}"/>
+                    <h:inputHidden id="userEmailFB"  value="#{userDataBean.email}"/>
+                    <h:commandButton id="fbSubmit" type="submit" style="display: none" action="#{loginServiceBean.facebookLogin()}"/>
+                </h:form>                        
+            </ui:define>
+        </ui:composition>
+    </h:body>       
+</html>
+

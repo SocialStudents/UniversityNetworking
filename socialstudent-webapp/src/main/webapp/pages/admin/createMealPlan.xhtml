@@ -1,0 +1,387 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+    <h:body>
+        <ui:composition template="../layout/adminLayout.xhtml">
+            <ui:define name="content">
+                <script type="text/javascript">
+                   if(document.getElementById("manageMealPlan") != null) {
+                       document.getElementById("manageMealPlan").setAttribute("class", "active");
+                   } else {
+                       location.href ="#{loginDataBean.lendingPage}";
+                   }                    
+                </script>
+                <f:metadata>
+                    <f:event type="preRenderView" listener="#{userServiceBean.clearFlashData()}"/>
+                </f:metadata>
+
+                <h:form prependId="false">
+
+                    <h3>Write A New Meal Plan</h3>
+                    <div align="right" style="margin-top: -23px"> <h:outputText value="(Fields marked with * are mandatory)" styleClass="infomessages"/></div>                 
+                    <hr class="red"/>
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0" class="form-table">
+                        <tr>
+                            <td width="10%">
+                                <h:outputText value="Title" /><sup><font color="red">*</font></sup>
+                            </td>
+                            <td width="35%">
+                                <h:inputText style="width: 90%;" styleClass="medium"  value="#{mealPlanDataBean.name}" id="Title" required="true" requiredMessage="Enter Title" maxlength="50">
+                                    <f:ajax event="blur" render="titleMsg" />
+                                </h:inputText>
+                                <h:message for="Title" style="color: red" id="titleMsg" />
+                            </td>
+
+                            <td width="15%">
+                                <h:outputText value="Category" />
+                            </td>
+                            <td width="40%">
+                                <h:selectOneMenu id="category" value="#{systemResultViewUtil.mealplanCat}">
+                                    <f:selectItem itemLabel="Vegetarian" itemValue="V" />
+                                    <f:selectItem itemLabel="Non-Vegetarian" itemValue="NV"/>  
+                                    <a4j:ajax event="change" execute="@this" render="temp" />
+                                </h:selectOneMenu>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0" class="form-table">
+                        <tr>
+                            <font style="size: 120%">
+                                <th width="5%" class="header"><h:outputText value="Day"/></th>
+                                <th width="19%" class="header"><h:outputText value="BreakFast" /></th>
+                                <th width="19%" class="header"><h:outputText value="Snack" /></th>
+                                <th width="19%" class="header"><h:outputText value="Lunch" /></th>
+                                <th width="19%" class="header"><h:outputText value="Snack" /></th>
+                                <th width="19%" class="header"><h:outputText value="Dinner" /></th>
+                            </font>
+                        </tr>
+                        <tr>
+                            <td width="5%"> <h:outputText value="1"/> </td>
+                            <td>
+                                <h:inputTextarea id="day1BreakFast" value="#{mealPlanDataBean.day1Breakfast}" style="width: 80%; resize: none" onkeyup="counterForTextArea('','day1BreakFast',150)"/>
+                                <a4j:commandLink style="float: right" immediate="true" execute="@this" oncomplete="setHiddenField('day1BreakFast');#{rich:component('addRecipe')}.show();" render="temp">
+                                    <img id="day1BreakfastAdd" src="#{facesContext.externalContext.requestContextPath}/images/add_merchant.jpg" alt="add" title="Add New Recipe" align="texttop"/>
+                                    <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="BF"/>
+                                </a4j:commandLink>
+                            </td>
+                            <td>
+                                <h:inputTextarea id="day1Snack" value="#{mealPlanDataBean.day1Snack1}" style="width: 80%;resize: none" onkeyup="counterForTextArea('','day1Snack',150)"/>
+                                <a4j:commandLink style="float: right" immediate="true" execute="@this" oncomplete="setHiddenField('day1Snack');#{rich:component('addRecipe')}.show();" render="temp">
+                                    <img id="day1Snack1Add" src="#{facesContext.externalContext.requestContextPath}/images/add_merchant.jpg" alt="add" title="Add New Recipe" align="texttop"/>
+                                    <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="SN"/>
+                                </a4j:commandLink>
+                            </td>
+                            <td>
+                                <h:inputTextarea id="day1Lunch" value="#{mealPlanDataBean.day1Lunch}" style="width: 80%;resize: none" onkeyup="counterForTextArea('','day1Lunch',150)"/>
+                                <a4j:commandLink style="float: right" immediate="true" execute="@this" oncomplete="setHiddenField('day1Lunch');#{rich:component('addRecipe')}.show();" render="temp">
+                                    <img id="day1LunchAdd" src="#{facesContext.externalContext.requestContextPath}/images/add_merchant.jpg" alt="add" title="Add New Recipe" align="texttop"/>
+                                    <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="LD"/>
+                                </a4j:commandLink>
+                            </td>
+                            <td>
+                                <h:inputTextarea id="day1Snack2" value="#{mealPlanDataBean.day1Snack2}" style="width: 80%;resize: none" onkeyup="counterForTextArea('','day1Snack2',150)"/>
+                                <a4j:commandLink style="float: right" immediate="true" execute="@this" oncomplete="setHiddenField('day1Snack2');#{rich:component('addRecipe')}.show();" render="temp">
+                                    <img id="day1Snack2Add" src="#{facesContext.externalContext.requestContextPath}/images/add_merchant.jpg" alt="add" title="Add New Recipe" align="texttop"/>
+                                    <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="SN"/>
+                                </a4j:commandLink>
+                            </td>
+                            <td>
+                                <h:inputTextarea id="day1Dinner" value="#{mealPlanDataBean.day1Dinner}" style="width: 80%;resize: none" onkeyup="counterForTextArea('','day1Dinner',150)"/>
+                                <a4j:commandLink style="float: right" immediate="true" execute="@this" oncomplete="setHiddenField('day1Dinner');#{rich:component('addRecipe')}.show();" render="temp">
+                                    <img id="day1DinnerAdd" src="#{facesContext.externalContext.requestContextPath}/images/add_merchant.jpg" alt="add" title="Add New Recipe" align="texttop"/>
+                                    <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="LD"/>
+                                </a4j:commandLink>
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td width="5%"> <h:outputText value="2"/> </td>
+                            <td>
+                                <h:inputTextarea id="day2BreakFast" value="#{mealPlanDataBean.day2Breakfast}" style="width: 80%;resize: none" onkeyup="counterForTextArea('','day2BreakFast',150)"/>
+                                <a4j:commandLink style="float: right" immediate="true" execute="@this" oncomplete="setHiddenField('day2BreakFast');#{rich:component('addRecipe')}.show();" render="temp">
+                                    <img id="day2BreakfastAdd" src="#{facesContext.externalContext.requestContextPath}/images/add_merchant.jpg" alt="add" title="Add New Recipe" align="texttop"/>
+                                    <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="BF"/>
+                                </a4j:commandLink>
+                            </td>
+                            <td>
+                                <h:inputTextarea id="day2Snack" value="#{mealPlanDataBean.day2Snack1}" style="width: 80%;resize: none" onkeyup="counterForTextArea('','day2Snack',150)"/>
+                                <a4j:commandLink style="float: right" immediate="true" execute="@this" oncomplete="setHiddenField('day2Snack');#{rich:component('addRecipe')}.show();" render="temp">
+                                    <img id="day2Snack" src="#{facesContext.externalContext.requestContextPath}/images/add_merchant.jpg" alt="add" title="Add New Recipe" align="texttop"/>
+                                    <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="SN"/>
+                                </a4j:commandLink>
+                            </td>
+                            <td>
+                                <h:inputTextarea id="day2Lunch" value="#{mealPlanDataBean.day2Lunch}" style="width: 80%;resize: none" onkeyup="counterForTextArea('','day2Lunch',150)"/>
+                                <a4j:commandLink style="float: right" immediate="true" execute="@this" oncomplete="setHiddenField('day2Lunch');#{rich:component('addRecipe')}.show();" render="temp">
+                                    <img id="day2Lunch" src="#{facesContext.externalContext.requestContextPath}/images/add_merchant.jpg" alt="add" title="Add New Recipe" align="texttop"/>
+                                    <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="LD"/>
+                                </a4j:commandLink>
+                            </td>
+                            <td>
+                                <h:inputTextarea id="day2Snack2" value="#{mealPlanDataBean.day2Snack2}" style="width: 80%;resize: none" onkeyup="counterForTextArea('','day2Snack2',150)"/>
+                                <a4j:commandLink style="float: right" immediate="true" execute="@this" oncomplete="setHiddenField('day2Snack2');#{rich:component('addRecipe')}.show();" render="temp">
+                                    <img id="day2Snack2Add" src="#{facesContext.externalContext.requestContextPath}/images/add_merchant.jpg" alt="add" title="Add New Recipe" align="texttop"/>
+                                    <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="SN"/>
+                                </a4j:commandLink>
+                            </td>
+                            <td>
+                                <h:inputTextarea id="day2Dinner" value="#{mealPlanDataBean.day2Dinner}" style="width: 80%;resize: none" onkeyup="counterForTextArea('','day2Dinner',150)"/>
+                                <a4j:commandLink style="float: right" immediate="true" execute="@this" oncomplete="setHiddenField('day2Dinner');#{rich:component('addRecipe')}.show();" render="temp">
+                                    <img id="day2DinnerAdd" src="#{facesContext.externalContext.requestContextPath}/images/add_merchant.jpg" alt="add" title="Add New Recipe" align="texttop"/>
+                                    <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="LD"/>
+                                </a4j:commandLink>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="5%"> <h:outputText value="3"/> </td>
+                            <td>
+                                <h:inputTextarea id="day3BreakFast" value="#{mealPlanDataBean.day3Breakfast}" style="width: 80%;resize: none" onkeyup="counterForTextArea('','day3BreakFast',150)"/>
+                                <a4j:commandLink style="float: right" immediate="true" execute="@this" oncomplete="setHiddenField('day3BreakFast');#{rich:component('addRecipe')}.show();" render="temp">
+                                    <img id="day3BreakfastAdd" src="#{facesContext.externalContext.requestContextPath}/images/add_merchant.jpg" alt="add" title="Add New Recipe" align="texttop"/>
+                                    <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="BF"/>
+                                </a4j:commandLink>
+                            </td>
+                            <td>
+                                <h:inputTextarea id="day3Snack" value="#{mealPlanDataBean.day3Snack1}" style="width: 80%;resize: none" onkeyup="counterForTextArea('','day3Snack',150)"/>
+                                <a4j:commandLink style="float: right" immediate="true" execute="@this" oncomplete="setHiddenField('day3Snack');#{rich:component('addRecipe')}.show();" render="temp">
+                                    <img id="day3Snack1Add" src="#{facesContext.externalContext.requestContextPath}/images/add_merchant.jpg" alt="add" title="Add New Recipe" align="texttop"/>
+                                    <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="SN"/>
+                                </a4j:commandLink>
+                            </td>
+                            <td>
+                                <h:inputTextarea id="day3Lunch" value="#{mealPlanDataBean.day3Lunch}" style="width: 80%;resize: none" onkeyup="counterForTextArea('','day3Lunch',150)"/>
+                                <a4j:commandLink style="float: right" immediate="true" execute="@this" oncomplete="setHiddenField('day3Lunch');#{rich:component('addRecipe')}.show();" render="temp">
+                                    <img id="day3LunchAdd" src="#{facesContext.externalContext.requestContextPath}/images/add_merchant.jpg" alt="add" title="Add New Recipe" align="texttop"/>
+                                    <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="LD"/>
+                                </a4j:commandLink>
+                            </td>
+                            <td>
+                                <h:inputTextarea id="day3Snack2" value="#{mealPlanDataBean.day3Snack2}" style="width: 80%;resize: none" onkeyup="counterForTextArea('','day3Snack2',150)"/>
+                                <a4j:commandLink style="float: right" immediate="true" execute="@this" oncomplete="setHiddenField('day3Snack2');#{rich:component('addRecipe')}.show();" render="temp">
+                                    <img id="day3Snack2Add" src="#{facesContext.externalContext.requestContextPath}/images/add_merchant.jpg" alt="add" title="Add New Recipe" align="texttop"/>
+                                    <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="SN"/>
+                                </a4j:commandLink>
+                            </td>
+                            <td>
+                                <h:inputTextarea id="day3Dinner" value="#{mealPlanDataBean.day3Dinner}" style="width: 80%;resize: none" onkeyup="counterForTextArea('','day3Dinner',150)"/>
+                                <a4j:commandLink style="float: right" immediate="true" execute="@this" oncomplete="setHiddenField('day3Dinner');#{rich:component('addRecipe')}.show();" render="temp">
+                                    <img id="day3DinnerAdd" src="#{facesContext.externalContext.requestContextPath}/images/add_merchant.jpg" alt="add" title="Add New Recipe" align="texttop"/>
+                                    <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="LD"/>
+                                </a4j:commandLink>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="5%"> <h:outputText value="4"/> </td>
+                            <td>
+                                <h:inputTextarea id="day4BreakFast" value="#{mealPlanDataBean.day4Breakfast}" style="width: 80%;resize: none" onkeyup="counterForTextArea('','day4BreakFast',150)"/>
+                                <a4j:commandLink style="float: right" immediate="true" execute="@this" oncomplete="setHiddenField('day4BreakFast');#{rich:component('addRecipe')}.show();" render="temp">
+                                    <img id="day4BreakfastAdd" src="#{facesContext.externalContext.requestContextPath}/images/add_merchant.jpg" alt="add" title="Add New Recipe" align="texttop"/>
+                                    <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="BF"/>
+                                </a4j:commandLink>
+                            </td>
+                            <td>
+                                <h:inputTextarea id="day4Snack" value="#{mealPlanDataBean.day4Snack1}" style="width: 80%;resize: none" onkeyup="counterForTextArea('','day4Snack',150)" />
+                                <a4j:commandLink style="float: right" immediate="true" execute="@this" oncomplete="setHiddenField('day4Snack');#{rich:component('addRecipe')}.show();" render="temp">
+                                    <img id="day4BreakfastAdd" src="#{facesContext.externalContext.requestContextPath}/images/add_merchant.jpg" alt="add" title="Add New Recipe" align="texttop"/>
+                                    <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="SN"/>
+                                </a4j:commandLink>
+                            </td>
+                            <td>
+                                <h:inputTextarea id="day4Lunch" value="#{mealPlanDataBean.day4Lunch}" style="width: 80%;resize: none" onkeyup="counterForTextArea('','day4Lunch',150)"/>
+                                <a4j:commandLink style="float: right" immediate="true" execute="@this" oncomplete="setHiddenField('day4Lunch');#{rich:component('addRecipe')}.show();" render="temp">
+                                    <img id="day4LunchAdd" src="#{facesContext.externalContext.requestContextPath}/images/add_merchant.jpg" alt="add" title="Add New Recipe" align="texttop"/>
+                                    <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="LD"/>
+                                </a4j:commandLink>
+                            </td>
+                            <td>
+                                <h:inputTextarea id="day4Snack2" value="#{mealPlanDataBean.day4Snack2}" style="width: 80%;resize: none" onkeyup="counterForTextArea('','day4Snack2',150)"/>
+                                <a4j:commandLink style="float: right" immediate="true" execute="@this" oncomplete="setHiddenField('day4Snack2');#{rich:component('addRecipe')}.show();" render="temp">
+                                    <img id="day4Snack2Add" src="#{facesContext.externalContext.requestContextPath}/images/add_merchant.jpg" alt="add" title="Add New Recipe" align="texttop"/>
+                                    <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="SN"/>
+                                </a4j:commandLink>
+                            </td>
+                            <td>
+                                <h:inputTextarea id="day4Dinner" value="#{mealPlanDataBean.day4Dinner}" style="width: 80%;resize: none" onkeyup="counterForTextArea('','day4Dinner',150)"/>
+                                <a4j:commandLink style="float: right" immediate="true" execute="@this" oncomplete="setHiddenField('day4Dinner');#{rich:component('addRecipe')}.show();" render="temp">
+                                    <img id="day4DinnerAdd" src="#{facesContext.externalContext.requestContextPath}/images/add_merchant.jpg" alt="add" title="Add New Recipe" align="texttop"/>
+                                    <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="LD"/>
+                                </a4j:commandLink>
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td width="5%"> <h:outputText value="5"/> </td>
+                            <td>
+                                <h:inputTextarea id="day5BreakFast" value="#{mealPlanDataBean.day5Breakfast}" style="width: 80%;resize: none" onkeyup="counterForTextArea('','day5BreakFast',150)"/>
+                                <a4j:commandLink style="float: right" immediate="true" execute="@this" oncomplete="setHiddenField('day5BreakFast');#{rich:component('addRecipe')}.show();" render="temp">
+                                    <img id="day5BreakfastAdd" src="#{facesContext.externalContext.requestContextPath}/images/add_merchant.jpg" alt="add" title="Add New Recipe" align="texttop"/>
+                                    <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="BF"/>
+                                </a4j:commandLink>
+                            </td>
+                            <td>
+                                <h:inputTextarea id="day5Snack" value="#{mealPlanDataBean.day5Snack1}" style="width: 80%;resize: none" onkeyup="counterForTextArea('','day5Snack',150)"/>
+                                <a4j:commandLink style="float: right" immediate="true" execute="@this" oncomplete="setHiddenField('day5Snack');#{rich:component('addRecipe')}.show();" render="temp">
+                                    <img id="day5Snack1Add" src="#{facesContext.externalContext.requestContextPath}/images/add_merchant.jpg" alt="add" title="Add New Recipe" align="texttop"/>
+                                    <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="SN"/>
+                                </a4j:commandLink>
+                            </td>
+                            <td>
+                                <h:inputTextarea id="day5Lunch" value="#{mealPlanDataBean.day5Lunch}" style="width: 80%;resize: none" onkeyup="counterForTextArea('','day5Lunch',150)"/>
+                                <a4j:commandLink style="float: right" immediate="true" execute="@this" oncomplete="setHiddenField('day5Lunch');#{rich:component('addRecipe')}.show();" render="temp">
+                                    <img id="day5LunchAdd" src="#{facesContext.externalContext.requestContextPath}/images/add_merchant.jpg" alt="add" title="Add New Recipe" align="texttop"/>
+                                    <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="LD"/>
+                                </a4j:commandLink>
+                            </td>
+                            <td>
+                                <h:inputTextarea id="day5Snack2" value="#{mealPlanDataBean.day5Snack2}" style="width: 80%;resize: none" onkeyup="counterForTextArea('','day5Snack2',150)"/>
+                                <a4j:commandLink style="float: right" immediate="true" execute="@this" oncomplete="setHiddenField('day5Snack2');#{rich:component('addRecipe')}.show();" render="temp">
+                                    <img id="day5Snack2Add" src="#{facesContext.externalContext.requestContextPath}/images/add_merchant.jpg" alt="add" title="Add New Recipe" align="texttop"/>
+                                    <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="SN"/>
+                                </a4j:commandLink>
+                            </td>
+                            <td>
+                                <h:inputTextarea id="day5Dinner" value="#{mealPlanDataBean.day5Dinner}" style="width: 80%;resize: none" onkeyup="counterForTextArea('','day5Dinner',150)"/>
+                                <a4j:commandLink style="float: right" immediate="true" execute="@this" oncomplete="setHiddenField('day5Dinner');#{rich:component('addRecipe')}.show();" render="temp">
+                                    <img id="day5DinnerAdd" src="#{facesContext.externalContext.requestContextPath}/images/add_merchant.jpg" alt="add" title="Add New Recipe" align="texttop"/>
+                                    <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="LD"/>
+                                </a4j:commandLink>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="5%"> <h:outputText value="6"/> </td>
+                            <td>
+                                <h:inputTextarea id="day6BreakFast" value="#{mealPlanDataBean.day6Breakfast}" style="width: 80%;resize: none" onkeyup="counterForTextArea('','day6BreakFast',150)"/>
+                                <a4j:commandLink style="float: right" immediate="true" execute="@this" oncomplete="setHiddenField('day6BreakFast');#{rich:component('addRecipe')}.show();" render="temp">
+                                    <img id="day6BreakfastAdd" src="#{facesContext.externalContext.requestContextPath}/images/add_merchant.jpg" alt="add" title="Add New Recipe" align="texttop"/>
+                                    <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="BF"/>
+                                </a4j:commandLink>
+                            </td>
+                            <td>
+                                <h:inputTextarea id="day6Snack"  value="#{mealPlanDataBean.day6Snack1}" style="width: 80%;resize: none" onkeyup="counterForTextArea('','day6Snack',150)"/>
+                                <a4j:commandLink style="float: right" immediate="true" execute="@this" oncomplete="setHiddenField('day6Snack');#{rich:component('addRecipe')}.show();" render="temp">
+                                    <img id="day6Snack1Add" src="#{facesContext.externalContext.requestContextPath}/images/add_merchant.jpg" alt="add" title="Add New Recipe" align="texttop"/>
+                                    <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="SN"/>
+                                </a4j:commandLink>
+                            </td>
+                            <td>
+                                <h:inputTextarea id="day6Lunch" value="#{mealPlanDataBean.day6Lunch}" style="width: 80%;resize: none" onkeyup="counterForTextArea('','day6Lunch',150)"/>
+                                <a4j:commandLink style="float: right" immediate="true" execute="@this" oncomplete="setHiddenField('day6Lunch');#{rich:component('addRecipe')}.show();" render="temp">
+                                    <img id="day6LunchAdd" src="#{facesContext.externalContext.requestContextPath}/images/add_merchant.jpg" alt="add" title="Add New Recipe" align="texttop"/>
+                                    <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="LD"/>
+                                </a4j:commandLink>
+                            </td>
+                            <td>
+                                <h:inputTextarea id="day6Snack2" value="#{mealPlanDataBean.day6Snack2}" style="width: 80%;resize: none" onkeyup="counterForTextArea('','day6Snack2',150)"/>
+                                <a4j:commandLink style="float: right" immediate="true" execute="@this" oncomplete="setHiddenField('day6Snack2');#{rich:component('addRecipe')}.show();" render="temp">
+                                    <img id="day6Snack2Add" src="#{facesContext.externalContext.requestContextPath}/images/add_merchant.jpg" alt="add" title="Add New Recipe" align="texttop"/>
+                                    <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="SN"/>
+                                </a4j:commandLink>
+                            </td>
+                            <td>
+                                <h:inputTextarea id="day6Dinner" value="#{mealPlanDataBean.day6Dinner}" style="width: 80%;resize: none" onkeyup="counterForTextArea('','day6Dinner',150)"/>
+                                <a4j:commandLink style="float: right" immediate="true" execute="@this" oncomplete="setHiddenField('day6Dinner');#{rich:component('addRecipe')}.show();" render="temp">
+                                    <img id="day6DinnerAdd" src="#{facesContext.externalContext.requestContextPath}/images/add_merchant.jpg" alt="add" title="Add New Recipe" align="texttop"/>
+                                    <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="LD"/>
+                                </a4j:commandLink>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="5%"> <h:outputText value="7"/> </td>
+                            <td>
+                                <h:inputTextarea id="day7BreakFast" value="#{mealPlanDataBean.day7Breakfast}" style="width: 80%;resize: none" onkeyup="counterForTextArea('','day7BreakFast',150)"/>
+                                <a4j:commandLink style="float: right" immediate="true" execute="@this" oncomplete="setHiddenField('day7BreakFast');#{rich:component('addRecipe')}.show();" render="temp">
+                                    <img id="day7BreakfastAdd" src="#{facesContext.externalContext.requestContextPath}/images/add_merchant.jpg" alt="add" title="Add New Recipe" align="texttop"/>
+                                    <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="BF"/>
+                                </a4j:commandLink>
+                            </td>
+                            <td>
+                                <h:inputTextarea id="day7Snack" value="#{mealPlanDataBean.day7Snack1}" style="width: 80%;resize: none" onkeyup="counterForTextArea('','day7Snack',150)"/>
+                                <a4j:commandLink style="float: right" immediate="true" execute="@this" oncomplete="setHiddenField('day7Snack');#{rich:component('addRecipe')}.show();" render="temp">
+                                    <img id="day7Snack1Add" src="#{facesContext.externalContext.requestContextPath}/images/add_merchant.jpg" alt="add" title="Add New Recipe" align="texttop"/>
+                                    <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="SN"/>
+                                </a4j:commandLink>
+                            </td>
+                            <td>
+                                <h:inputTextarea id="day7Lunch" value="#{mealPlanDataBean.day7Lunch}" style="width: 80%;resize: none" onkeyup="counterForTextArea('','day7Lunch',150)"/>
+                                <a4j:commandLink style="float: right" immediate="true" execute="@this" oncomplete="setHiddenField('day7Lunch');#{rich:component('addRecipe')}.show();" render="temp">
+                                    <img id="day7LunchAdd" src="#{facesContext.externalContext.requestContextPath}/images/add_merchant.jpg" alt="add" title="Add New Recipe" align="texttop"/>
+                                    <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="LD"/>
+                                </a4j:commandLink>
+                            </td>
+                            <td>
+                                <h:inputTextarea id="day7Snack2" value="#{mealPlanDataBean.day7Snack2}" style="width: 80%;resize: none" onkeyup="counterForTextArea('','day7Snack2',150)"/>
+                                <a4j:commandLink style="float: right" immediate="true" execute="@this" oncomplete="setHiddenField('day7Snack2');#{rich:component('addRecipe')}.show();" render="temp">
+                                    <img id="day7Snack2Add" src="#{facesContext.externalContext.requestContextPath}/images/add_merchant.jpg" alt="add" title="Add New Recipe" align="texttop"/>
+                                    <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="SN"/>
+                                </a4j:commandLink>
+                            </td>
+                            <td>
+                                <h:inputTextarea id="day7Dinner" value="#{mealPlanDataBean.day7Dinner}" style="width: 80%;resize: none" onkeyup="counterForTextArea('','day7Dinner',150)"/>
+                                <a4j:commandLink style="float: right" immediate="true" execute="@this" oncomplete="setHiddenField('day7Dinner');#{rich:component('addRecipe')}.show();" render="temp">
+                                    <img id="day7DinnerAdd" src="#{facesContext.externalContext.requestContextPath}/images/add_merchant.jpg" alt="add" title="Add New Recipe" align="texttop"/>
+                                    <f:setPropertyActionListener target="#{systemResultViewUtil.categorySelected}" value="LD"/>
+                                </a4j:commandLink>
+                            </td>
+                        </tr>
+                    </table>
+                    <br></br>
+                    <hr class="red"/>
+                    <div align="center">
+                        <a4j:commandButton value="Submit" action="#{mealPlanServiceBean.createMealPlan()}" styleClass="standard-button" onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content');">                                            
+                        </a4j:commandButton>
+                    </div>
+                    <h:inputHidden id="hiddenIdTextBox"/>
+                </h:form>
+
+                <rich:popupPanel id="addRecipe" minHeight="500" width="535" autosized="true" style="backface-visibility: visible ">
+                    <h:form id="popUpPanel" prependId="false">
+                        <a4j:outputPanel id="temp">
+                            <script>
+                                applyCss();
+                            </script>
+                            <h6>Recipes
+                                <img id="closeImage" onclick="#{rich:component('addRecipe')}.hide()()" src="#{facesContext.externalContext.requestContextPath}/images/close-btn.jpg" alt="add" title="Add New Recipe" align="texttop" style="float: right"/>
+                            </h6>
+                            <hr class="red"/>
+                            <h:outputLabel id="multiselectPanel" >
+                                <h:selectManyMenu id="featureMultiSelect" value="#{mealPlanServiceBean.recipeSelectedList}" style="width: 510px;height: 200px;" >
+                                    <f:selectItems value="#{mealPlanServiceBean.recipeNameList}"/>
+                                    <f:converter converterId="userRoleConverter"/>
+                                </h:selectManyMenu> 
+                            </h:outputLabel>
+                            <hr class="red"/>
+                            <div align="center">
+                                <a4j:commandButton value="Submit" action="#{mealPlanServiceBean.convertListToString()}" execute="featureMultiSelect" styleClass="standard-button" oncomplete="setTextArea('#{mealPlanDataBean.textToInsert}');#{rich:component('addRecipe')}.hide();" />                                            
+                            </div>
+                        </a4j:outputPanel>
+                    </h:form>
+                    <script type="text/javascript">
+                        function applyCss() {
+                            jQuery("[id$=featureMultiSelect]").multiselect();
+                        }
+                    </script>
+                </rich:popupPanel>
+
+                <script type="text/javascript">                   
+                    applyCss();
+                    function setHiddenField(temp){
+                        $(".remove-all").click();
+                        document.getElementById("hiddenIdTextBox").value = temp;
+                    }
+                    
+                    function setTextArea(temp1){
+                        var temp = document.getElementById('hiddenIdTextBox').value;
+                        document.getElementById(temp).value += unescape(temp1);
+                    }
+                </script>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>
+

@@ -1,0 +1,184 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+
+    <body>
+        <ui:composition template="./../layout/adminLayout.xhtml">
+            <ui:define name="content">
+                <script type="text/javascript">
+                    if(document.getElementById("manageRoster") != null) {
+                        document.getElementById("manageRoster").setAttribute("class", "active");
+                    } else {
+                        location.href ="#{loginDataBean.lendingPage}";
+                    }                    
+                </script>
+                <f:metadata>
+                    <f:event type="preRenderComponent" listener="#{schedulerServiceBean.retriveShiftInfo()}" />
+                </f:metadata>
+                <h3>Enter Session Details</h3>
+                <div align="right" style="margin-top: -23px"> <h:outputText value="(Fields marked with * are mandatory)" styleClass="infomessages"/></div>                 
+                <hr class="red"/>
+                <div id="content">
+                    <h:form prependId="false">
+                        <script type="text/javascript">
+                            var availableTags = [];
+                            var selectedDay = [];
+                            $(document).ready(function() {
+
+                            function split( val ) {
+                                    return val.split( /,\s*/ );
+                            }
+                            function extractLast( term ) {
+                                    return split( term ).pop();
+                            }
+
+
+                            $(document).ready(function() {
+                                  $("#trainers").data("placeholder", "Select Specialist").chosen();
+                            });
+
+                   selectedDay.push("#{systemResultSessionUtil.selectedDay}");
+                   $("#"+"#{systemResultSessionUtil.selectedDay}").css("background-image","url(#{facesContext.externalContext.requestContextPath}/images/book-slot-selected.png)");
+                   $("#"+"#{systemResultSessionUtil.selectedDay}"+" span").css("color","#FFFFFF");
+                   document.getElementById("selectedDays").value = selectedDay;
+                        });
+                        </script>
+                        <h:inputHidden id="selectedDays" value="#{schedulerServiceBean.slotDay}"/>
+                        <ui:include src="../common/message.xhtml" />
+                        <table>
+                            <tr>
+                                <td>
+                                    <h:panelGroup rendered="#{shiftCalendarDataBean.sunSlot == null}">
+                                        <div class="days" id="SUN" style="cursor: pointer;margin-left: 0px;float: left;top: -3px;width: 33px;height: 33px;background-repeat: no-repeat;background-image:url(#{facesContext.externalContext.requestContextPath}/images/book-slot.png)" onclick="selectDay('SUN')">
+                                            <center><div style="padding-top: 10px;"><span class="day" style="width: 46px;height: 25px;font-family: Arial; font-size: 14px; font-weight: bold; font-style: normal; text-decoration: none; color: black; cursor: pointer;">S</span></div></center>
+                                        </div>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{shiftCalendarDataBean.sunSlot != null}">
+                                        <div class="days" id="SUN" style="margin-left: 0px;float: left;top: -3px;width: 33px;height: 33px;background-repeat: no-repeat;background-image:url(#{facesContext.externalContext.requestContextPath}/images/book-slot-disabled.png)" >
+                                            <center><div style="padding-top: 10px;"><span class="day" style="width: 46px;height: 25px;font-family: Arial; font-size: 14px; font-weight: bold; font-style: normal; text-decoration: none; color: rgb(255, 255, 255); ">S</span></div></center>
+                                        </div>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{shiftCalendarDataBean.monSlot == null}">
+                                        <div class="days" id="MON" style="cursor: pointer;margin-left: 10px;float:left;top: -3px;width: 34px;height: 34px;background-repeat: no-repeat;background-image:url(#{facesContext.externalContext.requestContextPath}/images/book-slot.png)" onclick="selectDay('MON')">
+                                            <center><div style="padding-top: 10px"><span class="day" style="width: 46px;height: 25px;font-family: Arial; font-size: 14px; font-weight: bold; font-style: normal; text-decoration: none; color: black;cursor: pointer; ">M</span></div></center>
+                                        </div>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{shiftCalendarDataBean.monSlot != null}">
+                                        <div class="days" id="MON" style="margin-left: 10px;float:left;top: -3px;width: 34px;height: 34px;background-repeat: no-repeat;background-image:url(#{facesContext.externalContext.requestContextPath}/images/book-slot-disabled.png)">
+                                            <center><div style="padding-top: 10px"><span class="day" style="width: 46px;height: 25px;font-family: Arial; font-size: 14px; font-weight: bold; font-style: normal; text-decoration: none; color: rgb(255, 255, 255); ">M</span></div></center>
+                                        </div>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{shiftCalendarDataBean.tueSlot == null}">
+                                        <div class="days" id="TUE" style="cursor: pointer;margin-left: 10px;float:left;top: -3px;width: 34px;height: 34px;background-repeat: no-repeat;background-image:url(#{facesContext.externalContext.requestContextPath}/images/book-slot.png)" onclick="selectDay('TUE')">
+                                            <center><div style="padding-top: 10px"><span class="day" style="width: 46px;height: 25px;font-family: Arial; font-size: 14px; font-weight: bold; font-style: normal; text-decoration: none; color: black; cursor: pointer;">T</span></div></center>
+                                        </div>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{shiftCalendarDataBean.tueSlot != null}">
+                                        <div class="days" id="TUE" style="margin-left: 10px;float:left;top: -3px;width: 34px;height: 34px;background-repeat: no-repeat;background-image:url(#{facesContext.externalContext.requestContextPath}/images/book-slot-disabled.png)" >
+                                            <center><div style="padding-top: 10px"><span class="day" style="width: 46px;height: 25px;font-family: Arial; font-size: 14px; font-weight: bold; font-style: normal; text-decoration: none; color: rgb(255, 255, 255); ">T</span></div></center>
+                                        </div>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{shiftCalendarDataBean.wedSlot == null}">
+                                        <div class="days" id="WED" style="cursor: pointer;margin-left: 10px;float: left;top: -3px;width: 34px;height: 34px;background-repeat: no-repeat;background-image:url(#{facesContext.externalContext.requestContextPath}/images/book-slot.png)" onclick="selectDay('WED')">
+                                            <center><div style="padding-top: 10px"><span class="day" style="width: 46px;height: 25px;font-family: Arial; font-size: 14px; font-weight: bold; font-style: normal; text-decoration: none; color:black; cursor: pointer;">W</span></div></center>
+                                        </div>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{shiftCalendarDataBean.wedSlot != null}">
+                                        <div class="days" id="WED" style="margin-left: 10px;float: left;top: -3px;width: 34px;height: 34px;background-repeat: no-repeat;background-image:url(#{facesContext.externalContext.requestContextPath}/images/book-slot-disabled.png)">
+                                            <center><div style="padding-top: 10px"><span class="day" style="width: 46px;height: 25px;font-family: Arial; font-size: 14px; font-weight: bold; font-style: normal; text-decoration: none; color: rgb(255, 255, 255); ">W</span></div></center>
+                                        </div>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{shiftCalendarDataBean.thuSlot == null}">
+                                        <div class="days" id="THU" style="cursor: pointer;margin-left: 10px;float:left;top: -3px;width: 34px;height: 34px;background-repeat: no-repeat;background-image:url(#{facesContext.externalContext.requestContextPath}/images/book-slot.png)" onclick="selectDay('THU')">
+                                            <center><div style="padding-top: 10px;"><span class="day" style="width: 46px;height: 25px;font-family: Arial; font-size: 14px; font-weight: bold; font-style: normal; text-decoration: none; color: black;cursor: pointer;">T</span></div></center>
+                                        </div>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{shiftCalendarDataBean.thuSlot != null}">
+                                        <div class="days" id="THU" style="margin-left: 10px;float:left;top: -3px;width: 34px;height: 34px;background-repeat: no-repeat;background-image:url(#{facesContext.externalContext.requestContextPath}/images/book-slot-disabled.png)">
+                                            <center><div style="padding-top: 10px;"><span class="day" style="width: 46px;height: 25px;font-family: Arial; font-size: 14px; font-weight: bold; font-style: normal; text-decoration: none; color: rgb(255, 255, 255);">T</span></div></center>
+                                        </div>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{shiftCalendarDataBean.friSlot == null}">
+                                        <div class="days" id="FRI" style="cursor: pointer;margin-left: 10px;float:left;top: -3px;width: 34px;height: 34px;background-repeat: no-repeat;background-image:url(#{facesContext.externalContext.requestContextPath}/images/book-slot.png)" onclick="selectDay('FRI')" >
+                                            <center><div style="padding-top: 10px"><span class="day" style="width: 46px;height: 25px;font-family: Arial; font-size: 14px; font-weight: bold; font-style: normal; text-decoration: none; color:black;cursor: pointer">F</span></div></center>
+                                        </div>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{shiftCalendarDataBean.friSlot != null}">
+                                        <div class="days" id="FRI" style="margin-left: 10px;float:left;top: -3px;width: 34px;height: 34px;background-repeat: no-repeat;background-image:url(#{facesContext.externalContext.requestContextPath}/images/book-slot-disabled.png)" >
+                                            <center><div style="padding-top: 10px"><span class="day" style="width: 46px;height: 25px;font-family: Arial; font-size: 14px; font-weight: bold; font-style: normal; text-decoration: none; color: rgb(255, 255, 255);">F</span></div></center>
+                                        </div>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{shiftCalendarDataBean.satSlot == null}">
+                                        <div class="days" id="SAT" style="cursor: pointer;margin-left: 10px;float: left;top: -3px;width: 34px;height: 34px;background-repeat: no-repeat;background-image:url(#{facesContext.externalContext.requestContextPath}/images/book-slot.png)" onclick="selectDay('SAT')">
+                                            <center><div style="padding-top: 10px"><span class="day" style="width: 46px;height: 25px;font-family: Arial; font-size: 14px; font-weight: bold; font-style: normal; text-decoration: none; color:black;cursor: pointer;">S</span></div></center>
+                                        </div>
+                                    </h:panelGroup>
+                                    <h:panelGroup rendered="#{shiftCalendarDataBean.satSlot != null}">
+                                        <div class="days" id="SAT" style="margin-left: 10px;float: left;top: -3px;width: 34px;height: 34px;background-repeat: no-repeat;background-image:url(#{facesContext.externalContext.requestContextPath}/images/book-slot-disabled.png)">
+                                            <center><div style="padding-top: 10px"><span class="day" style="width: 46px;height: 25px;font-family: Arial; font-size: 14px; font-weight: bold; font-style: normal; text-decoration: none; color: rgb(255, 255, 255);">S</span></div></center>
+                                        </div>
+                                    </h:panelGroup>
+                                </td>
+                            </tr>
+                        </table>
+                        <br/>
+                        <table width="55%" border="0" cellspacing="0" cellpadding="0" class="form-table" >
+                            <tr>
+                                <th>Specialist<sup><font color="red">*</font></sup></th>
+                                <td>
+                                    <h:selectManyMenu id="trainers" value="#{schedulerServiceBean.selectedTrainerList}" required="true" requiredMessage="Select PB Specialists" style="width: 240px"  >
+                                        <f:selectItems value="#{schedulerServiceBean.trainerList}"/>
+                                    </h:selectManyMenu>
+                                    <rich:message for="trainers"/>
+                                </td> 
+                            </tr>
+                            <tr>
+                                <th>Max. Session count<sup><font color="red">*</font></sup></th>
+                                <td>
+                                    <h:inputText id="strength" value="#{schedulerServiceBean.strength}" styleClass="small" required="true" requiredMessage="Enter Strength" maxlength="4" validatorMessage="Invalid strength">
+                                        <f:validateLongRange minimum="1" maximum="9999" />
+                                    </h:inputText>
+                                    <rich:message for="strength"/>
+                                </td>
+                            </tr>
+                        </table>
+                        <table width="100%" border="0" cellspacing="0" cellpadding="0" class="form-table" >
+                            <tr>
+                                <td align="center">
+                                    <hr class="red"/>
+                                    <div align="center">
+                                        <a4j:commandButton value="Submit" action="#{schedulerServiceBean.createSlot}" styleClass="standard-button" onbegin="loadWaitPanel('content');" oncomplete="stopWaitPanel('content');"/>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </h:form>
+                </div>
+                <script type="text/javascript">                   
+                   document.getElementById("strength").value = "";
+                   jQuery("#strength").numeric();
+                   
+                   function selectDay(day){
+                       var arrayIndex = $.inArray(day,selectedDay);
+                       if(arrayIndex != -1){
+                           $("#"+day).css("background-image","url(#{facesContext.externalContext.requestContextPath}/images/book-slot.png)");
+                           $("#"+day+" span").css("color","black");
+                           selectedDay.splice(arrayIndex,1);
+                       }else{
+                               $("#"+day).css("background-image","url(#{facesContext.externalContext.requestContextPath}/images/book-slot-selected.png)");
+                           $("#"+day+" span").css("color","#FFFFFF");
+                           selectedDay.push(day);
+                       }
+
+                       document.getElementById("selectedDays").value = selectedDay;
+                   }
+                </script>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

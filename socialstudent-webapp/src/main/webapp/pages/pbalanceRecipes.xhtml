@@ -1,0 +1,104 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core">
+    <body>
+        <ui:composition template="layout/homeLayout.xhtml">
+            <ui:define name="content">
+                <h:form prependId="false">
+                    <div id="left">
+                        <ul id="subnav">
+                            <a href="/pbalancediet"><li>Eating</li></a> 
+                            <h:commandLink action="#{menuServiceBean.loginNavigate}">
+                                <li>PB Meal Plan</li>
+                                <f:param name="id" value="pbalancemealplan"/>
+                            </h:commandLink>
+                            <h:commandLink action="#{menuServiceBean.loginNavigate}">
+                                <li class="active">PB Recipes</li>
+                                <f:param name="id" value="pbalanceRecipes"/>
+                            </h:commandLink>
+                        </ul>
+                        <div class="contact-bg">
+                            <h4>Questions?</h4>
+                            <h5>Just call and talk to us:</h5>
+                            (510) 668-0701<br/>
+                            <br/>
+                            <a href="/contact"><div id="emailus">&#160;</div></a>
+                        </div>
+                    </div>
+                    <div id="right">
+                        <h3>PB Recipes</h3>
+                        <div class="breadcrumbs"> <a href="/login">HOME</a> | PB RECIPES</div>
+                        <div class="content">
+                            <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                                <tbody><tr>
+                                        <td width="33%">&nbsp;</td>
+                                        <td width="33%">&nbsp;</td>
+                                        <td width="34">&nbsp;</td>
+                                    </tr>
+                                    <tr>
+                                        <td> <strong>&nbsp;Breakfast</strong></td>
+                                        <td> <strong>&nbsp;Lunch/Dinner</strong></td>
+                                        <td> <strong>&nbsp;Snacks</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td valign="top" >
+                                            <ul id="meal-plan" style="vertical-align: top">
+                                                <ui:repeat id="breakFastRecipeList"  value="#{recipeServiceBean.breakfastRecipeDataBeanList}" var="bfrecipe"  >
+                                                    <li style="list-style-type: none;margin-left: 3px;margin-right: 50px;text-align: left">
+                                                        <h:graphicImage value="#{bfrecipe.category == 'V' ?'/images/veg-10x10.jpg' :'/images/non-veg-10x10.jpg'}" style="border: none" />
+                                                        &nbsp;
+                                                        <h:commandLink title="Click here to view Recipe detail" value="#{bfrecipe.name}" action="#{recipeServiceBean.navigateToViewRecipe()}" onclick="loadWaitPanel('content');" >
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeId}" value="#{bfrecipe.id}"/>
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeCategory}" value="#{bfrecipe.category}"/>
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeSubCategory}" value="#{bfrecipe.sub_category}"/>
+                                                        </h:commandLink>
+                                                    </li>                                                    
+                                                </ui:repeat>                                                        
+                                            </ul>
+                                        </td>
+                                        <td valign="top">
+                                            <ul id="meal-plan">
+                                                <ui:repeat id="lunchDinnerRecipeList"  value="#{recipeServiceBean.lunchDinnerRecipeDataBeanList}" var="ldRecipe">
+                                                    <li style="list-style-type: none;margin-left: 3px;margin-right: 50px;text-align: left" >
+                                                        <h:graphicImage value="#{ldRecipe.category == 'V' ?'/images/veg-10x10.jpg' :'/images/non-veg-10x10.jpg'}" style="border: none;width: 10px;height: 10px;" />
+                                                        &nbsp;
+                                                        <h:commandLink title="Click here to view Recipe detail" value="#{ldRecipe.name}" action="#{recipeServiceBean.navigateToViewRecipe()}" onclick="loadWaitPanel('content');">
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeId}" value="#{ldRecipe.id}"/>
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeCategory}" value="#{ldRecipe.category}"/>
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeSubCategory}" value="#{ldRecipe.sub_category}"/>
+                                                        </h:commandLink>
+                                                    </li>                                                    
+                                                </ui:repeat>                                                        
+                                            </ul>
+                                        </td>
+                                        <td valign="top">
+                                            <ul id="meal-plan">
+                                                <ui:repeat id="SnacksRecipeList"  value="#{recipeServiceBean.snacksRecipeDataBeanList}" var="snackRecipe">
+                                                    <li style="list-style-type: none;margin-left: 3px;margin-right: 50px;text-align: left">
+                                                        <h:graphicImage value="#{snackRecipe.category == 'V' ?'/images/veg-10x10.jpg' :'/images/non-veg-10x10.jpg'}" style="border: none;width: 10px;height: 10px;" />
+                                                        &nbsp;
+                                                        <h:commandLink title="Click here to view Recipe detail" value="#{snackRecipe.name}" action="#{recipeServiceBean.navigateToViewRecipe()}" onclick="loadWaitPanel('content');">
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeId}" value="#{snackRecipe.id}"/>
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeCategory}" value="#{snackRecipe.category}"/>
+                                                            <f:setPropertyActionListener target="#{systemResultSessionUtil.recipeSubCategory}" value="#{snackRecipe.sub_category}"/>
+                                                        </h:commandLink>
+                                                    </li>                                                    
+                                                </ui:repeat>                                                        
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>                          
+                        </div>
+                    </div>
+                    <script type="text/javascript">
+                        document.getElementById("pbalancediet").setAttribute("class", "active");
+                    </script>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>
